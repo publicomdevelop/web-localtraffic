@@ -79,3 +79,9 @@ Antes de presentarlo, repasa el plan y descarta si aparece cualquiera de estos t
 - El contenido de las páginas vive en `components/pages/*Page.tsx` y recibe `lang`. Los componentes de cliente leen el idioma de la URL con `useLang()`.
 - Rutas y equivalencias entre idiomas en `lib/i18n.ts` (`ROUTES`, `route()`, `counterpart()`); metadatos con hreflang en `lib/pageMeta.ts`.
 - Cada texto nuevo se añade en los dos idiomas (objetos `COPY = { es, en }`). Inglés británico.
+
+## Cookies y analítica
+
+- Google Analytics 4 (`GA_ID` en `lib/site.ts`, `G-GPP24MSVBB`) solo se carga tras aceptar el banner (`components/CookieBanner.tsx`, `components/Analytics.tsx`, `lib/consent.ts`). No añadir scripts de terceros que pongan cookies sin pasar por ese consentimiento.
+- Si se añade cualquier cookie o herramienta nueva, actualizar la tabla de la Política de cookies y la de privacidad (`components/pages/LegalPage.tsx`).
+- Dirección para Google: Carrer Sant Antoni 2, 08800 Vilanova i la Geltrú (oficina, no la de facturación).
