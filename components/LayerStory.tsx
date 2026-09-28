@@ -68,14 +68,14 @@ const STEPS: Step[] = [
       es: {
         kicker: "Origen del consumidor",
         title: "De dónde viene quien compra.",
-        body: "Qué códigos postales aportan el gasto de la zona y cuánto pesa cada uno. Así sabes si tu cliente es del barrio o viene de fuera, y dónde ir a buscarlo.",
+        body: "Con transacciones con tarjeta en comercios y venta física sabemos cuánto se gasta en cada código postal y de qué otros códigos postales viene quien lo gasta. Así sabes si tu cliente es del barrio o viene de fuera, y dónde ir a buscarlo.",
         items: ["¿Qué áreas aportan más gasto?", "¿Cuánto pesa el cliente de fuera?", "¿Dónde está el cliente que aún no viene?"],
         legend: "Gasto por código postal y hacia dónde se desplaza",
       },
       en: {
         kicker: "Consumer origin",
         title: "Where the people who buy come from.",
-        body: "Which postcodes bring spending into the area and how much each one weighs. So you know whether your customer is local or comes from elsewhere, and where to go and find them.",
+        body: "With card transactions in shops and in-store sales we know how much is spent in each postcode and which other postcodes its buyers come from. So you know whether your customer is local or comes from elsewhere, and where to go and find them.",
         items: ["Which areas bring in the most spending?", "How much do outside customers weigh?", "Where is the customer who doesn't come yet?"],
         legend: "Spending by postcode and where it flows",
       },

@@ -3,12 +3,12 @@ import type { Lang } from "@/lib/i18n";
 
 const REASONS = [
   {
-    title: "Interpretamos, no solo medimos",
-    body: "Cada análisis llega con una lectura clara: qué está pasando, por qué y qué te recomendamos hacer.",
+    title: "Sabemos de dónde viene el gasto",
+    body: "Cuánto se gasta en cada código postal y de qué otros códigos postales llegan los compradores, con transacciones con tarjeta reales.",
   },
   {
-    title: "Muchas fuentes, una respuesta",
-    body: "Cruzamos datos públicos y privados para no depender de una sola mirada.",
+    title: "Interpretamos, no solo medimos",
+    body: "Cada análisis llega con una lectura clara: qué está pasando, por qué y qué te recomendamos hacer.",
   },
   {
     title: "Experiencia sobre el terreno",
@@ -34,6 +34,10 @@ export const FAQ = [
     a: "No. Somos una consultoría: analizamos los datos por ti y te entregamos conclusiones y recomendaciones, no un programa que tengas que aprender a usar.",
   },
   {
+    q: "¿Qué os diferencia de otros proveedores de datos?",
+    a: "Sobre todo, el dato de consumo: con transacciones con tarjeta en comercios y venta física sabemos cuánto se gasta en cada código postal y de qué otros códigos postales viene ese gasto. Y la Inteligencia Humana: no te damos solo datos, te decimos qué significan y qué haríamos.",
+  },
+  {
     q: "¿Qué es la Inteligencia Humana?",
     a: "Es la parte que no hace ningún algoritmo: interpretar los datos con experiencia sobre el terreno y convertirlos en decisiones.",
   },
@@ -57,12 +61,12 @@ export const FAQ = [
 
 const REASONS_EN = [
   {
-    title: "We interpret, not just measure",
-    body: "Every analysis comes with a clear reading: what is happening, why and what we recommend you do.",
+    title: "We know where spending comes from",
+    body: "How much is spent in each postcode and which other postcodes its buyers come from, based on real card transactions.",
   },
   {
-    title: "Many sources, one answer",
-    body: "We combine public and private data so you never rely on a single view.",
+    title: "We interpret, not just measure",
+    body: "Every analysis comes with a clear reading: what is happening, why and what we recommend you do.",
   },
   {
     title: "Experience on the ground",
@@ -86,6 +90,10 @@ export const FAQ_EN = [
   {
     q: "Do I need to learn a tool?",
     a: "No. We analyse the data for you and hand you conclusions and recommendations, not software you have to learn.",
+  },
+  {
+    q: "What sets you apart from other data providers?",
+    a: "Above all, spending data: with card transactions in shops and in-store sales we know how much is spent in each postcode and which other postcodes that spending comes from. And Human Intelligence: we don't just hand you data, we tell you what it means and what we would do.",
   },
   {
     q: "What is Human Intelligence?",

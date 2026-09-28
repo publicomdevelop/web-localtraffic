@@ -9,7 +9,7 @@ const TEXT: Record<RouteKey, Record<Lang, { title?: string; description: string 
     es: { description: SITE_DESCRIPTION },
     en: {
       description:
-        "Geospatial data with Human Intelligence: resident profile, visitor profile and consumer origin to decide where to open, which area to boost and which campaign to launch.",
+        "Geospatial data with Human Intelligence: how much is spent in each postcode and where the spenders come from, plus resident and visitor profiles, to decide where to open, which area to boost and which campaign to launch.",
     },
   },
   approach: {

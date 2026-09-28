@@ -4,6 +4,8 @@
 
 ## Qué analiza
 
+- Ventaja principal: el dato de consumo. Con transacciones con tarjeta en comercios y venta física, localtraffic sabe cuánto se gasta en cada código postal y de qué otros códigos postales proceden los compradores.
+
 - Perfil del residente: cuántas personas viven en la zona, su edad, la renta disponible de los hogares y en qué gastan.
 - Perfil del visitante: visitas por día y hora, tiempo de estancia, edad y renta de quien visita la zona.
 - Origen del consumidor: qué áreas (por código postal) aportan el gasto de una zona y cuánto pesa el cliente de fuera.
@@ -36,7 +38,7 @@
 
 ## English
 
-localtraffic works with geospatial data and Human Intelligence: it gathers public and private data about an area, interprets it with experience on the ground and recommends what to do. It analyses the resident profile, the visitor profile and consumer origin (by postcode), and uses the same data to launch and measure geotargeted campaigns. Services: Tailored (one location over a period), Focus (monthly tracking of shopping areas for a year) and On Demand (tailor-made analysis, optionally combined with the client's own data).
+localtraffic works with geospatial data and Human Intelligence: it gathers public and private data about an area, interprets it with experience on the ground and recommends what to do. Its main edge is spending data: from card transactions in shops and in-store sales it knows how much is spent in each postcode and which other postcodes the buyers come from. It also analyses the resident profile, the visitor profile and consumer origin (by postcode), and uses the same data to launch and measure geotargeted campaigns. Services: Tailored (one location over a period), Focus (monthly tracking of shopping areas for a year) and On Demand (tailor-made analysis, optionally combined with the client's own data).
 
 - [Home](https://www.localtraffic.es/en)
 - [Approach: Human Intelligence](https://www.localtraffic.es/en/approach)

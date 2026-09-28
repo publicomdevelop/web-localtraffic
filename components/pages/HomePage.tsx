@@ -4,6 +4,7 @@ import LayerStory from "@/components/LayerStory";
 import Services from "@/components/Services";
 import Campaigns from "@/components/Campaigns";
 import StudyTypes from "@/components/StudyTypes";
+import SpendOrigin from "@/components/SpendOrigin";
 import { Marquee, CtaBand } from "@/components/Bands";
 import type { Lang } from "@/lib/i18n";
 
@@ -12,6 +13,7 @@ export default function HomePage({ lang }: { lang: Lang }) {
     <>
       <Hero />
       <Marquee />
+      <SpendOrigin lang={lang} />
       <Approach lang={lang} />
       <LayerStory />
       <Services />

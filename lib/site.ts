@@ -2,7 +2,7 @@
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.localtraffic.es").replace(/\/$/, "");
 export const SITE_NAME = "localtraffic";
 export const SITE_DESCRIPTION =
-  "Datos geoespaciales con Inteligencia Humana: perfil del residente, perfil del visitante y origen del consumidor para decidir dónde abrir, qué zona impulsar y qué campaña activar.";
+  "Datos geoespaciales con Inteligencia Humana: cuánto se gasta en cada código postal y de dónde viene quien lo gasta, perfil del residente y del visitante, para decidir dónde abrir, qué zona impulsar y qué campaña activar.";
 
 /**
  * Search engines only index the site once it lives on its real domain. Until
