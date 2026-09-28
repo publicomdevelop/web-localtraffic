@@ -2893,6 +2893,37 @@ canvas {
   }
 }
 
+/* Client login ------------------------------------------------------------- */
+
+.header__login {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+  color: var(--ink-2);
+  font-size: 15px;
+  text-decoration: none;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.header__login:hover {
+  color: var(--ink);
+  border-color: var(--ink-3);
+}
+
+.mobile-menu .mobile-menu__login {
+  color: var(--signal);
+}
+
+@media (max-width: 720px) {
+  .header__login {
+    display: none;
+  }
+}
+
 /* Reduced motion: everything is readable standing still ------------------- */
 
 @media (prefers-reduced-motion: reduce) {

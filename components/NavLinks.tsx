@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import SolutionArt from "@/components/illustrations/SolutionArt";
 import SocialLinks from "@/components/Social";
 import { SERVICES } from "@/lib/services";
+import { LOGIN_URL } from "@/lib/site";
 
 const PAGES = [
   { href: "/enfoque", label: "Enfoque", body: "Qué es la Inteligencia Humana y cómo leemos cada zona." },
@@ -151,6 +152,9 @@ export default function NavLinks() {
         <Link href="/campanas" aria-current={isActive("/campanas") ? "page" : undefined}>
           Campañas
         </Link>
+        <a href={LOGIN_URL} target="_blank" rel="noopener noreferrer" className="mobile-menu__login">
+          Acceso clientes ↗<span className="sr-only"> (se abre en otra pestaña)</span>
+        </a>
         <SocialLinks className="social social--menu" />
       </nav>
     </>

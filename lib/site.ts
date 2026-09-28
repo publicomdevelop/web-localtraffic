@@ -11,6 +11,8 @@ export const SITE_DESCRIPTION =
  */
 export const INDEXABLE = process.env.SITE_INDEXABLE === "true";
 
+export const LOGIN_URL = "https://localtraffic.app/";
+
 export const CONTACT = { phone: "+34938148787", email: "hola@localtraffic.es" };
 
 export const SOCIAL_URLS = [

@@ -2,6 +2,16 @@ import Image from "next/image";
 import Link from "next/link";
 import NavLinks from "@/components/NavLinks";
 import SocialLinks from "@/components/Social";
+import { LOGIN_URL } from "@/lib/site";
+
+function LoginIcon() {
+  return (
+    <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6">
+      <circle cx="10" cy="7" r="3.2" />
+      <path d="M3.5 17c.9-3 3.4-4.6 6.5-4.6s5.6 1.6 6.5 4.6" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 export const NAV = [
   { href: "/enfoque", label: "Enfoque" },
@@ -20,6 +30,11 @@ export function SiteHeader() {
           <Image src="/logo-localtraffic.png" alt="" width={148} height={32} priority />
         </Link>
         <NavLinks />
+        <a className="header__login" href={LOGIN_URL} target="_blank" rel="noopener noreferrer">
+          <LoginIcon />
+          <span>Acceso clientes</span>
+          <span className="sr-only"> (se abre en otra pestaña)</span>
+        </a>
         <Link className="btn btn--primary btn--small" href="/contacto">
           Pedir demo
         </Link>
@@ -50,6 +65,11 @@ export function SiteFooter() {
             ))}
             <li>
               <Link href="/contacto">Pedir demo</Link>
+            </li>
+            <li>
+              <a href={LOGIN_URL} target="_blank" rel="noopener noreferrer">
+                Acceso clientes<span className="sr-only"> (se abre en otra pestaña)</span>
+              </a>
             </li>
           </ul>
         </nav>
