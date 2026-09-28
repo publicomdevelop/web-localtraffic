@@ -149,6 +149,7 @@ canvas {
 }
 
 .btn--ghost {
+  background: transparent;
   border-color: var(--line-2);
   color: var(--ink);
 }
@@ -3128,8 +3129,14 @@ canvas {
   margin-top: 16px;
 }
 
+.cookies__actions {
+  flex-wrap: nowrap;
+}
+
 .cookies__actions .btn {
   flex: 1 1 0;
+  min-width: 0;
+  padding: 0 10px;
 }
 
 .has-cookie-banner .askbar {
