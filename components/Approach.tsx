@@ -8,7 +8,7 @@ function ConvergeArt() {
     const y0 = 20 + i * 12 + (r() - 0.5) * 8;
     const c1 = 120 + r() * 80;
     const tone = tones[i % tones.length];
-    return { d: `M0 ${y0.toFixed(1)}C${c1.toFixed(1)} ${y0.toFixed(1)} ${(c1 + 60).toFixed(1)} 180 330 180`, tone, o: 0.18 + r() * 0.35 };
+    return { d: `M0 ${y0.toFixed(1)}C${c1.toFixed(1)} ${y0.toFixed(1)} ${(c1 + 60).toFixed(1)} 180 330 180`, tone, o: 0.3 + r() * 0.4 };
   });
   return (
     <svg viewBox="0 0 640 360" className="converge" role="img" aria-label="Muchas señales de datos se juntan en un punto de interpretación y salen como una sola decisión">

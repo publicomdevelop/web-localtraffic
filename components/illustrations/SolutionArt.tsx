@@ -22,7 +22,7 @@ const CROPS: Record<ArtKind, Crop> = {
   axis: { cx: 700, cy: 470, k: 1.5 },
   event: { cx: 420, cy: 700, k: 1.1 },
   pedestrian: { cx: 700, cy: 470, k: 2 },
-  tailored: { cx: 1060, cy: 600, k: 1.25 },
+  tailored: { cx: 1060, cy: 590, k: 0.72 },
   focus: { cx: 800, cy: 520, k: 0.7 },
 };
 
@@ -111,7 +111,7 @@ function Campaign() {
           className="hex"
           style={{ animationDelay: `${(c.x / 480) * 1.6}s` }}
           fill={c.v > 0.62 ? SPEND : BLUE}
-          fillOpacity={c.v > 0.62 ? 0.5 : c.v * 0.45}
+          fillOpacity={c.v > 0.62 ? 0.55 : 0.05 + c.v * 0.55}
           stroke={INK}
           strokeOpacity="0.06"
         />

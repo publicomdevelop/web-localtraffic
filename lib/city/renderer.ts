@@ -399,7 +399,7 @@ export class CityRenderer {
       ctx.beginPath();
       cell.quad.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
       ctx.closePath();
-      ctx.fillStyle = `rgba(${SPEND}, ${(0.03 + z.spend * z.spend * 0.42) * alpha})`;
+      ctx.fillStyle = `rgba(${SPEND}, ${(0.02 + z.spend * z.spend * 0.26) * alpha})`;
       ctx.fill();
     });
     ctx.beginPath();
