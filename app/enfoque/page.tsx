@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import PageHero from "@/components/PageHero";
 import { ConvergeArt } from "@/components/Approach";
 import { Why, Faq } from "@/components/WhyFaq";
 import { Marquee, CtaBand } from "@/components/Bands";
 import SolutionArt from "@/components/illustrations/SolutionArt";
 
-export const metadata: Metadata = {
-  title: "Enfoque",
-  description: "Inteligencia Humana: reunimos datos de población, visitantes y consumo, los interpretamos y te decimos qué hacer.",
-};
+export const metadata: Metadata = pageMeta({
+  title: "Enfoque: Inteligencia Humana",
+  description:
+    "Qué es la Inteligencia Humana de localtraffic: reunimos datos de residentes, visitantes y consumo de cualquier zona, los interpretamos con experiencia sobre el terreno y te decimos qué hacer.",
+  path: "/enfoque",
+});
 
 const PARTS = [
   {

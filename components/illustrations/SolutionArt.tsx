@@ -1,4 +1,4 @@
-import { MapCrop, project, VB_H, VB_W, type Crop } from "./MapCrop";
+import { MapCrop, blockArea, project, VB_H, VB_W, type Crop } from "./MapCrop";
 import { getCity, isochrone, mulberry32 } from "@/lib/city/model";
 
 export type ArtKind =
@@ -23,7 +23,7 @@ const CROPS: Record<ArtKind, Crop> = {
   event: { cx: 420, cy: 700, k: 1.1 },
   pedestrian: { cx: 700, cy: 470, k: 2 },
   tailored: { cx: 1060, cy: 590, k: 0.72 },
-  focus: { cx: 800, cy: 520, k: 0.7 },
+  focus: { cx: 800, cy: 470, k: 0.7 },
 };
 
 const BLUE = "#3340F5";
@@ -272,33 +272,41 @@ function Tailored() {
 }
 
 function Focus() {
+  const crop = CROPS.focus;
+  // Commercial areas as groups of blocks on the ground: two axes and two squares.
   const zones = [
-    { x: 120, y: 110, w: 80, h: 50 },
-    { x: 250, y: 90, w: 70, h: 60 },
-    { x: 330, y: 170, w: 90, h: 44 },
-    { x: 150, y: 190, w: 76, h: 48 },
-  ];
+    { cells: [17, 17, 20, 17], tone: SIGNAL, label: "Eje 1" },
+    { cells: [21, 16, 22, 17], tone: INK, label: "Zona 2" },
+    { cells: [15, 20, 16, 21], tone: BLUE, label: "Zona 3" },
+    { cells: [12, 18, 15, 18], tone: SPEND, label: "Eje 4" },
+  ].map((z) => ({ ...z, area: blockArea(crop, z.cells[0], z.cells[1], z.cells[2], z.cells[3]) }));
   const series = [
     [0.5, 0.52, 0.55, 0.6, 0.58, 0.64, 0.7, 0.68, 0.72, 0.75, 0.78, 0.8],
     [0.62, 0.6, 0.58, 0.61, 0.6, 0.57, 0.55, 0.56, 0.54, 0.55, 0.53, 0.52],
-    [0.3, 0.33, 0.35, 0.34, 0.4, 0.46, 0.52, 0.6, 0.58, 0.61, 0.66, 0.7],
     [0.42, 0.44, 0.43, 0.45, 0.44, 0.46, 0.45, 0.47, 0.48, 0.47, 0.49, 0.5],
+    [0.3, 0.33, 0.35, 0.34, 0.4, 0.46, 0.52, 0.6, 0.58, 0.61, 0.66, 0.7],
   ];
-  const tones = [SIGNAL, INK, SPEND, BLUE];
   const cx = (i: number) => 40 + i * 36;
   const cy = (v: number) => 340 - v * 90;
   return (
-    <Frame kind="focus" label="Cuatro zonas comerciales y su evolución mensual durante un año">
-      <rect x="0" y="236" width={VB_W} height="124" fill="#0E0B1C" fillOpacity=".85" />
-      {zones.map((z, i) => (
-        <rect key={i} x={z.x} y={z.y} width={z.w} height={z.h} rx="8" fill={tones[i]} fillOpacity=".14" stroke={tones[i]} strokeOpacity=".8" strokeDasharray="4 4" />
+    <Frame kind="focus" label="Cuatro áreas comerciales sobre el plano y su evolución mensual durante un año">
+      {zones.map((z) => (
+        <g key={z.label}>
+          <path d={z.area.outline} fill={z.tone} fillOpacity=".16" />
+          <path d={z.area.roofs} fill={z.tone} fillOpacity=".55" />
+          <path d={z.area.outline} fill="none" stroke={z.tone} strokeWidth="1.6" strokeDasharray="5 4" strokeLinejoin="round" />
+          <text x={z.area.top.x} y={z.area.top.y - 8} textAnchor="middle" className="art__label" fill={z.tone}>
+            {z.label}
+          </text>
+        </g>
       ))}
+      <rect x="0" y="246" width={VB_W} height="114" fill="#0E0B1C" fillOpacity=".88" />
       {series.map((vals, k) => (
         <path
           key={k}
           d={vals.map((v, i) => `${i ? "L" : "M"}${cx(i)} ${cy(v)}`).join("")}
           fill="none"
-          stroke={tones[k]}
+          stroke={zones[k].tone}
           strokeWidth="2.2"
           strokeLinejoin="round"
           pathLength={1}

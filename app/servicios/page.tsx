@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import PageHero from "@/components/PageHero";
 import SolutionArt from "@/components/illustrations/SolutionArt";
@@ -6,10 +7,12 @@ import ZoneStudy from "@/components/ZoneStudy";
 import { CtaBand } from "@/components/Bands";
 import { SERVICES } from "@/lib/services";
 
-export const metadata: Metadata = {
-  title: "Servicios",
-  description: "Tailored, Focus y On Demand: tres formas de entender una zona y decidir con datos e Inteligencia Humana.",
-};
+export const metadata: Metadata = pageMeta({
+  title: "Servicios: Tailored, Focus y On Demand",
+  description:
+    "Tres formas de analizar una zona con datos geoespaciales: Tailored (una ubicación en un periodo), Focus (seguimiento mensual de áreas comerciales) y On Demand (análisis a medida).",
+  path: "/servicios",
+});
 
 const COMPARE: { label: string; values: [string, string, string] }[] = [
   { label: "Para qué", values: ["Una foto de una ubicación", "La evolución de una zona", "Una pregunta concreta"] },

@@ -5,6 +5,9 @@ import PageHero from "@/components/PageHero";
 import SolutionArt from "@/components/illustrations/SolutionArt";
 import { CtaBand } from "@/components/Bands";
 import { SERVICES, getService } from "@/lib/services";
+import JsonLd from "@/components/JsonLd";
+import { ORG_ID, pageMeta } from "@/lib/seo";
+import { SITE_URL } from "@/lib/site";
 
 export function generateStaticParams() {
   return SERVICES.map((s) => ({ slug: s.slug }));
@@ -12,7 +15,9 @@ export function generateStaticParams() {
 
 export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
   const s = getService(params.slug);
-  return s ? { title: s.name, description: `${s.tagline} ${s.intro}` } : {};
+  return s
+    ? pageMeta({ title: `${s.name}: ${s.tagline.replace(/\.$/, "")}`, description: `${s.tagline} ${s.intro}`, path: `/servicios/${s.slug}` })
+    : {};
 }
 
 export default function ServicePage({ params }: { params: { slug: string } }) {
@@ -20,8 +25,28 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
   if (!s) notFound();
   const others = SERVICES.filter((o) => o.slug !== s.slug);
 
+  const serviceLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: `${s.name} · localtraffic`,
+    serviceType: s.tagline,
+    description: s.intro,
+    url: `${SITE_URL}/servicios/${s.slug}`,
+    provider: { "@id": ORG_ID },
+    areaServed: { "@type": "Country", name: "España" },
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: `Qué incluye ${s.name}`,
+      itemListElement: s.includes.map((i) => ({
+        "@type": "Offer",
+        itemOffered: { "@type": "Service", name: i.title, description: i.body },
+      })),
+    },
+  };
+
   return (
     <>
+      <JsonLd data={serviceLd} />
       <PageHero
         title={s.name}
         lede={`${s.tagline} ${s.intro}`}

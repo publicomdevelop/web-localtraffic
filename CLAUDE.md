@@ -65,3 +65,10 @@ Antes de presentarlo, repasa el plan y descarta si aparece cualquiera de estos t
 - Mapas: rejilla recta en perspectiva isométrica con edificios extruidos (sin anillo ni diagonal, sin ondulaciones); el área de influencia del hero es un círculo sobre el suelo (elipse en pantalla, `inGroundCircle`).
 - Navegación: megamenú en Servicios, transición de cortina entre páginas (`app/template.tsx`), redes: Instagram y LinkedIn (`components/Social.tsx`).
 - Ritmo entre secciones: alternar `band--layer`, `band--grid`, `Marquee` y `CtaBand` (azul) para que el scroll no sea plano.
+
+## SEO, GEO y buscadores de IA
+
+- Metadatos por página con `pageMeta()` (`lib/seo.ts`): título, descripción, canonical y Open Graph. Cada página nueva debe usarlo.
+- Datos estructurados (JSON-LD): Organization + WebSite en el layout, BreadcrumbList en `PageHero`, Service en cada servicio y FAQPage en `/enfoque`.
+- `app/sitemap.ts`, `app/robots.ts` (permite a los rastreadores de IA), `app/opengraph-image.tsx` y `public/llms.txt` (resumen para asistentes de IA: actualizarlo si cambian servicios o contacto).
+- La web es `noindex` mientras `SITE_INDEXABLE` no sea `true` en Vercel. Activarlo solo cuando `localtraffic.es` apunte a este proyecto. `NEXT_PUBLIC_SITE_URL` por defecto es `https://localtraffic.es`.

@@ -1,0 +1,33 @@
+# localtraffic
+
+> localtraffic trabaja con datos geoespaciales e Inteligencia Humana (IH): reúne datos públicos y privados sobre una zona, los interpreta con experiencia sobre el terreno y recomienda qué hacer: dónde abrir, qué zona comercial impulsar o qué campaña activar. Lema: "Datos que cambian decisiones". Trabaja en España, en castellano.
+
+## Qué analiza
+
+- Perfil del residente: cuántas personas viven en la zona, su edad, la renta disponible de los hogares y en qué gastan.
+- Perfil del visitante: visitas por día y hora, tiempo de estancia, edad y renta de quien visita la zona.
+- Origen del consumidor: qué áreas (por código postal) aportan el gasto de una zona y cuánto pesa el cliente de fuera.
+- Inteligencia Humana: cada análisis termina con una lectura y recomendaciones de su equipo, no solo con datos.
+- Todos los datos están agregados y anonimizados.
+
+## Servicios
+
+- [Tailored](https://localtraffic.es/servicios/tailored): una foto de una ubicación. Se elige un punto, su área de influencia (a pie, en coche, por radio o por área administrativa) y un periodo.
+- [Focus](https://localtraffic.es/servicios/focus): seguimiento mes a mes, durante un año, de una o varias áreas comerciales, con un informe cada mes.
+- [On Demand](https://localtraffic.es/servicios/on-demand): análisis a medida para una pregunta concreta, con zonas y periodos a medida y la posibilidad de cruzar datos propios del cliente.
+- [Campañas](https://localtraffic.es/campanas): usa los mismos datos para decidir dónde y cuándo activar campañas geolocalizadas y medir su efecto.
+
+## Páginas
+
+- [Inicio](https://localtraffic.es/)
+- [Enfoque: Inteligencia Humana](https://localtraffic.es/enfoque)
+- [Servicios](https://localtraffic.es/servicios)
+- [Campañas](https://localtraffic.es/campanas)
+- [Pedir demo](https://localtraffic.es/contacto)
+
+## Contacto
+
+- Email: hola@localtraffic.es
+- Teléfono: +34 938 148 787
+- Instagram: https://www.instagram.com/localtraffic.es/
+- LinkedIn: https://www.linkedin.com/company/localtraffic

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import JsonLd, { breadcrumbLd } from "@/components/JsonLd";
+import { SITE_URL } from "@/lib/site";
 
 type Crumb = { href: string; label: string };
 
@@ -15,6 +17,9 @@ export default function PageHero({
 }) {
   return (
     <section className="page-hero band--grid">
+      {crumbs.length > 0 && (
+        <JsonLd data={breadcrumbLd(crumbs.map((c) => ({ name: c.label, path: c.href === "/" ? "" : c.href })), SITE_URL)} />
+      )}
       <div className={`wrap page-hero__inner${art ? " page-hero__inner--art" : ""}`}>
         <div>
           {crumbs.length > 0 && (

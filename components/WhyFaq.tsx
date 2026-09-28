@@ -1,3 +1,5 @@
+import JsonLd from "@/components/JsonLd";
+
 const REASONS = [
   {
     title: "Interpretamos, no solo medimos",
@@ -25,7 +27,7 @@ const REASONS = [
   },
 ];
 
-const FAQ = [
+export const FAQ = [
   {
     q: "¿Sois una herramienta?",
     a: "No. Somos una consultoría: analizamos los datos por ti y te entregamos conclusiones y recomendaciones, no un programa que tengas que aprender a usar.",
@@ -72,9 +74,15 @@ export function Why() {
   );
 }
 
-export function Faq() {
+export function Faq({ schema = true }: { schema?: boolean }) {
+  const faqLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: FAQ.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+  };
   return (
     <section className="faq" aria-labelledby="faq-title">
+      {schema && <JsonLd data={faqLd} />}
       <div className="wrap faq__grid">
         <h2 id="faq-title" className="section-title">
           Preguntas frecuentes

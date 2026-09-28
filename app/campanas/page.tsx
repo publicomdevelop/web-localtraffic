@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import PageHero from "@/components/PageHero";
 import SolutionArt from "@/components/illustrations/SolutionArt";
 import { CtaBand, Marquee } from "@/components/Bands";
 
-export const metadata: Metadata = {
-  title: "Campañas",
-  description: "Usamos los datos de cada zona para decidir dónde y cuándo activar una campaña, y para medir después su efecto.",
-};
+export const metadata: Metadata = pageMeta({
+  title: "Campañas geolocalizadas",
+  description:
+    "Usamos datos de residentes, visitantes y origen del consumidor para decidir dónde y cuándo activar una campaña geolocalizada, y medimos después su efecto en visitas y consumo.",
+  path: "/campanas",
+});
 
 const STAGES = [
   {

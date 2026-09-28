@@ -56,6 +56,32 @@ export function cropPaths(crop: Crop) {
   return out;
 }
 
+/**
+ * A rectangular group of blocks (cells i0..i1, j0..j1) as it sits on the
+ * isometric ground: its outline and the roofs of the buildings inside it.
+ */
+export function blockArea(crop: Crop, i0: number, j0: number, i1: number, j1: number) {
+  const city = getCity();
+  const node = (i: number, j: number) => project(crop, city.nodes[j * (city.nx + 1) + i]);
+  const outline = [node(i0, j0), node(i1 + 1, j0), node(i1 + 1, j1 + 1), node(i0, j1 + 1)];
+  let roofs = "";
+  for (let j = j0; j <= j1; j++) {
+    for (let i = i0; i <= i1; i++) {
+      const cell = city.cells[j * city.nx + i];
+      cell.lots.forEach((lot, li) => {
+        const h = cell.heights[li] * crop.k;
+        roofs += lot.map((p, k) => {
+          const q = project(crop, p);
+          return `${k ? "L" : "M"}${f(q.x)} ${f(q.y - h)}`;
+        }).join("") + "Z";
+      });
+    }
+  }
+  const d = outline.map((p, k) => `${k ? "L" : "M"}${f(p.x)} ${f(p.y)}`).join("") + "Z";
+  const top = outline.reduce((a, b) => (b.y < a.y ? b : a));
+  return { outline: d, roofs, top };
+}
+
 export function MapCrop({ crop }: { crop: Crop }) {
   const { streets, avenues, lots } = cropPaths(crop);
   return (

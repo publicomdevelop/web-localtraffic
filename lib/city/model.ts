@@ -57,6 +57,9 @@ export type CityModel = {
   hubs: Vec[];
   zones: Zone[];
   zoneBorders: [Vec, Vec][];
+  /** Blocks per side: cell (i, j) is `cells[j * nx + i]`, node (i, j) is `nodes[j * (nx + 1) + i]`. */
+  nx: number;
+  ny: number;
 };
 
 export const WORLD_W = 1600;
@@ -336,6 +339,8 @@ function buildCity(seed: number): CityModel {
     hubs,
     zones,
     zoneBorders,
+    nx: NX,
+    ny: NY,
   };
 }
 
