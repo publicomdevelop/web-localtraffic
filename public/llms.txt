@@ -12,18 +12,18 @@
 
 ## Servicios
 
-- [Tailored](https://localtraffic.es/servicios/tailored): una foto de una ubicación. Se elige un punto, su área de influencia (a pie, en coche, por radio o por área administrativa) y un periodo.
-- [Focus](https://localtraffic.es/servicios/focus): seguimiento mes a mes, durante un año, de una o varias áreas comerciales, con un informe cada mes.
-- [On Demand](https://localtraffic.es/servicios/on-demand): análisis a medida para una pregunta concreta, con zonas y periodos a medida y la posibilidad de cruzar datos propios del cliente.
-- [Campañas](https://localtraffic.es/campanas): usa los mismos datos para decidir dónde y cuándo activar campañas geolocalizadas y medir su efecto.
+- [Tailored](https://www.localtraffic.es/servicios/tailored): una foto de una ubicación. Se elige un punto, su área de influencia (a pie, en coche, por radio o por área administrativa) y un periodo.
+- [Focus](https://www.localtraffic.es/servicios/focus): seguimiento mes a mes, durante un año, de una o varias áreas comerciales, con un informe cada mes.
+- [On Demand](https://www.localtraffic.es/servicios/on-demand): análisis a medida para una pregunta concreta, con zonas y periodos a medida y la posibilidad de cruzar datos propios del cliente.
+- [Campañas](https://www.localtraffic.es/campanas): usa los mismos datos para decidir dónde y cuándo activar campañas geolocalizadas y medir su efecto.
 
 ## Páginas
 
-- [Inicio](https://localtraffic.es/)
-- [Enfoque: Inteligencia Humana](https://localtraffic.es/enfoque)
-- [Servicios](https://localtraffic.es/servicios)
-- [Campañas](https://localtraffic.es/campanas)
-- [Pedir demo](https://localtraffic.es/contacto)
+- [Inicio](https://www.localtraffic.es/)
+- [Enfoque: Inteligencia Humana](https://www.localtraffic.es/enfoque)
+- [Servicios](https://www.localtraffic.es/servicios)
+- [Campañas](https://www.localtraffic.es/campanas)
+- [Pedir demo](https://www.localtraffic.es/contacto)
 
 ## Contacto
 
