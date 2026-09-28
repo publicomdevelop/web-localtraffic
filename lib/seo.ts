@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, CONTACT, SOCIAL_URLS } from "@/lib/site";
 
+// Pages that set their own openGraph lose the file-based image, so it is listed explicitly.
+const OG_IMAGE = { url: "/opengraph-image", width: 1200, height: 630, alt: "localtraffic · Datos que cambian decisiones" };
+
 /** Title, description, canonical and Open Graph for one page. */
 export function pageMeta({ title, description, path }: { title?: string; description: string; path: string }): Metadata {
   const ogTitle = title ? `${title} · ${SITE_NAME}` : `${SITE_NAME} · Datos que cambian decisiones`;
@@ -15,8 +18,9 @@ export function pageMeta({ title, description, path }: { title?: string; descrip
       url: path,
       title: ogTitle,
       description,
+      images: [OG_IMAGE],
     },
-    twitter: { card: "summary_large_image", title: ogTitle, description },
+    twitter: { card: "summary_large_image", title: ogTitle, description, images: [OG_IMAGE.url] },
   };
 }
 
