@@ -1,13 +1,21 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { Outfit, IBM_Plex_Mono } from "next/font/google";
+import "./globals.css";
+
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
+const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono", display: "swap" });
 
 export const metadata: Metadata = {
-  title: "LocalTraffic",
-  description: "LocalTraffic",
+  title: "localtraffic · Datos de consumo, movilidad y tráfico por calle",
+  description:
+    "Datos de consumo con tarjeta, movilidad y tráfico a nivel de calle para retailers, marcas y ayuntamientos. Pide una demo con tu zona.",
 };
+
+export const viewport: Viewport = { themeColor: "#0E0B1C" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es">
+    <html lang="es" className={`${outfit.variable} ${mono.variable}`}>
       <body>{children}</body>
     </html>
   );

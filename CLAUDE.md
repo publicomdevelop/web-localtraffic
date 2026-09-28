@@ -40,9 +40,9 @@ Antes de presentarlo, repasa el plan y descarta si aparece cualquiera de estos t
 
 ## Animación
 
-- Usa GSAP o Motion solo cuando aporte algo.
-- Mejor un único momento orquestado que muchos efectos sueltos.
-- Siempre con alternativa para `prefers-reduced-motion`.
+- Se permite animación abundante, pero solo si explica los datos (capas del mapa, gráficos que se dibujan, flujos). Nada de efectos genéricos de aparición en cada sección.
+- Usa GSAP (ScrollTrigger) para lo orquestado con el scroll; CSS para lo pequeño.
+- Siempre con alternativa para `prefers-reduced-motion`: la página debe entenderse entera con todo quieto.
 
 ## Textos
 
@@ -52,3 +52,11 @@ Antes de presentarlo, repasa el plan y descarta si aparece cualquiera de estos t
 ## Entorno
 
 - En este Mac no hay Node/npm local: las builds se verifican en Vercel. Por eso no se puede ejecutar `scripts/preflight.mjs` del skill `design-taste`; aplica su checklist (`reference/pre-flight.md`) a mano.
+
+## Decisiones aprobadas (sept. 2026)
+
+- Paleta: Noche `#0E0B1C`, Capa `#18142C`, Azul localtraffic `#3340F5`, Azul señal `#8A92FF`, Texto `#ECEDF7`, Consumo `#FF6B3D` (solo capa de consumo).
+- Tipografías: Outfit (titulares y texto) e IBM Plex Mono (cifras y etiquetas).
+- Idea central: la ciudad ilustrada de noche (`lib/city/`) con capas de consumo, movilidad, tráfico y fuentes públicas.
+- Contenido: no nombrar clientes; no mencionar bancos ni proveedores de datos. Consumo = "transacciones con tarjeta en comercios y venta física". Solo castellano por ahora.
+- Formulario de demo: `/api/demo` envía con Resend (`RESEND_API_KEY` en Vercel) a `hola@localtraffic.es` (o `DEMO_TO_EMAIL`).
