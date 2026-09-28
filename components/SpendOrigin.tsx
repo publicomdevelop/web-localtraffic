@@ -53,14 +53,15 @@ type Origin = { zone: number; c: Vec; share: number };
 function buildArt() {
   const city = getCity();
   const hub = city.hubs[0];
-  // Destination: the postal area that contains the main shopping hub.
+  // Destination: the biggest postal area near the main shopping hub, so it reads as one shape.
   let dest = 0;
-  let best = Infinity;
+  let best = -Infinity;
   city.zones.forEach((z, i) => {
     if (!z.cells.length) return;
     const d = Math.hypot(z.centroid.x - hub.x, z.centroid.y - hub.y);
-    if (d < best) {
-      best = d;
+    const score = z.cells.length - d / 12;
+    if (d < 320 && score > best) {
+      best = score;
       dest = i;
     }
   });
@@ -81,7 +82,15 @@ function buildArt() {
   const zoneShape = (zi: number) =>
     city.zones[zi].cells.map((k) => quad(city.cells[k].quad.map((p) => project(CROP, p)))).join("");
 
-  return { dest, destC, origins, destShape: zoneShape(dest), originShapes: origins.map((o) => zoneShape(o.zone)) };
+  const borders = city.zoneBorders
+    .map(([a, b]) => {
+      const p = project(CROP, a);
+      const q = project(CROP, b);
+      return `M${p.x.toFixed(1)} ${p.y.toFixed(1)}L${q.x.toFixed(1)} ${q.y.toFixed(1)}`;
+    })
+    .join("");
+
+  return { dest, destC, origins, borders, destShape: zoneShape(dest), originShapes: origins.map((o) => zoneShape(o.zone)) };
 }
 
 export default function SpendOrigin({ lang = "es" }: { lang?: Lang }) {
@@ -121,9 +130,11 @@ export default function SpendOrigin({ lang = "es" }: { lang?: Lang }) {
             <rect width={VB_W} height={VB_H} fill="#0E0B1C" />
             <MapCrop crop={CROP} />
             {art.originShapes.map((d, i) => (
-              <path key={i} d={d} fill={SPEND} fillOpacity={0.12 + art.origins[i].share * 0.9} stroke={SPEND} strokeOpacity=".35" strokeWidth=".6" />
+              <path key={i} d={d} fill={SPEND} fillOpacity={[0.62, 0.5, 0.4, 0.31, 0.23, 0.16][i]} />
             ))}
-            <path d={art.destShape} fill={BLUE} fillOpacity=".45" stroke={SIGNAL} strokeWidth="1.2" />
+            <path d={art.destShape} fill={BLUE} fillOpacity=".7" />
+            {/* Postcode boundaries */}
+            <path d={art.borders} fill="none" stroke={INK} strokeOpacity=".4" strokeWidth=".9" strokeDasharray="3 3" />
             {art.origins.map((o, i) => {
               const dx = art.destC.x - o.c.x;
               const dy = art.destC.y - o.c.y;
