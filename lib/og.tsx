@@ -1,10 +1,10 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "localtraffic · Data that changes decisions";
-export const size = { width: 1200, height: 630 };
-export const contentType = "image/png";
-
-export default function OgImage() {
+/** Share image (Open Graph / Twitter), 1200×630, in each language. */
+export function renderOg(lang: "es" | "en") {
+  const t = lang === "en"
+    ? { claim: "Data that changes decisions.", sub: "Geospatial data with Human Intelligence" }
+    : { claim: "Datos que cambian decisiones.", sub: "Datos geoespaciales con Inteligencia Humana" };
   const lines = Array.from({ length: 14 }, (_, i) => i);
   return new ImageResponse(
     (
@@ -50,13 +50,13 @@ export default function OgImage() {
           localtraffic
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ fontSize: 88, lineHeight: 1, letterSpacing: -3, maxWidth: 760 }}>Data that changes decisions.</div>
+          <div style={{ fontSize: 88, lineHeight: 1, letterSpacing: -3, maxWidth: 760 }}>{t.claim}</div>
           <div style={{ fontSize: 30, marginTop: 28, color: "rgba(236,237,247,0.7)" }}>
-            Geospatial data with Human Intelligence
+            {t.sub}
           </div>
         </div>
       </div>
     ),
-    size,
+    { width: 1200, height: 630 },
   );
 }

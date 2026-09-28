@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, CONTACT, SOCIAL_URLS } from "@/lib/site";
 import { languageAlternates, type Lang } from "@/lib/i18n";
 
-// Pages that set their own openGraph lose the file-based image, so it is listed explicitly.
-const OG_IMAGE = { url: "/opengraph-image", width: 1200, height: 630, alt: "localtraffic · Datos que cambian decisiones" };
+// Share image served by app/og/[lang] (a fixed URL; file-based images inside route groups get hashed names).
+const OG_IMAGE = { url: "/og/es", width: 1200, height: 630, alt: "localtraffic · Datos que cambian decisiones" };
 
 /** Title, description, canonical, hreflang and Open Graph for one page. */
 export function pageMeta({
@@ -21,7 +21,7 @@ export function pageMeta({
   const path = paths[lang];
   const claim = lang === "en" ? "Data that changes decisions" : "Datos que cambian decisiones";
   const ogTitle = title ? `${title} · ${SITE_NAME}` : `${SITE_NAME} · ${claim}`;
-  const image = { ...OG_IMAGE, url: lang === "en" ? "/en/opengraph-image" : OG_IMAGE.url, alt: `${SITE_NAME} · ${claim}` };
+  const image = { ...OG_IMAGE, url: `/og/${lang}`, alt: `${SITE_NAME} · ${claim}` };
   return {
     ...(title ? { title } : { title: { absolute: `${SITE_NAME} · ${claim}` } }),
     description,
