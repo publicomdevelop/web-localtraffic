@@ -76,7 +76,7 @@ function buildArt() {
   const origins: Origin[] = raw
     .map((o) => ({ zone: o.zone, c: o.c, share: o.w / total }))
     .sort((a, b) => b.share - a.share)
-    .slice(0, 6);
+    .slice(0, 5);
 
   const quad = (q: Vec[]) => q.map((p, i) => `${i ? "L" : "M"}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join("") + "Z";
   const zoneShape = (zi: number) =>
