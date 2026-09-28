@@ -2964,6 +2964,74 @@ canvas {
   }
 }
 
+/* Legal pages --------------------------------------------------------------- */
+
+.legal__inner {
+  max-width: 760px;
+  padding-bottom: clamp(80px, 10vw, 140px);
+}
+
+.legal__updated {
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+.legal__note {
+  margin-top: 12px;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+.legal__section {
+  padding-top: 36px;
+}
+
+.legal__section h2 {
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  margin-bottom: 12px;
+}
+
+.legal__section p {
+  color: var(--ink-2);
+  max-width: 68ch;
+}
+
+.legal__section p + p {
+  margin-top: 12px;
+}
+
+.legal__section ul {
+  margin-top: 12px;
+  padding-left: 1.2em;
+  list-style: disc;
+  color: var(--ink-2);
+}
+
+.legal__section li + li {
+  margin-top: 6px;
+}
+
+.footer__copy {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+
+.footer__copy a {
+  color: var(--ink-3);
+  text-decoration: none;
+}
+
+.footer__copy a:hover {
+  color: var(--ink);
+}
+
+.form__legal a {
+  color: var(--signal);
+}
+
 /* Reduced motion: everything is readable standing still ------------------- */
 
 @media (prefers-reduced-motion: reduce) {

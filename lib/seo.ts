@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, CONTACT, SOCIAL_URLS } from "@/lib/site";
+import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, CONTACT, SOCIAL_URLS, COMPANY } from "@/lib/site";
 import { languageAlternates, type Lang } from "@/lib/i18n";
 
 // Share image served by app/og/[lang] (a fixed URL; file-based images inside route groups get hashed names).
@@ -47,8 +47,18 @@ export const organizationLd = {
   "@type": "Organization",
   "@id": ORG_ID,
   name: SITE_NAME,
+  legalName: COMPANY.legalName,
+  taxID: COMPANY.taxId,
   url: SITE_URL,
   logo: `${SITE_URL}/logo-localtraffic.png`,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: COMPANY.street,
+    postalCode: COMPANY.postalCode,
+    addressLocality: COMPANY.city,
+    addressRegion: COMPANY.region,
+    addressCountry: COMPANY.country,
+  },
   slogan: "Datos que cambian decisiones",
   description: SITE_DESCRIPTION,
   email: CONTACT.email,

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ZONE_KEY } from "@/components/AskBar";
 import { useLang } from "@/lib/useLang";
+import { route } from "@/lib/i18n";
 
 const COPY = {
   es: {
@@ -23,6 +24,7 @@ const COPY = {
     submit: "Pedir demo",
     error: "No se ha podido enviar. Escríbenos a",
     legal: "Usaremos tus datos solo para contactarte sobre la demo.",
+    privacy: "Política de privacidad",
   },
   en: {
     title: "Book a demo for your area.",
@@ -42,6 +44,7 @@ const COPY = {
     submit: "Book a demo",
     error: "It couldn't be sent. Email us at",
     legal: "We'll only use your details to contact you about the demo.",
+    privacy: "Privacy policy",
   },
 };
 
@@ -161,7 +164,9 @@ export default function DemoForm() {
                 {t.error} <a href="mailto:hola@localtraffic.es">hola@localtraffic.es</a>.
               </p>
             )}
-            <p className="form__legal">{t.legal}</p>
+            <p className="form__legal">
+              {t.legal} <a href={route("privacy", lang)}>{t.privacy}</a>
+            </p>
           </form>
         )}
       </div>

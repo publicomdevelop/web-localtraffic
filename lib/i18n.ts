@@ -7,6 +7,8 @@ export const ROUTES = {
   services: { es: "/servicios", en: "/en/services" },
   campaigns: { es: "/campanas", en: "/en/campaigns" },
   contact: { es: "/contacto", en: "/en/contact" },
+  legal: { es: "/aviso-legal", en: "/en/legal-notice" },
+  privacy: { es: "/politica-privacidad", en: "/en/privacy-policy" },
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;

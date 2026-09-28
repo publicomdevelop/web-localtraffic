@@ -13,13 +13,10 @@ const nextConfig = {
       ["/video", "/"],
       ["/377-2", "/"],
       ["/feed", "/"],
+      ["/terminos-y-condiciones", "/aviso-legal"],
     ];
-    return [
-      ...moved.map(([source, destination]) => ({ source, destination, permanent: true })),
-      // No legal pages yet: temporary until the new privacy and legal notice pages exist.
-      { source: "/politica-privacidad", destination: "/contacto", permanent: false },
-      { source: "/terminos-y-condiciones", destination: "/contacto", permanent: false },
-    ];
+    // /politica-privacidad keeps its old URL, so it needs no redirect.
+    return moved.map(([source, destination]) => ({ source, destination, permanent: true }));
   },
 };
 

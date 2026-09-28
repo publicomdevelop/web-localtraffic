@@ -19,6 +19,8 @@ const COPY = {
     footerNav: "Pie de página",
     services: "Servicios",
     contact: "Contacto",
+    legal: "Aviso legal",
+    privacy: "Privacidad",
     links: [
       { key: "home" as const, label: "Inicio" },
       { key: "approach" as const, label: "Enfoque" },
@@ -37,6 +39,8 @@ const COPY = {
     footerNav: "Footer",
     services: "Services",
     contact: "Contact",
+    legal: "Legal notice",
+    privacy: "Privacy",
     links: [
       { key: "home" as const, label: "Home" },
       { key: "approach" as const, label: "Approach" },
@@ -131,7 +135,11 @@ export function SiteFooter({ lang = "es" }: { lang?: Lang }) {
             </li>
           </ul>
         </div>
-        <p className="footer__copy">© {new Date().getFullYear()} localtraffic</p>
+        <div className="footer__copy">
+          <span>© {new Date().getFullYear()} localtraffic · Publicom All Line, S.L.U.</span>
+          <Link href={route("legal", lang)}>{t.legal}</Link>
+          <Link href={route("privacy", lang)}>{t.privacy}</Link>
+        </div>
       </div>
     </footer>
   );

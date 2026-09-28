@@ -48,6 +48,14 @@ const TEXT: Record<RouteKey, Record<Lang, { title?: string; description: string 
         "We use data on residents, visitors and consumer origin to decide where and when to launch a geotargeted campaign, then measure its effect on visits and spending.",
     },
   },
+  legal: {
+    es: { title: "Aviso legal", description: "Aviso legal y condiciones de uso de www.localtraffic.es, titularidad de Publicom All Line, S.L.U." },
+    en: { title: "Legal notice", description: "Legal notice and terms of use of www.localtraffic.es, owned by Publicom All Line, S.L.U." },
+  },
+  privacy: {
+    es: { title: "Política de privacidad", description: "Qué datos recoge localtraffic en su web, para qué los usa y cómo ejercer tus derechos." },
+    en: { title: "Privacy policy", description: "What data localtraffic collects on its website, what it uses it for and how to exercise your rights." },
+  },
   contact: {
     es: {
       title: "Pedir demo",

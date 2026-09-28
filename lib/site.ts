@@ -15,6 +15,22 @@ export const LOGIN_URL = "https://localtraffic.app/";
 
 export const CONTACT = { phone: "+34938148787", email: "hola@localtraffic.es" };
 
+/** Legal owner of the localtraffic brand and website (same company as publicom.cat). */
+export const COMPANY = {
+  legalName: "Publicom All Line, S.L.U.",
+  taxId: "B66271453",
+  registry: "Registro Mercantil de Barcelona, tomo 44290, folio 192, hoja 451874",
+  representative: "Jaume Blanxart",
+  building: "Casa Nin – Espai de negocis",
+  street: "Carrer de Sant Antoni, 2",
+  postalCode: "08800",
+  city: "Vilanova i la Geltrú",
+  region: "Barcelona",
+  country: "ES",
+  phone: "938 148 787",
+  privacyEmail: "publicom@publicom.cat",
+};
+
 export const SOCIAL_URLS = [
   "https://www.instagram.com/localtraffic.es/",
   "https://www.linkedin.com/company/localtraffic",
