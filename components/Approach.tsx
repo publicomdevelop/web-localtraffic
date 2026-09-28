@@ -3,8 +3,8 @@ import { mulberry32 } from "@/lib/city/model";
 import { route, type Lang } from "@/lib/i18n";
 
 const ART = {
-  es: { aria: "Muchas señales de datos se juntan en un punto de interpretación y salen como una sola decisión", data: "datos", reading: "interpretación", decision: "decisión" },
-  en: { aria: "Many data signals come together at one point of interpretation and leave as a single decision", data: "data", reading: "interpretation", decision: "decision" },
+  es: { aria: "Muchas señales de datos pasan por la Inteligencia Humana y salen como una sola decisión", data: "datos", reading: "Inteligencia Humana", decision: "decisión" },
+  en: { aria: "Many data signals pass through Human Intelligence and leave as a single decision", data: "data", reading: "Human Intelligence", decision: "decision" },
 };
 
 /** Many thin data signals converge into one interpretation, then one decision. */
