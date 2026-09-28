@@ -10,7 +10,9 @@ const COPY = {
     title: "Pide una demo con tu zona.",
     lede: "Te enseñamos un análisis de la ubicación, el barrio o el municipio que nos digas.",
     done: "Recibido.",
-    doneBody: "Te escribimos en breve para concretar la demo.",
+    doneBody: "Te hemos enviado un correo de confirmación y te escribiremos en breve para concretar la demo.",
+    book: "Elige ya día y hora",
+    bookIntro: "¿Prefieres no esperar? Reserva directamente un hueco en nuestra agenda.",
     name: "Nombre",
     company: "Empresa o entidad",
     email: "Email",
@@ -30,7 +32,9 @@ const COPY = {
     title: "Book a demo for your area.",
     lede: "We'll show you an analysis of the location, neighbourhood or town you choose.",
     done: "Got it.",
-    doneBody: "We'll be in touch shortly to arrange the demo.",
+    doneBody: "We've sent you a confirmation email and will be in touch shortly to arrange the demo.",
+    book: "Pick a day and time now",
+    bookIntro: "Rather not wait? Book a slot in our calendar straight away.",
     name: "Name",
     company: "Company or organisation",
     email: "Email",
@@ -49,6 +53,9 @@ const COPY = {
 };
 
 type Status = "idle" | "sending" | "sent" | "error";
+
+/** Optional scheduling link (Google Calendar, Cal.com, Calendly…), set in Vercel. */
+const BOOKING_URL = process.env.NEXT_PUBLIC_BOOKING_URL || "";
 
 export default function DemoForm() {
   const lang = useLang();
@@ -118,6 +125,14 @@ export default function DemoForm() {
           <div className="form form--done" role="status">
             <p className="form__done-title">{t.done}</p>
             <p>{t.doneBody}</p>
+            {BOOKING_URL && (
+              <div className="form__book">
+                <p>{t.bookIntro}</p>
+                <a className="btn btn--primary" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
+                  {t.book}
+                </a>
+              </div>
+            )}
           </div>
         ) : (
           <form className="form" onSubmit={onSubmit} noValidate={false}>

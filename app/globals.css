@@ -3184,6 +3184,17 @@ canvas {
   color: var(--ink);
 }
 
+.form__book {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.form__book p {
+  margin-bottom: 16px;
+  color: var(--ink-2);
+}
+
 /* Reduced motion: everything is readable standing still ------------------- */
 
 @media (prefers-reduced-motion: reduce) {

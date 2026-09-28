@@ -1,9 +1,29 @@
 import { NextResponse } from "next/server";
+import { confirmationEmail, internalEmail, type DemoRequest } from "@/lib/email";
 
 const FIELDS = ["nombre", "empresa", "email", "telefono", "zona", "interes", "idioma"] as const;
 
-const ENTITIES: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
-const escape = (s: string) => s.replace(/[&<>"']/g, (c) => ENTITIES[c] ?? c);
+const FROM = "localtraffic <noreply@localtraffic.app>";
+const TEAM = process.env.DEMO_TO_EMAIL || "hola@localtraffic.es";
+
+async function send(apiKey: string, payload: Record<string, unknown>) {
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (res.ok) return null;
+  // Resend explains the problem (invalid key, unverified domain…). It never contains the key.
+  const text = await res.text();
+  console.error("Resend error", res.status, text);
+  let detail = "";
+  try {
+    detail = String((JSON.parse(text) as { message?: string }).message ?? "");
+  } catch {
+    detail = text.slice(0, 200);
+  }
+  return { status: res.status, detail };
+}
 
 export async function POST(request: Request) {
   let body: Record<string, unknown>;
@@ -15,7 +35,7 @@ export async function POST(request: Request) {
   // Honeypot: bots fill the hidden "web" field. Pretend success.
   if (typeof body.web === "string" && body.web.trim()) return NextResponse.json({ ok: true });
 
-  const data: Record<string, string> = {};
+  const data = {} as DemoRequest;
   for (const f of FIELDS) {
     const v = body[f];
     data[f] = typeof v === "string" ? v.trim().slice(0, 500) : "";
@@ -30,35 +50,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "not-configured" }, { status: 500 });
   }
 
-  const rows = FIELDS.map(
-    (f) =>
-      `<tr><td style="padding:4px 12px 4px 0;color:#666">${f}</td><td style="padding:4px 0">${escape(data[f] || "—")}</td></tr>`,
-  ).join("");
+  const team = internalEmail(data);
+  const failed = await send(apiKey, { from: FROM, to: [TEAM], reply_to: data.email, subject: team.subject, html: team.html });
+  if (failed) return NextResponse.json({ error: "send-failed", ...failed }, { status: 502 });
 
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      from: "Web localtraffic <noreply@localtraffic.app>",
-      to: [process.env.DEMO_TO_EMAIL || "hola@localtraffic.es"],
-      reply_to: data.email,
-      subject: `Demo: ${data.empresa}${data.zona ? ` · ${data.zona}` : ""}`,
-      html: `<h2 style="font-family:sans-serif">Nueva solicitud de demo</h2><table style="font-family:sans-serif;font-size:14px">${rows}</table>`,
-    }),
-  });
+  // The request already reached the team; a failed confirmation is only logged.
+  const confirm = confirmationEmail(data, process.env.NEXT_PUBLIC_BOOKING_URL || undefined);
+  await send(apiKey, { from: FROM, to: [data.email], reply_to: TEAM, subject: confirm.subject, html: confirm.html });
 
-  if (!res.ok) {
-    // Resend explains the problem (invalid key, unverified domain…); pass its
-    // message on so the form can show why it failed. It never contains the key.
-    const text = await res.text();
-    console.error("Resend error", res.status, text);
-    let detail = "";
-    try {
-      detail = String((JSON.parse(text) as { message?: string }).message ?? "");
-    } catch {
-      detail = text.slice(0, 200);
-    }
-    return NextResponse.json({ error: "send-failed", status: res.status, detail }, { status: 502 });
-  }
   return NextResponse.json({ ok: true });
 }
