@@ -31,6 +31,28 @@ export default function Services() {
   const [active, setActive] = useState(0);
   const current = SERVICES[active];
 
+  const detail = (
+    <>
+      <SolutionArt kind={current.art} lang={lang} />
+      <div className="services__text">
+        <p>{current.body}</p>
+        <dl className="services__meta">
+          <div>
+            <dt>{c.useful}</dt>
+            <dd>{current.useful}</dd>
+          </div>
+          <div>
+            <dt>{c.example}</dt>
+            <dd>{current.example}</dd>
+          </div>
+        </dl>
+        <Link className="link-arrow" href={servicePath(current.slug, lang)}>
+          {c.more(current.name)}
+        </Link>
+      </div>
+    </>
+  );
+
   return (
     <section className="services band--layer" aria-labelledby="services-title">
       <div className="wrap">
@@ -57,28 +79,18 @@ export default function Services() {
                   <span className="service__name">{s.name}</span>
                   <span className="service__tagline">{s.tagline}</span>
                 </button>
+                {i === active && (
+                  <div className="services__detail services__detail--inline" key={s.slug}>
+                    {detail}
+                  </div>
+                )}
               </li>
             ))}
           </ul>
 
-          <div id="service-detail" className="services__detail" key={current.slug} aria-live="polite">
-            <SolutionArt kind={current.art} lang={lang} />
-            <div className="services__text">
-              <p>{current.body}</p>
-              <dl className="services__meta">
-                <div>
-                  <dt>{c.useful}</dt>
-                  <dd>{current.useful}</dd>
-                </div>
-                <div>
-                  <dt>{c.example}</dt>
-                  <dd>{current.example}</dd>
-                </div>
-              </dl>
-              <Link className="link-arrow" href={servicePath(current.slug, lang)}>
-                {c.more(current.name)}
-              </Link>
-            </div>
+          {/* Desktop: detail panel beside the list. Phones use the inline copy under the tapped service. */}
+          <div id="service-detail" className="services__detail services__detail--side" key={current.slug} aria-live="polite">
+            {detail}
           </div>
         </div>
       </div>

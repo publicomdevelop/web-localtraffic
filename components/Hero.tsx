@@ -109,7 +109,7 @@ export default function Hero() {
     [on],
   );
   const camera = useMemo(
-    () => (narrow ? { x: 720, y: 500, zoom: 2.2 } : { x: 800, y: 520, zoom: 1.3 }),
+    () => (narrow ? { x: 700, y: 480, zoom: 1.12 } : { x: 800, y: 520, zoom: 1.3 }),
     [narrow],
   );
 

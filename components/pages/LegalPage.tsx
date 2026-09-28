@@ -494,7 +494,17 @@ export default function LegalPage({ kind, lang }: { kind: "legal" | "privacy" | 
                     <tbody>
                       {s.table.rows.map((r) => (
                         <tr key={r[0]}>
-                          {r.map((c, i) => (i === 0 ? <th key={i} scope="row">{c}</th> : <td key={i}>{c}</td>))}
+                          {r.map((c, i) =>
+                            i === 0 ? (
+                              <th key={i} scope="row">
+                                {c}
+                              </th>
+                            ) : (
+                              <td key={i} data-label={s.table!.head[i]}>
+                                {c}
+                              </td>
+                            ),
+                          )}
                         </tr>
                       ))}
                     </tbody>
