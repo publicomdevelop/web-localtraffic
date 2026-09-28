@@ -13,7 +13,12 @@ const NIGHT = "#0E0B1C";
 type Walker = { edge: number; from: number; t: number; speed: number };
 type Car = { path: number; s: number; speed: number; lane: 1 | -1 };
 
-const BASE_SCALE = 1.6;
+/** Resolution of the pre-rendered city layers: lower on small screens to save memory. */
+const baseScale = () => (typeof window !== "undefined" && window.innerWidth < 800 ? 1 : 1.6);
+
+type StaticLayers = { base: HTMLCanvasElement; publicTint: HTMLCanvasElement; spendTint: HTMLCanvasElement };
+/** The static layers never change, so the hero and the story map share them. */
+const layerCache = new Map<number, StaticLayers>();
 
 /**
  * Canvas renderer for the illustrated city. Framework-free: the React wrapper
@@ -21,9 +26,10 @@ const BASE_SCALE = 1.6;
  */
 export class CityRenderer {
   private ctx: CanvasRenderingContext2D;
-  private base: HTMLCanvasElement;
-  private publicTint: HTMLCanvasElement;
-  private spendTint: HTMLCanvasElement;
+  private base!: HTMLCanvasElement;
+  private publicTint!: HTMLCanvasElement;
+  private spendTint!: HTMLCanvasElement;
+  private scaleFactor = 1.6;
   private time = 0;
   private rand = mulberry32(7);
   private walkers: Walker[] = [];
@@ -57,9 +63,15 @@ export class CityRenderer {
     this.targetCamera = { ...options.camera };
     this.layers = { ...options.layers };
     this.targetLayers = { ...options.layers };
-    this.base = this.renderBase();
-    this.publicTint = this.renderTint("publico");
-    this.spendTint = this.renderTint("consumo");
+    this.scaleFactor = baseScale();
+    let layers = layerCache.get(this.scaleFactor);
+    if (!layers) {
+      layers = { base: this.renderBase(), publicTint: this.renderTint("publico"), spendTint: this.renderTint("consumo") };
+      layerCache.set(this.scaleFactor, layers);
+    }
+    this.base = layers.base;
+    this.publicTint = layers.publicTint;
+    this.spendTint = layers.spendTint;
     this.seedWalkers(options.walkers);
     this.seedCars();
   }
@@ -69,10 +81,10 @@ export class CityRenderer {
   private makeLayer(): [HTMLCanvasElement, CanvasRenderingContext2D | null] {
     const { model } = this;
     const c = document.createElement("canvas");
-    c.width = Math.round(model.width * BASE_SCALE);
-    c.height = Math.round(model.height * BASE_SCALE);
+    c.width = Math.round(model.width * this.scaleFactor);
+    c.height = Math.round(model.height * this.scaleFactor);
     const g = c.getContext("2d");
-    g?.scale(BASE_SCALE, BASE_SCALE);
+    g?.scale(this.scaleFactor, this.scaleFactor);
     return [c, g];
   }
 
@@ -235,7 +247,7 @@ export class CityRenderer {
   // --- lifecycle ---------------------------------------------------------
 
   resize(w: number, h: number) {
-    this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+    this.dpr = Math.min(window.devicePixelRatio || 1, window.innerWidth < 800 ? 1.5 : 2);
     this.w = w;
     this.h = h;
     this.canvas.width = Math.round(w * this.dpr);

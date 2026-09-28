@@ -116,15 +116,12 @@ export function blockSet(crop: Crop, blocks: [number, number][]) {
   return { ground, roofs, border, streets };
 }
 
+/** Bump when the drawing of the city changes, so cached map files are refreshed. */
+export const MAPCROP_VERSION = 1;
+
+export const mapCropUrl = (crop: Crop) => `/mapcrop/v${MAPCROP_VERSION}_${Math.round(crop.cx)}_${Math.round(crop.cy)}_${crop.k}.svg`;
+
+/** The city behind an illustration, loaded as a cached SVG file instead of inline paths. */
 export function MapCrop({ crop }: { crop: Crop }) {
-  const { streets, avenues, lots } = cropPaths(crop);
-  return (
-    <g aria-hidden="true">
-      <path d={streets} stroke="rgba(236,237,247,0.1)" strokeWidth="1.2" fill="none" strokeLinecap="round" />
-      <path d={avenues} stroke="rgba(236,237,247,0.2)" strokeWidth="3" fill="none" strokeLinecap="round" />
-      <path d={lots.sideR} fill="#1a1630" />
-      <path d={lots.sideL} fill="#141026" />
-      <path d={lots.roofs} fill="#231e3b" stroke="rgba(236,237,247,0.07)" strokeWidth="0.6" />
-    </g>
-  );
+  return <image href={mapCropUrl(crop)} x="0" y="0" width={VB_W} height={VB_H} aria-hidden="true" />;
 }

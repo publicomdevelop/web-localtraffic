@@ -129,9 +129,8 @@ export default function NavLinks() {
                 {services.map((s) => (
                   <li key={s.slug}>
                     <Link href={servicePath(s.slug, lang)} className="mega__service">
-                      <span className="mega__thumb">
-                        <SolutionArt kind={s.art} lang={lang} />
-                      </span>
+                      {/* Only drawn while the menu is open, to keep every page light. */}
+                      <span className="mega__thumb">{mega && <SolutionArt kind={s.art} lang={lang} />}</span>
                       <span className="mega__name">{s.name}</span>
                       <span className="mega__tagline">{s.tagline}</span>
                     </Link>

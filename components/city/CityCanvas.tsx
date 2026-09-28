@@ -27,7 +27,9 @@ export default function CityCanvas({ layers, camera, catchment = null, walkers =
     const wrap = wrapRef.current;
     if (!canvas || !wrap) return;
     const { layers: l, camera: c, walkers: n, onReady: ready } = initial.current;
-    const renderer = new CityRenderer(canvas, getCity(), { walkers: n, camera: c, layers: l });
+    // Fewer moving dots on phones: same look, less work per frame.
+    const count = window.innerWidth < 800 ? Math.round(n * 0.45) : n;
+    const renderer = new CityRenderer(canvas, getCity(), { walkers: count, camera: c, layers: l });
     rendererRef.current = renderer;
 
     const ro = new ResizeObserver(() => {
