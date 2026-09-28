@@ -58,6 +58,9 @@ Antes de presentarlo, repasa el plan y descarta si aparece cualquiera de estos t
 - Paleta: Noche `#0E0B1C`, Capa `#18142C`, Azul localtraffic `#3340F5`, Azul señal `#8A92FF`, Texto `#ECEDF7`, Consumo `#FF6B3D` (solo capa de consumo).
 - Tipografías: Outfit (titulares y texto) e IBM Plex Mono (cifras y etiquetas).
 - Idea central: la ciudad ilustrada de noche (`lib/city/`): perfil del residente, perfil del visitante y origen del consumidor. El consumo se pinta por zonas de código postal, nunca por calle.
-- Posicionamiento: consultoría con Inteligencia Humana (IH), no una herramienta. Servicios: Tailored, Focus y On Demand. Los datos también sirven para activar campañas.
+- Posicionamiento: Inteligencia Humana (IH): interpretamos los datos. No usar la palabra "consultoría" en la web ni presentarnos como herramienta. Servicios: Tailored, Focus y On Demand. Los datos también sirven para activar campañas.
 - Contenido: no nombrar clientes ni sectores concretos como destinatarios; no listar datasets de forma explícita; no mencionar bancos ni proveedores; no indicar granularidad de los datos (la transaccionalidad es por CP); nada de precios. Solo castellano por ahora.
 - Formulario de demo: `/api/demo` envía con Resend (`RESEND_API_KEY` en Vercel) a `hola@localtraffic.es` (o `DEMO_TO_EMAIL`).
+- Estructura multipágina: `/`, `/enfoque`, `/servicios`, `/servicios/[slug]` (datos en `lib/services.ts`), `/campanas`, `/contacto`. Nada de one page.
+- Mapas: rejilla ortogonal (sin anillo ni diagonal); el área de influencia del hero es un círculo.
+- Ritmo entre secciones: alternar `band--layer`, `band--grid`, `Marquee` y `CtaBand` (azul) para que el scroll no sea plano.

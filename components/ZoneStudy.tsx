@@ -36,7 +36,7 @@ export default function ZoneStudy() {
               <li key={i}>{i}</li>
             ))}
           </ul>
-          <a className="btn btn--primary" href="#demo">
+          <a className="btn btn--primary" href="/contacto">
             Pedir demo con mi zona
           </a>
         </div>

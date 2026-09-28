@@ -1,21 +1,21 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { getCity, type Isochrone } from "@/lib/city/model";
+import { getCity, type Vec } from "@/lib/city/model";
 import { CityRenderer, type Camera, type Layers } from "@/lib/city/renderer";
 import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 
 type Props = {
   layers: Layers;
   camera: Camera;
-  iso?: Isochrone | null;
+  catchment?: { center: Vec; radius: number } | null;
   walkers?: number;
   className?: string;
   /** Called once the renderer exists, e.g. to position DOM overlays per frame. */
   onReady?: (renderer: CityRenderer) => void;
 };
 
-export default function CityCanvas({ layers, camera, iso = null, walkers = 700, className, onReady }: Props) {
+export default function CityCanvas({ layers, camera, catchment = null, walkers = 700, className, onReady }: Props) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rendererRef = useRef<CityRenderer | null>(null);
@@ -65,9 +65,9 @@ export default function CityCanvas({ layers, camera, iso = null, walkers = 700, 
     if (!r) return;
     r.targetLayers = { ...layers };
     r.targetCamera = { ...camera };
-    r.iso = iso;
+    r.catchment = catchment;
     if (r.reducedMotion) r.refresh();
-  }, [layers, camera, iso]);
+  }, [layers, camera, catchment]);
 
   return (
     <div ref={wrapRef} className={className} style={{ overflow: "hidden" }}>

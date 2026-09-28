@@ -1,26 +1,46 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ZONE_EVENT } from "@/components/DemoForm";
+import { usePathname, useRouter } from "next/navigation";
 
-/** Floating "¿Qué zona quieres analizar?" bar. Hides while the demo form is on screen. */
+export const ZONE_KEY = "lt:zona";
+
+/**
+ * Floating "¿Qué zona quieres analizar?" bar. Hides on the contact page and
+ * while any element marked `data-hide-askbar` is on screen.
+ */
 export default function AskBar() {
   const [value, setValue] = useState("");
-  const [hidden, setHidden] = useState(false);
+  const [covered, setCovered] = useState(false);
+  const path = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
-    const demo = document.getElementById("demo");
-    if (!demo) return;
-    const io = new IntersectionObserver(([entry]) => setHidden(entry.isIntersecting), { threshold: 0.15 });
-    io.observe(demo);
+    setCovered(false);
+    const targets = document.querySelectorAll("[data-hide-askbar]");
+    if (!targets.length) return;
+    const visible = new Set<Element>();
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => (e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)));
+        setCovered(visible.size > 0);
+      },
+      { threshold: 0.1 },
+    );
+    targets.forEach((t) => io.observe(t));
     return () => io.disconnect();
-  }, []);
+  }, [path]);
+
+  const hidden = covered || path === "/contacto";
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    window.dispatchEvent(new CustomEvent(ZONE_EVENT, { detail: value.trim() }));
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    document.getElementById("demo")?.scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
+    try {
+      sessionStorage.setItem(ZONE_KEY, value.trim());
+    } catch {
+      // Storage can be blocked; the form still opens, just without the zone filled in.
+    }
+    router.push("/contacto");
   };
 
   return (

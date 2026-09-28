@@ -153,9 +153,8 @@ function buildCity(seed: number): CityModel {
     }
   }
 
-  const AV_ROW = 11;
-  const AV_COL = 15;
-  const DIAG = 4; // nodes where i - j === DIAG form the diagonal avenue
+  const AV_ROWS = [5, 11, 17];
+  const AV_COLS = [7, 15, 23];
   const edges: Edge[] = [];
   const addEdge = (a: number, b: number, avenue: boolean) => {
     const pa = nodes[a];
@@ -166,14 +165,13 @@ function buildCity(seed: number): CityModel {
   for (let j = 0; j <= NY; j++) {
     for (let i = 0; i <= NX; i++) {
       if (i < NX) {
-        const avenue = j === AV_ROW;
+        const avenue = AV_ROWS.includes(j);
         if (avenue || rand() > 0.09) addEdge(id(i, j), id(i + 1, j), avenue);
       }
       if (j < NY) {
-        const avenue = i === AV_COL;
+        const avenue = AV_COLS.includes(i);
         if (avenue || rand() > 0.09) addEdge(id(i, j), id(i, j + 1), avenue);
       }
-      if (i < NX && j < NY && i - j === DIAG) addEdge(id(i, j), id(i + 1, j + 1), true);
     }
   }
 
@@ -194,12 +192,11 @@ function buildCity(seed: number): CityModel {
     for (let i = 0; i < NX; i++) {
       const quad = [nodes[id(i, j)], nodes[id(i + 1, j)], nodes[id(i + 1, j + 1)], nodes[id(i, j + 1)]];
       const center = bilinear(quad, 0.5, 0.5);
-      const onDiagonal = i - j === DIAG;
       const inset = (u: number, v: number) => bilinear(quad, u, v);
       const m = 0.09;
       const dCenter = dist(center, { x: 760, y: 520 });
       const commerce = commerceAt(center);
-      const park = !onDiagonal && commerce < 0.25 && rand() < 0.05;
+      const park = commerce < 0.25 && rand() < 0.05;
       const pop = Math.min(
         1,
         (0.25 + 0.75 * Math.exp(-(dCenter * dCenter) / (2 * 420 * 420))) * (0.55 + rand() * 0.45) + commerce * 0.15,
@@ -210,7 +207,6 @@ function buildCity(seed: number): CityModel {
         const splitsV = 1 + Math.floor(rand() * 2);
         for (let a = 0; a < splitsU; a++) {
           for (let b = 0; b < splitsV; b++) {
-            if (onDiagonal && Math.abs((a + 0.5) / splitsU - (b + 0.5) / splitsV) < 0.3) continue;
             const u0 = lerp(m, 1 - m, a / splitsU) + 0.015;
             const u1 = lerp(m, 1 - m, (a + 1) / splitsU) - 0.015;
             const v0 = lerp(m, 1 - m, b / splitsV) + 0.015;
@@ -266,21 +262,17 @@ function buildCity(seed: number): CityModel {
     shopCdf.push(acc);
   });
 
-  const row: Vec[] = [];
-  for (let i = 0; i <= NX; i++) row.push(nodes[id(i, AV_ROW)]);
-  const col: Vec[] = [];
-  for (let j = 0; j <= NY; j++) col.push(nodes[id(AV_COL, j)]);
-  const diag: Vec[] = [];
-  for (let j = 0; j <= NY; j++) {
-    const i = j + DIAG;
-    if (i <= NX) diag.push(nodes[id(i, j)]);
-  }
-  const ring: Vec[] = [];
-  for (let k = 0; k < 72; k++) {
-    const t = (k / 72) * Math.PI * 2;
-    const r = 430 + Math.sin(t * 3) * 18;
-    ring.push({ x: 780 + Math.cos(t) * r * 1.25, y: 520 + Math.sin(t) * r * 0.82 });
-  }
+  const paths: TrafficPath[] = [];
+  AV_ROWS.forEach((j) => {
+    const pts: Vec[] = [];
+    for (let i = 0; i <= NX; i++) pts.push(nodes[id(i, j)]);
+    paths.push(buildPath(pts, false));
+  });
+  AV_COLS.forEach((i) => {
+    const pts: Vec[] = [];
+    for (let j = 0; j <= NY; j++) pts.push(nodes[id(i, j)]);
+    paths.push(buildPath(pts, false));
+  });
 
   const zones: Zone[] = zoneSeeds.map(() => ({ centroid: { x: 0, y: 0 }, spend: 0, cells: [] }));
   cells.forEach((c, k) => zones[c.zone].cells.push(k));
@@ -316,7 +308,7 @@ function buildCity(seed: number): CityModel {
     cells,
     shops,
     shopCdf,
-    paths: [buildPath(row, false), buildPath(col, false), buildPath(diag, false), buildPath(ring, true)],
+    paths,
     hubs,
     zones,
     zoneBorders,

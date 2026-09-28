@@ -147,7 +147,7 @@ export default function LayerStory() {
                     ))}
                   </ul>
                 ) : (
-                  <a className="btn btn--primary" href="#demo">
+                  <a className="btn btn--primary" href="/contacto">
                     Verlo con mi zona
                   </a>
                 )}

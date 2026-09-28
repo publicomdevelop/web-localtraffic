@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import CityCanvas from "@/components/city/CityCanvas";
 import AnimatedNumber from "@/components/AnimatedNumber";
-import { getCity, isochrone, zoneStats, UNITS_PER_100M, WORLD_W, WORLD_H, type Vec } from "@/lib/city/model";
+import { getCity, zoneStats, UNITS_PER_100M, WORLD_W, WORLD_H, type Vec } from "@/lib/city/model";
 import type { CityRenderer, Layers } from "@/lib/city/renderer";
 import { formatInt } from "@/lib/format";
 
@@ -14,6 +14,9 @@ const LAYER_BUTTONS: { key: Chip; label: string }[] = [
   { key: "visitantes", label: "Visitantes" },
   { key: "consumo", label: "Consumo" },
 ];
+
+/** 800 m around the pin. */
+const RADIUS = UNITS_PER_100M * 8;
 
 const clampPin = (p: Vec): Vec => ({
   x: Math.min(WORLD_W - 140, Math.max(140, p.x)),
@@ -45,8 +48,8 @@ export default function Hero() {
   }, []);
 
   const city = getCity();
-  const iso = useMemo(() => isochrone(city, pin), [city, pin]);
-  const stats = useMemo(() => zoneStats(city, pin), [city, pin]);
+  const catchment = useMemo(() => ({ center: pin, radius: RADIUS }), [pin]);
+  const stats = useMemo(() => zoneStats(city, pin, RADIUS), [city, pin]);
 
   const layers: Layers = useMemo(
     () => ({
@@ -160,14 +163,14 @@ export default function Hero() {
           Datos que cambian decisiones.
         </h1>
         <p className="hero__lede">
-          Consultoría de datos geoespaciales con Inteligencia Humana. Reunimos todo lo que se puede saber de un
-          lugar, lo interpretamos y te decimos qué hacer: dónde abrir, qué zona impulsar o qué campaña activar.
+          Datos geoespaciales con Inteligencia Humana. Reunimos todo lo que se puede saber de un lugar, lo
+          interpretamos y te decimos qué hacer: dónde abrir, qué zona impulsar o qué campaña activar.
         </p>
         <div className="hero__actions">
-          <a className="btn btn--primary" href="#demo">
+          <a className="btn btn--primary" href="/contacto">
             Pedir demo
           </a>
-          <a className="btn btn--ghost" href="#enfoque">
+          <a className="btn btn--ghost" href="/enfoque">
             Cómo trabajamos
           </a>
         </div>
@@ -175,7 +178,7 @@ export default function Hero() {
 
       <div className="hero__stage wrap-wide">
         <div className="map" ref={mapRef} onClick={onMapClick}>
-          <CityCanvas className="map__canvas" layers={layers} camera={camera} iso={iso} onReady={onReady} />
+          <CityCanvas className="map__canvas" layers={layers} camera={camera} catchment={catchment} onReady={onReady} />
 
           <button
             ref={pinEl}
@@ -224,8 +227,8 @@ export default function Hero() {
 
         <aside className="stats" aria-live="polite" aria-label="Datos de la zona seleccionada">
           <p className="stats__head">
-            <span className="mono">10 min a pie</span>
-            <span className="stats__note">desde el pin</span>
+            <span className="mono">Radio de 800 m</span>
+            <span className="stats__note">alrededor del pin</span>
           </p>
           <div className="stats__group">
             <p className="stats__label">Perfil del residente</p>

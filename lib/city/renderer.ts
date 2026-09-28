@@ -1,6 +1,5 @@
 import {
   type CityModel,
-  type Isochrone,
   type Vec,
   mulberry32,
   pointOnPath,
@@ -44,7 +43,8 @@ export class CityRenderer {
   targetLayers: Layers = { consumo: 0, movilidad: 0, trafico: 0, publico: 0 };
   camera: Camera;
   targetCamera: Camera;
-  iso: Isochrone | null = null;
+  /** Circular area of influence around the pin, in world units. */
+  catchment: { center: Vec; radius: number } | null = null;
   reducedMotion = false;
   onFrame: (() => void) | null = null;
 
@@ -124,21 +124,6 @@ export class CityRenderer {
       g.lineWidth = e.avenue ? 3.2 : 1.2;
       g.stroke();
     });
-
-    // Ring road with a casing so it cuts through blocks.
-    const ring = model.paths[3];
-    const ringLine = () => {
-      g.beginPath();
-      ring.points.forEach((p, i) => (i ? g.lineTo(p.x, p.y) : g.moveTo(p.x, p.y)));
-    };
-    ringLine();
-    g.strokeStyle = NIGHT;
-    g.lineWidth = 9;
-    g.stroke();
-    ringLine();
-    g.strokeStyle = `rgba(${INK}, 0.14)`;
-    g.lineWidth = 3;
-    g.stroke();
 
     // Shop fronts: tiny ticks along commercial streets.
     g.fillStyle = `rgba(${INK}, 0.22)`;
@@ -320,7 +305,7 @@ export class CityRenderer {
 
     if (L.consumo > 0.01) this.drawSpendZones(L.consumo);
 
-    if (this.iso) this.drawIsochrone(this.iso, s);
+    if (this.catchment) this.drawCatchment(this.catchment.center, this.catchment.radius, s);
 
     if (L.trafico > 0.01) {
       ctx.lineCap = "round";
@@ -447,38 +432,37 @@ export class CityRenderer {
     ctx.fill();
   }
 
-  private drawIsochrone(iso: Isochrone, s: number) {
-    const { ctx } = this;
-    const pts = iso.polygon;
+  private drawCatchment(c: Vec, r: number, s: number) {
+    const { ctx, model } = this;
     ctx.beginPath();
-    for (let i = 0; i < pts.length; i++) {
-      const p = pts[i];
-      const q = pts[(i + 1) % pts.length];
-      const mx = (p.x + q.x) / 2;
-      const my = (p.y + q.y) / 2;
-      if (i === 0) ctx.moveTo(mx, my);
-      else ctx.quadraticCurveTo(p.x, p.y, mx, my);
-    }
-    const p0 = pts[0];
-    const p1 = pts[1];
-    ctx.quadraticCurveTo(p0.x, p0.y, (p0.x + p1.x) / 2, (p0.y + p1.y) / 2);
-    ctx.closePath();
-    ctx.fillStyle = `rgba(${BLUE}, 0.14)`;
+    ctx.arc(c.x, c.y, r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${BLUE}, 0.13)`;
     ctx.fill();
-    ctx.setLineDash([6 / s, 5 / s]);
-    ctx.strokeStyle = `rgba(${SIGNAL}, 0.8)`;
-    ctx.lineWidth = 1.4 / s;
-    ctx.stroke();
-    ctx.setLineDash([]);
 
-    ctx.lineCap = "round";
-    ctx.strokeStyle = `rgba(${SIGNAL}, 0.55)`;
-    ctx.lineWidth = 2.4 / Math.sqrt(s);
+    // Streets inside the circle light up.
+    ctx.save();
     ctx.beginPath();
-    for (const [a, b] of iso.segments) {
+    ctx.arc(c.x, c.y, r, 0, Math.PI * 2);
+    ctx.clip();
+    ctx.lineCap = "round";
+    ctx.strokeStyle = `rgba(${SIGNAL}, 0.5)`;
+    ctx.lineWidth = 2.2 / Math.sqrt(s);
+    ctx.beginPath();
+    for (const e of model.edges) {
+      const a = model.nodes[e.a];
+      const b = model.nodes[e.b];
       ctx.moveTo(a.x, a.y);
       ctx.lineTo(b.x, b.y);
     }
     ctx.stroke();
+    ctx.restore();
+
+    ctx.beginPath();
+    ctx.arc(c.x, c.y, r, 0, Math.PI * 2);
+    ctx.setLineDash([6 / s, 5 / s]);
+    ctx.strokeStyle = `rgba(${SIGNAL}, 0.9)`;
+    ctx.lineWidth = 1.6 / s;
+    ctx.stroke();
+    ctx.setLineDash([]);
   }
 }

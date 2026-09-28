@@ -1,6 +1,7 @@
+import Link from "next/link";
 import SolutionArt from "@/components/illustrations/SolutionArt";
 
-const FLOW = [
+export const FLOW = [
   { title: "Entender", body: "Dónde vive tu público, por dónde se mueve y dónde gasta." },
   { title: "Activar", body: "Campañas geolocalizadas en las zonas y momentos con más potencial." },
   { title: "Medir", body: "Qué ha cambiado en visitas y en consumo después de la campaña." },
@@ -8,7 +9,7 @@ const FLOW = [
 
 export default function Campaigns() {
   return (
-    <section id="campanas" className="campaigns" aria-labelledby="campaigns-title">
+    <section className="campaigns" aria-labelledby="campaigns-title">
       <div className="wrap campaigns__grid">
         <div className="campaigns__text">
           <h2 id="campaigns-title" className="section-title">
@@ -26,6 +27,9 @@ export default function Campaigns() {
               </li>
             ))}
           </ol>
+          <Link className="link-arrow" href="/campanas">
+            Cómo activamos campañas
+          </Link>
         </div>
         <div className="campaigns__art">
           <SolutionArt kind="campaign" />

@@ -1,7 +1,8 @@
+import Link from "next/link";
 import { mulberry32 } from "@/lib/city/model";
 
 /** Many thin data signals converge into one interpretation, then one decision. */
-function ConvergeArt() {
+export function ConvergeArt() {
   const r = mulberry32(21);
   const tones = ["#8A92FF", "#ECEDF7", "#FF6B3D", "#3340F5"];
   const lines = Array.from({ length: 26 }, (_, i) => {
@@ -38,16 +39,19 @@ function ConvergeArt() {
 
 export default function Approach() {
   return (
-    <section id="enfoque" className="approach" aria-labelledby="approach-title">
+    <section className="approach band--grid" aria-labelledby="approach-title">
       <div className="wrap approach__grid">
         <div>
           <h2 id="approach-title" className="approach__title">
             Los datos no toman decisiones. Las personas, sí.
           </h2>
           <p className="section-lede">
-            Somos una consultoría, no una herramienta más. Trabajamos con todos los datos a nuestro alcance y los
-            interpretamos con experiencia sobre el terreno. A eso lo llamamos <strong>Inteligencia Humana</strong>.
+            Trabajamos con todos los datos a nuestro alcance y los interpretamos con experiencia sobre el terreno. A
+            eso lo llamamos <strong>Inteligencia Humana</strong>.
           </p>
+          <Link className="link-arrow" href="/enfoque">
+            Cómo trabajamos
+          </Link>
         </div>
         <ConvergeArt />
       </div>

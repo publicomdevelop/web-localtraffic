@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
-export const ZONE_EVENT = "lt:zona";
+import { ZONE_KEY } from "@/components/AskBar";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
@@ -12,13 +11,16 @@ export default function DemoForm() {
   const nameRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const onZone = (e: Event) => {
-      const detail = (e as CustomEvent<string>).detail;
-      if (typeof detail === "string") setZona(detail);
-      window.setTimeout(() => nameRef.current?.focus({ preventScroll: true }), 600);
-    };
-    window.addEventListener(ZONE_EVENT, onZone);
-    return () => window.removeEventListener(ZONE_EVENT, onZone);
+    try {
+      const saved = sessionStorage.getItem(ZONE_KEY);
+      if (saved) {
+        setZona(saved);
+        sessionStorage.removeItem(ZONE_KEY);
+        nameRef.current?.focus({ preventScroll: true });
+      }
+    } catch {
+      // Storage unavailable: the field just starts empty.
+    }
   }, []);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -38,12 +40,12 @@ export default function DemoForm() {
   };
 
   return (
-    <section id="demo" className="demo" aria-labelledby="demo-title">
+    <section id="demo" className="demo" data-hide-askbar aria-labelledby="demo-title">
       <div className="wrap demo__grid">
         <div className="demo__text">
-          <h2 id="demo-title" className="section-title">
+          <h1 id="demo-title" className="page-title">
             Pide una demo con tu zona.
-          </h2>
+          </h1>
           <p className="section-lede">
             Te enseñamos un análisis de la ubicación, el barrio o el municipio que nos digas.
           </p>
