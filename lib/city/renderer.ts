@@ -163,7 +163,7 @@ export class CityRenderer {
     model.shops.forEach((s) => {
       const r = 34 + s.weight * 20;
       const grd = g.createRadialGradient(s.p.x, s.p.y, 0, s.p.x, s.p.y, r);
-      grd.addColorStop(0, `rgba(${SPEND}, ${0.1 + s.weight * 0.12})`);
+      grd.addColorStop(0, `rgba(${SPEND}, ${0.045 + s.weight * 0.075})`);
       grd.addColorStop(1, `rgba(${SPEND}, 0)`);
       g.fillStyle = grd;
       g.beginPath();

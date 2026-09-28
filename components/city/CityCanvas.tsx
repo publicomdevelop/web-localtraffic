@@ -70,7 +70,7 @@ export default function CityCanvas({ layers, camera, iso = null, walkers = 700, 
   }, [layers, camera, iso]);
 
   return (
-    <div ref={wrapRef} className={className} style={{ position: "relative", overflow: "hidden" }}>
+    <div ref={wrapRef} className={className} style={{ overflow: "hidden" }}>
       <canvas ref={canvasRef} aria-hidden="true" style={{ display: "block" }} />
     </div>
   );
