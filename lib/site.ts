@@ -24,6 +24,8 @@ export const COMPANY = {
   taxId: "B66271453",
   registry: "Registro Mercantil de Barcelona, tomo 44290, folio 192, hoja 451874",
   representative: "Jaume Blanxart",
+  /** Registered (billing) address: the one legal texts must show. */
+  registeredAddress: "Avda. Torre del Vallès, 143, 08800 Vilanova i la Geltrú (Barcelona)",
   // Office address (the one Google shows). Not the billing address.
   street: "Carrer Sant Antoni, 2",
   postalCode: "08800",

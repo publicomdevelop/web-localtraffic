@@ -10,7 +10,8 @@ import { route, type Lang } from "@/lib/i18n";
 type Section = { title: string; paragraphs?: string[]; list?: string[]; table?: { head: string[]; rows: string[][] } };
 type Doc = { title: string; lede: string; updated: string; sections: Section[]; note?: string };
 
-const address = `${COMPANY.street}, ${COMPANY.postalCode} ${COMPANY.city} (${COMPANY.region})`;
+const office = `${COMPANY.street}, ${COMPANY.postalCode} ${COMPANY.city} (${COMPANY.region})`;
+const address = COMPANY.registeredAddress;
 
 const LEGAL: Record<Lang, Doc> = {
   es: {
@@ -28,7 +29,8 @@ const LEGAL: Record<Lang, Doc> = {
           `NIF: ${COMPANY.taxId}`,
           `Inscripción: ${COMPANY.registry}`,
           `Representante: ${COMPANY.representative}`,
-          `Domicilio: ${address}`,
+          `Domicilio social: ${address}`,
+          `Oficina: ${office}`,
           `Teléfono: ${COMPANY.phone}`,
           `Email: ${CONTACT.email}`,
         ],
@@ -87,7 +89,8 @@ const LEGAL: Record<Lang, Doc> = {
           `Tax ID (NIF): ${COMPANY.taxId}`,
           `Registration: ${COMPANY.registry}`,
           `Representative: ${COMPANY.representative}`,
-          `Address: ${address}, Spain`,
+          `Registered address: ${address}, Spain`,
+          `Office: ${office}, Spain`,
           `Phone: +34 ${COMPANY.phone}`,
           `Email: ${CONTACT.email}`,
         ],
@@ -143,7 +146,7 @@ const PRIVACY: Record<Lang, Doc> = {
         list: [
           `${COMPANY.legalName} (marca localtraffic)`,
           `NIF: ${COMPANY.taxId}`,
-          `Domicilio: ${address}`,
+          `Domicilio social: ${address}`,
           `Teléfono: ${COMPANY.phone}`,
           `Email para protección de datos: ${COMPANY.privacyEmail}`,
         ],
@@ -249,7 +252,7 @@ const PRIVACY: Record<Lang, Doc> = {
         list: [
           `${COMPANY.legalName} (localtraffic brand)`,
           `Tax ID (NIF): ${COMPANY.taxId}`,
-          `Address: ${address}, Spain`,
+          `Registered address: ${address}, Spain`,
           `Phone: +34 ${COMPANY.phone}`,
           `Data protection email: ${COMPANY.privacyEmail}`,
         ],

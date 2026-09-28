@@ -48,8 +48,17 @@ export async function POST(request: Request) {
   });
 
   if (!res.ok) {
-    console.error("Resend error", res.status, await res.text());
-    return NextResponse.json({ error: "send-failed" }, { status: 502 });
+    // Resend explains the problem (invalid key, unverified domain…); pass its
+    // message on so the form can show why it failed. It never contains the key.
+    const text = await res.text();
+    console.error("Resend error", res.status, text);
+    let detail = "";
+    try {
+      detail = String((JSON.parse(text) as { message?: string }).message ?? "");
+    } catch {
+      detail = text.slice(0, 200);
+    }
+    return NextResponse.json({ error: "send-failed", status: res.status, detail }, { status: 502 });
   }
   return NextResponse.json({ ok: true });
 }

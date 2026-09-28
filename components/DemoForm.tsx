@@ -55,6 +55,7 @@ export default function DemoForm() {
   const t = COPY[lang];
   const [status, setStatus] = useState<Status>("idle");
   const [zona, setZona] = useState("");
+  const [errorCode, setErrorCode] = useState("");
   const nameRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -80,8 +81,15 @@ export default function DemoForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...data, idioma: lang }),
       });
-      setStatus(res.ok ? "sent" : "error");
+      if (res.ok) {
+        setStatus("sent");
+      } else {
+        const body = (await res.json().catch(() => ({}))) as { error?: string; status?: number; detail?: string };
+        setErrorCode([body.error, body.status, body.detail].filter(Boolean).join(" · ") || `http ${res.status}`);
+        setStatus("error");
+      }
     } catch {
+      setErrorCode("network");
       setStatus("error");
     }
   };
@@ -162,6 +170,7 @@ export default function DemoForm() {
             {status === "error" && (
               <p className="form__error" role="alert">
                 {t.error} <a href="mailto:hola@localtraffic.es">hola@localtraffic.es</a>.
+                {errorCode && <span className="form__code"> ({errorCode})</span>}
               </p>
             )}
             <p className="form__legal">
