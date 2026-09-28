@@ -169,19 +169,25 @@ canvas {
 
 /* Header ------------------------------------------------------------- */
 
+/* Hidden (not just moved off-screen) until focused, so overscroll never reveals it. */
 .skip {
   position: absolute;
   left: 16px;
-  top: -60px;
+  top: 12px;
   z-index: 100;
   padding: 10px 14px;
   background: var(--blue);
   color: #fff;
   border-radius: 8px;
+  clip-path: inset(50%);
+  opacity: 0;
+  pointer-events: none;
 }
 
-.skip:focus {
-  top: 12px;
+.skip:focus-visible {
+  clip-path: none;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .header {
