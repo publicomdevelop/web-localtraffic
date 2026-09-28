@@ -289,7 +289,7 @@ export default function Hero() {
               <div className="stats__row stats__row--publico">
                 <dt>{t.income}</dt>
                 <dd>
-                  <AnimatedNumber value={stats.rentaHogar} format={(v) => `${formatInt(v)} €`} />
+                  <AnimatedNumber value={stats.rentaHogar} format={(v) => (lang === "en" ? `€${formatInt(v)}` : `${formatInt(v)} €`)} />
                 </dd>
               </div>
             </dl>
