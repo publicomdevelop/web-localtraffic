@@ -285,7 +285,7 @@ canvas {
 
 .map {
   position: relative;
-  height: clamp(440px, 64vh, 700px);
+  min-height: clamp(460px, 66vh, 720px);
   cursor: crosshair;
 }
 
@@ -505,7 +505,7 @@ canvas {
     column-gap: 16px;
   }
   .map {
-    height: clamp(380px, 60svh, 560px);
+    min-height: clamp(380px, 60svh, 560px);
   }
 }
 

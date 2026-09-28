@@ -23,8 +23,8 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
   return (
     <>
       <PageHero
-        title={`${s.name}. ${s.tagline}`}
-        lede={s.intro}
+        title={s.name}
+        lede={`${s.tagline} ${s.intro}`}
         crumbs={[
           { href: "/", label: "Inicio" },
           { href: "/servicios", label: "Servicios" },
