@@ -82,6 +82,40 @@ export function blockArea(crop: Crop, i0: number, j0: number, i1: number, j1: nu
   return { outline: d, roofs, top };
 }
 
+/**
+ * Any set of blocks on the isometric ground: the ground fill, the roofs of the
+ * buildings inside and the outer border (edges shared with blocks outside the set).
+ */
+export function blockSet(crop: Crop, blocks: [number, number][]) {
+  const city = getCity();
+  const node = (i: number, j: number) => project(crop, city.nodes[j * (city.nx + 1) + i]);
+  const inSet = new Set(blocks.map(([i, j]) => `${i},${j}`));
+  const has = (i: number, j: number) => inSet.has(`${i},${j}`);
+  const seg = (a: Vec, b: Vec) => `M${f(a.x)} ${f(a.y)}L${f(b.x)} ${f(b.y)}`;
+  let ground = "";
+  let roofs = "";
+  let border = "";
+  let streets = "";
+  for (const [i, j] of blocks) {
+    const q = [node(i, j), node(i + 1, j), node(i + 1, j + 1), node(i, j + 1)];
+    ground += q.map((p, k) => `${k ? "L" : "M"}${f(p.x)} ${f(p.y)}`).join("") + "Z";
+    streets += seg(q[0], q[1]) + seg(q[1], q[2]) + seg(q[2], q[3]) + seg(q[3], q[0]);
+    if (!has(i - 1, j)) border += seg(q[0], q[3]);
+    if (!has(i + 1, j)) border += seg(q[1], q[2]);
+    if (!has(i, j - 1)) border += seg(q[0], q[1]);
+    if (!has(i, j + 1)) border += seg(q[3], q[2]);
+    const cell = city.cells[j * city.nx + i];
+    cell.lots.forEach((lot, li) => {
+      const h = cell.heights[li] * crop.k;
+      roofs += lot.map((p, k) => {
+        const r = project(crop, p);
+        return `${k ? "L" : "M"}${f(r.x)} ${f(r.y - h)}`;
+      }).join("") + "Z";
+    });
+  }
+  return { ground, roofs, border, streets };
+}
+
 export function MapCrop({ crop }: { crop: Crop }) {
   const { streets, avenues, lots } = cropPaths(crop);
   return (

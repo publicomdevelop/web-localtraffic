@@ -1,5 +1,5 @@
-import { MapCrop, blockArea, project, VB_H, VB_W, type Crop } from "./MapCrop";
-import { getCity, isochrone, mulberry32 } from "@/lib/city/model";
+import { MapCrop, blockArea, blockSet, project, VB_H, VB_W, type Crop } from "./MapCrop";
+import { getCity, mulberry32 } from "@/lib/city/model";
 
 export type ArtKind =
   | "expansion"
@@ -233,23 +233,25 @@ function Pedestrian() {
 function Tailored() {
   const city = getCity();
   const crop = CROPS.tailored;
-  const origin = { x: 1060, y: 600 };
-  const iso = isochrone(city, origin, 260);
-  const poly = iso.polygon.map((p) => project(crop, p));
-  const d = poly.map((p, i) => `${i ? "L" : "M"}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join("") + "Z";
-  const segs = iso.segments
-    .map(([a, b]) => {
-      const pa = project(crop, a);
-      const pb = project(crop, b);
-      return `M${pa.x.toFixed(1)} ${pa.y.toFixed(1)}L${pb.x.toFixed(1)} ${pb.y.toFixed(1)}`;
-    })
-    .join("");
-  const o = project(crop, origin);
+  // Walking on a street grid: every block within 3 blocks (Manhattan distance)
+  // of the chosen one. A stepped diamond that follows the streets.
+  const ci = 24;
+  const cj = 19;
+  const blocks: [number, number][] = [];
+  for (let di = -3; di <= 3; di++) {
+    for (let dj = -3; dj <= 3; dj++) {
+      if (Math.abs(di) + Math.abs(dj) <= 3) blocks.push([ci + di, cj + dj]);
+    }
+  }
+  const area = blockSet(crop, blocks);
+  const o = project(crop, city.cells[cj * city.nx + ci].center);
   const modes = ["A pie", "En coche", "Radio", "Área administrativa"];
   return (
-    <Frame kind="tailored" label="Área de influencia a pie alrededor de una ubicación durante un periodo">
-      <path d={d} fill={BLUE} fillOpacity=".18" stroke={SIGNAL} strokeDasharray="5 5" className="iso-grow" />
-      <path d={segs} stroke={SIGNAL} strokeOpacity=".75" strokeWidth="2" fill="none" strokeLinecap="round" className="draw-soft" />
+    <Frame kind="tailored" label="Área de influencia a pie alrededor de una ubicación, manzana a manzana, durante un periodo">
+      <path d={area.ground} fill={BLUE} fillOpacity=".22" />
+      <path d={area.streets} stroke={SIGNAL} strokeOpacity=".45" strokeWidth="1.2" fill="none" />
+      <path d={area.roofs} fill={SIGNAL} fillOpacity=".55" className="draw-soft" />
+      <path d={area.border} stroke={SIGNAL} strokeWidth="2" strokeDasharray="6 4" strokeLinecap="round" fill="none" />
       <circle cx={o.x} cy={o.y} r="7" fill={BLUE} stroke={INK} strokeWidth="2" />
       <g transform="translate(16 16)">
         {modes.map((m, i) => (
