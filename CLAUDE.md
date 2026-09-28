@@ -62,5 +62,6 @@ Antes de presentarlo, repasa el plan y descarta si aparece cualquiera de estos t
 - Contenido: no nombrar clientes ni sectores concretos como destinatarios; no listar datasets de forma explícita; no mencionar bancos ni proveedores; no indicar granularidad de los datos (la transaccionalidad es por CP); nada de precios. Solo castellano por ahora.
 - Formulario de demo: `/api/demo` envía con Resend (`RESEND_API_KEY` en Vercel) a `hola@localtraffic.es` (o `DEMO_TO_EMAIL`).
 - Estructura multipágina: `/`, `/enfoque`, `/servicios`, `/servicios/[slug]` (datos en `lib/services.ts`), `/campanas`, `/contacto`. Nada de one page.
-- Mapas: rejilla ortogonal (sin anillo ni diagonal); el área de influencia del hero es un círculo.
+- Mapas: rejilla recta en perspectiva isométrica con edificios extruidos (sin anillo ni diagonal, sin ondulaciones); el área de influencia del hero es un círculo sobre el suelo (elipse en pantalla, `inGroundCircle`).
+- Navegación: megamenú en Servicios, transición de cortina entre páginas (`app/template.tsx`), redes: Instagram y LinkedIn (`components/Social.tsx`).
 - Ritmo entre secciones: alternar `band--layer`, `band--grid`, `Marquee` y `CtaBand` (azul) para que el scroll no sea plano.
