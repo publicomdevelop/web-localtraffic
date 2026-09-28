@@ -278,7 +278,7 @@ function Focus() {
     { cells: [17, 17, 20, 17], tone: SIGNAL, label: "Eje 1" },
     { cells: [21, 16, 22, 17], tone: INK, label: "Zona 2" },
     { cells: [15, 20, 16, 21], tone: BLUE, label: "Zona 3" },
-    { cells: [12, 18, 15, 18], tone: SPEND, label: "Eje 4" },
+    { cells: [14, 18, 17, 18], tone: SPEND, label: "Eje 4" },
   ].map((z) => ({ ...z, area: blockArea(crop, z.cells[0], z.cells[1], z.cells[2], z.cells[3]) }));
   const series = [
     [0.5, 0.52, 0.55, 0.6, 0.58, 0.64, 0.7, 0.68, 0.72, 0.75, 0.78, 0.8],
