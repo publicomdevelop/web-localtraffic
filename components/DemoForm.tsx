@@ -4,6 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import { ZONE_KEY } from "@/components/AskBar";
 import { useLang } from "@/lib/useLang";
 import { route } from "@/lib/i18n";
+import {
+  DEFAULT_PREFIX,
+  PREFIXES,
+  formatPhone,
+  maxDigits,
+  validateDemo,
+  type DemoInput,
+  type Errors,
+  type Field,
+} from "@/lib/demoValidation";
 
 const COPY = {
   es: {
@@ -17,6 +27,9 @@ const COPY = {
     company: "Empresa o entidad",
     email: "Email",
     phone: "Teléfono",
+    prefix: "Prefijo",
+    phonePh: "612 345 678",
+    fixErrors: "Revisa los campos marcados.",
     optional: "(opcional)",
     zone: "Zona que te interesa",
     zonePh: "Una ubicación, un barrio o un municipio",
@@ -39,6 +52,9 @@ const COPY = {
     company: "Company or organisation",
     email: "Email",
     phone: "Phone",
+    prefix: "Country code",
+    phonePh: "612 345 678",
+    fixErrors: "Please check the highlighted fields.",
     optional: "(optional)",
     zone: "Area you're interested in",
     zonePh: "A location, a neighbourhood or a town",
@@ -61,37 +77,121 @@ export default function DemoForm() {
   const lang = useLang();
   const t = COPY[lang];
   const [status, setStatus] = useState<Status>("idle");
-  const [zona, setZona] = useState("");
+  const [values, setValues] = useState<DemoInput>({
+    nombre: "",
+    empresa: "",
+    email: "",
+    prefijo: DEFAULT_PREFIX,
+    telefono: "",
+    zona: "",
+  });
+  const [errors, setErrors] = useState<Errors>({});
+  const [touched, setTouched] = useState<Partial<Record<Field, boolean>>>({});
   const [errorCode, setErrorCode] = useState("");
-  const nameRef = useRef<HTMLInputElement>(null);
+  const refs = {
+    nombre: useRef<HTMLInputElement>(null),
+    empresa: useRef<HTMLInputElement>(null),
+    email: useRef<HTMLInputElement>(null),
+    telefono: useRef<HTMLInputElement>(null),
+    zona: useRef<HTMLInputElement>(null),
+  };
 
   useEffect(() => {
     try {
       const saved = sessionStorage.getItem(ZONE_KEY);
       if (saved) {
-        setZona(saved);
+        setValues((v) => ({ ...v, zona: saved.slice(0, 160) }));
         sessionStorage.removeItem(ZONE_KEY);
-        nameRef.current?.focus({ preventScroll: true });
+        refs.nombre.current?.focus({ preventScroll: true });
       }
     } catch {
       // Storage unavailable: the field just starts empty.
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const update = (field: keyof DemoInput, value: string) => {
+    const next = { ...values, [field]: value };
+    setValues(next);
+    // Once a field has been left with an error, re-check it as the user types.
+    if (field !== "prefijo" && touched[field as Field]) setErrors(validateDemo(next, lang));
+    if (field === "prefijo" && touched.telefono) setErrors(validateDemo(next, lang));
+  };
+
+  const onPhone = (raw: string) => {
+    const digits = raw.replace(/\D/g, "").slice(0, maxDigits(values.prefijo));
+    update("telefono", formatPhone(digits));
+  };
+
+  const onPrefix = (dial: string) => {
+    const digits = values.telefono.replace(/\D/g, "").slice(0, maxDigits(dial));
+    const next = { ...values, prefijo: dial, telefono: formatPhone(digits) };
+    setValues(next);
+    if (touched.telefono) setErrors(validateDemo(next, lang));
+  };
+
+  const blur = (field: Field) => {
+    setTouched((s) => ({ ...s, [field]: true }));
+    setErrors(validateDemo(values, lang));
+  };
+
+  const field = (name: Field) => ({
+    ref: refs[name],
+    id: `f-${name}`,
+    name,
+    value: values[name],
+    onBlur: () => blur(name),
+    "aria-invalid": touched[name] && errors[name] ? true : undefined,
+    "aria-describedby": touched[name] && errors[name] ? `f-${name}-err` : undefined,
+  });
+
+  const errorFor = (name: Field) =>
+    touched[name] && errors[name] ? (
+      <p id={`f-${name}-err`} className="form__field-error">
+        {errors[name]}
+      </p>
+    ) : null;
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const data = Object.fromEntries(new FormData(e.currentTarget).entries());
+    const found = validateDemo(values, lang);
+    setErrors(found);
+    setTouched({ nombre: true, empresa: true, email: true, telefono: true, zona: true });
+    const first = (["nombre", "empresa", "email", "telefono", "zona"] as Field[]).find((f) => found[f]);
+    if (first) {
+      refs[first].current?.focus();
+      return;
+    }
+    const form = new FormData(e.currentTarget);
+    const digits = values.telefono.replace(/\s/g, "");
     setStatus("sending");
     try {
       const res = await fetch("/api/demo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, idioma: lang }),
+        body: JSON.stringify({
+          ...values,
+          telefono: digits ? `${values.prefijo} ${values.telefono}` : "",
+          telefonoNacional: values.telefono,
+          interes: form.get("interes"),
+          web: form.get("web"),
+          idioma: lang,
+        }),
       });
       if (res.ok) {
         setStatus("sent");
       } else {
-        const body = (await res.json().catch(() => ({}))) as { error?: string; status?: number; detail?: string };
+        const body = (await res.json().catch(() => ({}))) as {
+          error?: string;
+          status?: number;
+          detail?: string;
+          fields?: Errors;
+        };
+        if (body.error === "invalid-fields" && body.fields) {
+          setErrors(body.fields);
+          setStatus("idle");
+          return;
+        }
         setErrorCode([body.error, body.status, body.detail].filter(Boolean).join(" · ") || `http ${res.status}`);
         setStatus("error");
       }
@@ -101,6 +201,8 @@ export default function DemoForm() {
     }
   };
 
+  const hasErrors = Object.keys(errors).some((k) => touched[k as Field]);
+
   return (
     <section id="demo" className="demo" data-hide-askbar aria-labelledby="demo-title">
       <div className="wrap demo__grid">
@@ -108,9 +210,7 @@ export default function DemoForm() {
           <h1 id="demo-title" className="page-title">
             {t.title}
           </h1>
-          <p className="section-lede">
-            {t.lede}
-          </p>
+          <p className="section-lede">{t.lede}</p>
           <ul className="demo__contact">
             <li>
               <a href="tel:+34938148787">938 148 787</a>
@@ -135,36 +235,78 @@ export default function DemoForm() {
             )}
           </div>
         ) : (
-          <form className="form" onSubmit={onSubmit} noValidate={false}>
+          <form className="form" onSubmit={onSubmit} noValidate>
             <div className="form__row">
               <label htmlFor="f-nombre">{t.name}</label>
-              <input ref={nameRef} id="f-nombre" name="nombre" required autoComplete="name" />
+              <input {...field("nombre")} autoComplete="name" maxLength={80} onChange={(e) => update("nombre", e.target.value)} />
+              {errorFor("nombre")}
             </div>
             <div className="form__row">
               <label htmlFor="f-empresa">{t.company}</label>
-              <input id="f-empresa" name="empresa" required autoComplete="organization" />
+              <input
+                {...field("empresa")}
+                autoComplete="organization"
+                maxLength={120}
+                onChange={(e) => update("empresa", e.target.value)}
+              />
+              {errorFor("empresa")}
             </div>
             <div className="form__pair">
               <div className="form__row">
                 <label htmlFor="f-email">{t.email}</label>
-                <input id="f-email" name="email" type="email" required autoComplete="email" />
+                <input
+                  {...field("email")}
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  maxLength={254}
+                  onChange={(e) => update("email", e.target.value)}
+                />
+                {errorFor("email")}
               </div>
               <div className="form__row">
-                <label htmlFor="f-tel">
+                <label htmlFor="f-telefono">
                   {t.phone} <span className="form__opt">{t.optional}</span>
                 </label>
-                <input id="f-tel" name="telefono" type="tel" autoComplete="tel" />
+                <div className="phone">
+                  <label htmlFor="f-prefijo" className="sr-only">
+                    {t.prefix}
+                  </label>
+                  <select
+                    id="f-prefijo"
+                    className="phone__prefix"
+                    value={values.prefijo}
+                    onChange={(e) => onPrefix(e.target.value)}
+                    autoComplete="tel-country-code"
+                  >
+                    {PREFIXES.map((p) => (
+                      <option key={p.dial} value={p.dial}>
+                        {p.dial} {p[lang]}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    {...field("telefono")}
+                    className="phone__number"
+                    type="tel"
+                    inputMode="numeric"
+                    autoComplete="tel-national"
+                    placeholder={values.prefijo === DEFAULT_PREFIX ? t.phonePh : ""}
+                    onChange={(e) => onPhone(e.target.value)}
+                  />
+                </div>
+                {errorFor("telefono")}
               </div>
             </div>
             <div className="form__row">
               <label htmlFor="f-zona">{t.zone}</label>
               <input
-                id="f-zona"
-                name="zona"
+                {...field("zona")}
                 placeholder={t.zonePh}
-                value={zona}
-                onChange={(e) => setZona(e.target.value)}
+                maxLength={160}
+                onChange={(e) => update("zona", e.target.value)}
               />
+              {errorFor("zona")}
             </div>
             <fieldset className="form__row form__choices">
               <legend>{t.interest}</legend>
@@ -182,6 +324,11 @@ export default function DemoForm() {
             <button className="btn btn--primary btn--block" type="submit" disabled={status === "sending"}>
               {status === "sending" ? t.sending : t.submit}
             </button>
+            {hasErrors && status !== "sending" && (
+              <p className="form__error" role="alert">
+                {t.fixErrors}
+              </p>
+            )}
             {status === "error" && (
               <p className="form__error" role="alert">
                 {t.error} <a href="mailto:hola@localtraffic.es">hola@localtraffic.es</a>.

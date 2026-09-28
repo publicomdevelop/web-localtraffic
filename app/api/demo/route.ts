@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { confirmationEmail, internalEmail, type DemoRequest } from "@/lib/email";
+import { DEFAULT_PREFIX, validateDemo } from "@/lib/demoValidation";
 
 const FIELDS = ["nombre", "empresa", "email", "telefono", "zona", "interes", "idioma"] as const;
 
-const FROM = "localtraffic <noreply@localtraffic.app>";
+const FROM = "localtraffic <noreply@localtraffic.es>";
 const TEAM = process.env.DEMO_TO_EMAIL || "hola@localtraffic.es";
 
 async function send(apiKey: string, payload: Record<string, unknown>) {
@@ -40,8 +41,22 @@ export async function POST(request: Request) {
     const v = body[f];
     data[f] = typeof v === "string" ? v.trim().slice(0, 500) : "";
   }
-  if (!data.nombre || !data.empresa || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-    return NextResponse.json({ error: "missing" }, { status: 422 });
+  // Same rules as the form. The phone arrives as "+34 612 345 678".
+  const phone = data.telefono.match(/^(\+\d{1,4})\s+([\d\s]+)$/);
+  const lang = data.idioma === "en" ? "en" : "es";
+  const fields = validateDemo(
+    {
+      nombre: data.nombre,
+      empresa: data.empresa,
+      email: data.email,
+      prefijo: phone ? phone[1] : DEFAULT_PREFIX,
+      telefono: data.telefono ? (phone ? phone[2] : "x") : "",
+      zona: data.zona,
+    },
+    lang,
+  );
+  if (Object.keys(fields).length) {
+    return NextResponse.json({ error: "invalid-fields", fields }, { status: 422 });
   }
 
   const apiKey = process.env.RESEND_API_KEY;

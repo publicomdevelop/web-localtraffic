@@ -3195,6 +3195,48 @@ canvas {
   color: var(--ink-2);
 }
 
+/* Form validation and phone ------------------------------------------------- */
+
+.form__field-error {
+  font-size: 14px;
+  color: #ffb199;
+}
+
+.form input[aria-invalid="true"] {
+  border-color: #ff8a6b;
+}
+
+.phone {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+}
+
+.phone__prefix {
+  flex: none;
+  width: 128px;
+  min-height: 48px;
+  padding: 0 8px;
+  border-radius: 10px;
+  border: 1px solid var(--line-2);
+  background: var(--night);
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+}
+
+.phone__prefix:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 1px;
+}
+
+.phone__number {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-mono), monospace;
+  letter-spacing: 0.02em;
+}
+
 /* Reduced motion: everything is readable standing still ------------------- */
 
 @media (prefers-reduced-motion: reduce) {
