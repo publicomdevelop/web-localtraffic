@@ -3032,6 +3032,158 @@ canvas {
   color: var(--signal);
 }
 
+/* Cookie notice ------------------------------------------------------------ */
+
+.cookies {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 120;
+  max-width: 560px;
+  padding: 20px;
+  border-radius: 18px;
+  background: var(--layer);
+  border: 1px solid var(--line-2);
+  box-shadow: 0 24px 60px rgb(0 0 0 / 0.55);
+  animation: mega-in 0.3s var(--ease-out);
+}
+
+.cookies__text {
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+.cookies__text a {
+  color: var(--signal);
+}
+
+.cookies__detail {
+  margin-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.cookies__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.cookies__name {
+  font-weight: 500;
+}
+
+.cookies__desc {
+  font-size: 14px;
+  color: var(--ink-3);
+}
+
+.cookies__always {
+  flex: none;
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.cookies__switch {
+  flex: none;
+  width: 44px;
+  height: 26px;
+  appearance: none;
+  border-radius: 999px;
+  background: var(--line-2);
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.cookies__switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--ink);
+  transition: transform 0.2s var(--ease-out);
+}
+
+.cookies__switch:checked {
+  background: var(--blue);
+}
+
+.cookies__switch:checked::after {
+  transform: translateX(18px);
+}
+
+.cookies__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.cookies__actions .btn {
+  flex: 1 1 0;
+}
+
+.has-cookie-banner .askbar {
+  transform: translate(-50%, 140%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.footer__linkbtn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-3);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.footer__linkbtn:hover {
+  color: var(--ink);
+}
+
+.legal__table {
+  margin-top: 16px;
+  overflow-x: auto;
+}
+
+.legal__table table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.legal__table th,
+.legal__table td {
+  padding: 10px 12px 10px 0;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-2);
+}
+
+.legal__table thead th {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.legal__table tbody th {
+  font-family: var(--font-mono), monospace;
+  font-weight: 400;
+  color: var(--ink);
+}
+
 /* Reduced motion: everything is readable standing still ------------------- */
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
 import AskBar from "@/components/AskBar";
+import Analytics from "@/components/Analytics";
+import CookieBanner from "@/components/CookieBanner";
 import JsonLd from "@/components/JsonLd";
 import { INDEXABLE, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import { organizationLd, websiteLd } from "@/lib/seo";
@@ -30,6 +32,8 @@ export default function Document({ lang, children }: { lang: Lang; children: Rea
         <main id="contenido">{children}</main>
         <SiteFooter lang={lang} />
         <AskBar />
+        <CookieBanner />
+        <Analytics />
       </body>
     </html>
   );

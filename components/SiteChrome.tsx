@@ -6,6 +6,7 @@ import LangSwitch from "@/components/LangSwitch";
 import { LOGIN_URL } from "@/lib/site";
 import { route, servicePath, type Lang } from "@/lib/i18n";
 import { servicesFor } from "@/lib/services";
+import CookieSettingsLink from "@/components/CookieSettingsLink";
 
 const COPY = {
   es: {
@@ -21,6 +22,8 @@ const COPY = {
     contact: "Contacto",
     legal: "Aviso legal",
     privacy: "Privacidad",
+    cookies: "Cookies",
+    cookieSettings: "Configurar cookies",
     links: [
       { key: "home" as const, label: "Inicio" },
       { key: "approach" as const, label: "Enfoque" },
@@ -41,6 +44,8 @@ const COPY = {
     contact: "Contact",
     legal: "Legal notice",
     privacy: "Privacy",
+    cookies: "Cookies",
+    cookieSettings: "Cookie settings",
     links: [
       { key: "home" as const, label: "Home" },
       { key: "approach" as const, label: "Approach" },
@@ -139,6 +144,8 @@ export function SiteFooter({ lang = "es" }: { lang?: Lang }) {
           <span>© {new Date().getFullYear()} localtraffic · Publicom All Line, S.L.U.</span>
           <Link href={route("legal", lang)}>{t.legal}</Link>
           <Link href={route("privacy", lang)}>{t.privacy}</Link>
+          <Link href={route("cookies", lang)}>{t.cookies}</Link>
+          <CookieSettingsLink label={t.cookieSettings} />
         </div>
       </div>
     </footer>

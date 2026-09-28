@@ -9,6 +9,7 @@ export const ROUTES = {
   contact: { es: "/contacto", en: "/en/contact" },
   legal: { es: "/aviso-legal", en: "/en/legal-notice" },
   privacy: { es: "/politica-privacidad", en: "/en/privacy-policy" },
+  cookies: { es: "/politica-cookies", en: "/en/cookie-policy" },
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;

@@ -13,6 +13,9 @@ export const INDEXABLE = process.env.SITE_INDEXABLE === "true";
 
 export const LOGIN_URL = "https://localtraffic.app/";
 
+/** Google Analytics 4 property (same one the previous site used). Loaded only after consent. */
+export const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-GPP24MSVBB";
+
 export const CONTACT = { phone: "+34938148787", email: "hola@localtraffic.es" };
 
 /** Legal owner of the localtraffic brand and website (same company as publicom.cat). */
@@ -21,8 +24,8 @@ export const COMPANY = {
   taxId: "B66271453",
   registry: "Registro Mercantil de Barcelona, tomo 44290, folio 192, hoja 451874",
   representative: "Jaume Blanxart",
-  building: "Casa Nin – Espai de negocis",
-  street: "Carrer de Sant Antoni, 2",
+  // Office address (the one Google shows). Not the billing address.
+  street: "Carrer Sant Antoni, 2",
   postalCode: "08800",
   city: "Vilanova i la Geltrú",
   region: "Barcelona",

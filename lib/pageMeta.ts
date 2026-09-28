@@ -56,6 +56,10 @@ const TEXT: Record<RouteKey, Record<Lang, { title?: string; description: string 
     es: { title: "Política de privacidad", description: "Qué datos recoge localtraffic en su web, para qué los usa y cómo ejercer tus derechos." },
     en: { title: "Privacy policy", description: "What data localtraffic collects on its website, what it uses it for and how to exercise your rights." },
   },
+  cookies: {
+    es: { title: "Política de cookies", description: "Qué cookies usa www.localtraffic.es, para qué y cómo gestionarlas o retirar tu consentimiento." },
+    en: { title: "Cookie policy", description: "Which cookies www.localtraffic.es uses, what for, and how to manage them or withdraw your consent." },
+  },
   contact: {
     es: {
       title: "Pedir demo",

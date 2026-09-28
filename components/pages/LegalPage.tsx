@@ -1,15 +1,16 @@
 import PageHero from "@/components/PageHero";
-import { COMPANY, CONTACT } from "@/lib/site";
+import { COMPANY, CONTACT, GA_ID } from "@/lib/site";
 import { route, type Lang } from "@/lib/i18n";
 
 // Adapted from the legal texts of publicom.cat (same company, Publicom All Line,
 // S.L.U.) to what this site actually does: a demo form sent through Vercel and
-// Resend, no cookies, only sessionStorage for the zone typed in the ask bar.
+// Resend, Google Analytics only after consent, localStorage/sessionStorage for
+// the consent choice and the zone typed in the ask bar.
 
-type Section = { title: string; paragraphs?: string[]; list?: string[] };
+type Section = { title: string; paragraphs?: string[]; list?: string[]; table?: { head: string[]; rows: string[][] } };
 type Doc = { title: string; lede: string; updated: string; sections: Section[]; note?: string };
 
-const address = `${COMPANY.street} (${COMPANY.building}), ${COMPANY.postalCode} ${COMPANY.city} (${COMPANY.region})`;
+const address = `${COMPANY.street}, ${COMPANY.postalCode} ${COMPANY.city} (${COMPANY.region})`;
 
 const LEGAL: Record<Lang, Doc> = {
   es: {
@@ -154,6 +155,7 @@ const PRIVACY: Record<Lang, Doc> = {
         title: "Qué datos tratamos",
         paragraphs: [
           "Solo tratamos los datos que nos das tú. Si rellenas el formulario de demo: nombre, empresa o entidad, email, teléfono (opcional), la zona que te interesa y el servicio que te interesa. Si nos escribes por email o nos llamas, los datos que incluyas en tu mensaje. No tratamos categorías especiales de datos.",
+          "Si aceptas las cookies analíticas, Google Analytics recoge datos de navegación: páginas vistas, duración de la visita, tipo de dispositivo y navegador, ubicación aproximada (ciudad o país) e identificadores en línea asignados a tu navegador. No sirven para identificarte por tu nombre.",
           "Los datos que mostramos en la web sobre zonas, visitantes o consumo son agregados y anónimos y no permiten identificar a ninguna persona.",
         ],
       },
@@ -161,17 +163,22 @@ const PRIVACY: Record<Lang, Doc> = {
         title: "Para qué los usamos",
         paragraphs: [
           "Para atender tu solicitud de demo o tu consulta, contactar contigo y, si lo pides, preparar una propuesta. No tomamos decisiones automatizadas ni elaboramos perfiles con tus datos, y no los usamos para enviarte comunicaciones comerciales si no nos lo pides.",
+          "Los datos de Google Analytics, solo si los aceptas, para conocer de forma agregada cómo se usa la web y mejorarla. No los usamos con fines publicitarios.",
         ],
       },
       {
         title: "Base legal",
         paragraphs: [
-          "Tu consentimiento al enviarnos el formulario o escribirnos, y la aplicación de medidas precontractuales a petición tuya (artículo 6.1.a y 6.1.b del RGPD). Puedes retirar tu consentimiento en cualquier momento, sin que afecte a la licitud del tratamiento anterior.",
+          "Para el formulario y los mensajes: tu consentimiento y la aplicación de medidas precontractuales a petición tuya (artículo 6.1.a y 6.1.b del RGPD). Para la analítica web: tu consentimiento, que das en el aviso de cookies (artículo 6.1.a del RGPD y artículo 22.2 de la LSSI-CE).",
+          "Puedes retirar tu consentimiento en cualquier momento, sin que afecte a la licitud del tratamiento anterior. Para las cookies, desde «Configurar cookies» en el pie de página.",
         ],
       },
       {
         title: "Cuánto tiempo los conservamos",
-        paragraphs: ["Durante 24 meses desde tu último contacto con nosotros, o hasta que nos pidas que los suprimamos."],
+        paragraphs: [
+          "Datos del formulario y de tus mensajes: 24 meses desde tu último contacto con nosotros, o hasta que nos pidas que los suprimamos.",
+          "Datos de Google Analytics: 14 meses, el plazo mínimo que permite Google Analytics.",
+        ],
       },
       {
         title: "Quién más accede a tus datos",
@@ -181,12 +188,13 @@ const PRIVACY: Record<Lang, Doc> = {
         list: [
           "Vercel Inc., que aloja la web.",
           "Resend, que envía a nuestro buzón el correo con tu solicitud.",
+          "Google Ireland Limited, que presta el servicio de Google Analytics, solo si aceptas las cookies analíticas.",
         ],
       },
       {
         title: "Transferencias internacionales",
         paragraphs: [
-          "Estos proveedores pueden tratar datos fuera del Espacio Económico Europeo, en Estados Unidos. En ese caso lo hacen con garantías adecuadas, como el Marco de Privacidad de Datos UE-EE. UU. o las cláusulas contractuales tipo aprobadas por la Comisión Europea.",
+          "Estos proveedores o sus matrices pueden tratar datos fuera del Espacio Económico Europeo, en Estados Unidos. En ese caso lo hacen con garantías adecuadas: la Decisión de adecuación de la Comisión Europea de 10 de julio de 2023 sobre el Marco de Privacidad de Datos UE-EE. UU., para las empresas adheridas, o las cláusulas contractuales tipo aprobadas por la Comisión Europea.",
         ],
       },
       {
@@ -211,11 +219,9 @@ const PRIVACY: Record<Lang, Doc> = {
         ],
       },
       {
-        title: "Cookies y almacenamiento local",
+        title: "Cookies",
         paragraphs: [
-          "Esta web no utiliza cookies propias ni de terceros para análisis ni publicidad. Las fuentes tipográficas se sirven desde nuestro propio dominio.",
-          "Solo guardamos temporalmente en tu navegador (almacenamiento de sesión) la zona que escribes en la barra «¿Qué zona quieres analizar?», para rellenar con ella el formulario de demo. Se borra al usarla o al cerrar la pestaña. Al ser necesario para una función que tú pides, no requiere consentimiento.",
-          "Si en el futuro añadimos herramientas de medición, te pediremos permiso antes de activarlas.",
+          "Usamos cookies analíticas de Google Analytics solo si las aceptas. Tienes todos los detalles en la Política de cookies.",
         ],
       },
       {
@@ -255,6 +261,7 @@ const PRIVACY: Record<Lang, Doc> = {
         title: "What data we process",
         paragraphs: [
           "We only process the data you give us. If you fill in the demo form: name, company or organisation, email, phone (optional), the area you are interested in and the service you are interested in. If you email or call us, whatever data you include in your message. We do not process special categories of data.",
+          "If you accept analytics cookies, Google Analytics collects browsing data: pages viewed, visit length, device and browser type, approximate location (city or country) and online identifiers assigned to your browser. It cannot identify you by name.",
           "The data we show on the website about areas, visitors or spending is aggregated and anonymous and cannot identify anyone.",
         ],
       },
@@ -262,29 +269,38 @@ const PRIVACY: Record<Lang, Doc> = {
         title: "What we use it for",
         paragraphs: [
           "To handle your demo request or enquiry, get in touch with you and, if you ask, prepare a proposal. We make no automated decisions and build no profiles with your data, and we don't use it to send you marketing unless you ask us to.",
+          "Google Analytics data, only if you accept it, to understand in aggregate how the website is used and improve it. We don't use it for advertising.",
         ],
       },
       {
         title: "Legal basis",
         paragraphs: [
-          "Your consent when you send us the form or write to us, and taking steps at your request before entering into a contract (Article 6(1)(a) and 6(1)(b) GDPR). You can withdraw your consent at any time, without affecting the lawfulness of earlier processing.",
+          "For the form and messages: your consent and taking steps at your request before entering into a contract (Article 6(1)(a) and 6(1)(b) GDPR). For web analytics: your consent, given in the cookie notice (Article 6(1)(a) GDPR and Article 22.2 LSSI-CE).",
+          "You can withdraw your consent at any time, without affecting the lawfulness of earlier processing. For cookies, use «Cookie settings» in the footer.",
         ],
       },
       {
         title: "How long we keep it",
-        paragraphs: ["For 24 months from your last contact with us, or until you ask us to delete it."],
+        paragraphs: [
+          "Form data and messages: 24 months from your last contact with us, or until you ask us to delete it.",
+          "Google Analytics data: 14 months, the shortest period Google Analytics allows.",
+        ],
       },
       {
         title: "Who else can access your data",
         paragraphs: [
           "We do not share your data with third parties unless required by law. To run the website and the form, two providers process it on our behalf as data processors:",
         ],
-        list: ["Vercel Inc., which hosts the website.", "Resend, which delivers the email with your request to our inbox."],
+        list: [
+          "Vercel Inc., which hosts the website.",
+          "Resend, which delivers the email with your request to our inbox.",
+          "Google Ireland Limited, which provides Google Analytics, only if you accept analytics cookies.",
+        ],
       },
       {
         title: "International transfers",
         paragraphs: [
-          "These providers may process data outside the European Economic Area, in the United States. When they do, it is under appropriate safeguards such as the EU–US Data Privacy Framework or the European Commission's standard contractual clauses.",
+          "These providers or their parent companies may process data outside the European Economic Area, in the United States. When they do, it is under appropriate safeguards: the European Commission's adequacy decision of 10 July 2023 on the EU–US Data Privacy Framework, for certified companies, or the standard contractual clauses approved by the European Commission.",
         ],
       },
       {
@@ -309,12 +325,8 @@ const PRIVACY: Record<Lang, Doc> = {
         ],
       },
       {
-        title: "Cookies and local storage",
-        paragraphs: [
-          "This website does not use its own or third-party cookies for analytics or advertising. Fonts are served from our own domain.",
-          "We only store temporarily in your browser (session storage) the area you type into the «Which area do you want to analyse?» bar, to fill it into the demo form. It is deleted once used or when you close the tab. As it is needed for a feature you ask for, it does not require consent.",
-          "If we add measurement tools in the future, we will ask for your permission before turning them on.",
-        ],
+        title: "Cookies",
+        paragraphs: ["We use Google Analytics cookies only if you accept them. The full details are in the Cookie policy."],
       },
       {
         title: "Links to other sites",
@@ -332,8 +344,110 @@ const PRIVACY: Record<Lang, Doc> = {
   },
 };
 
-export default function LegalPage({ kind, lang }: { kind: "legal" | "privacy"; lang: Lang }) {
-  const doc = (kind === "legal" ? LEGAL : PRIVACY)[lang];
+const COOKIES: Record<Lang, Doc> = {
+  es: {
+    title: "Política de cookies",
+    lede: "Qué cookies y qué almacenamiento del navegador usa esta web, para qué y cómo puedes gestionarlos.",
+    updated: "Última actualización: 28 de septiembre de 2026",
+    sections: [
+      {
+        title: "Qué son las cookies",
+        paragraphs: [
+          "Las cookies y tecnologías similares, como el almacenamiento local del navegador, son pequeños archivos o datos que una web guarda en tu dispositivo para recordar información sobre tu visita. Esta política cumple el artículo 22.2 de la LSSI-CE, el RGPD y la Guía sobre el uso de las cookies de la Agencia Española de Protección de Datos.",
+        ],
+      },
+      {
+        title: "Qué usamos en esta web",
+        paragraphs: [
+          "No usamos cookies publicitarias ni de redes sociales. Las fuentes tipográficas se sirven desde nuestro propio dominio. Solo usamos lo siguiente:",
+        ],
+        table: {
+          head: ["Nombre", "Titular", "Tipo y finalidad", "Duración"],
+          rows: [
+            ["lt:consent (almacenamiento local)", "localtraffic", "Técnica. Recuerda si aceptas o rechazas las cookies analíticas.", "12 meses"],
+            ["lt:zona (almacenamiento de sesión)", "localtraffic", "Técnica. Lleva al formulario de demo la zona que escribes en la barra de búsqueda.", "Hasta usarla o cerrar la pestaña"],
+            ["_ga", "Google (Google Analytics)", "Analítica. Distingue visitantes de forma anónima para medir el uso de la web.", "2 años"],
+            [`_ga_${GA_ID.replace(/^G-/, "")}`, "Google (Google Analytics)", "Analítica. Mantiene el estado de la sesión de medición.", "2 años"],
+          ],
+        },
+      },
+      {
+        title: "Consentimiento",
+        paragraphs: [
+          "Las técnicas son necesarias para que la web funcione y no requieren consentimiento. Las analíticas solo se instalan si las aceptas en el aviso de cookies; hasta entonces, Google Analytics ni siquiera se carga. Rechazar es tan sencillo como aceptar, y la web funciona igual en ambos casos.",
+          "Te volveremos a preguntar como máximo al cabo de 12 meses.",
+        ],
+      },
+      {
+        title: "Cómo cambiar o retirar tu consentimiento",
+        paragraphs: [
+          "En cualquier momento, desde «Configurar cookies» en el pie de página. Si retiras el consentimiento, borramos las cookies de Google Analytics de tu navegador.",
+          "También puedes bloquear o eliminar las cookies desde la configuración de tu navegador (Chrome, Firefox, Safari o Edge, en el apartado de privacidad).",
+        ],
+      },
+      {
+        title: "Terceros y transferencias",
+        paragraphs: [
+          "Google Analytics lo presta Google Ireland Limited. Google puede tratar los datos en Estados Unidos al amparo del Marco de Privacidad de Datos UE-EE. UU. Más información en la política de privacidad de Google (policies.google.com/privacy). Los datos se conservan 14 meses.",
+          "Para el resto de información sobre el tratamiento de tus datos, consulta nuestra Política de privacidad.",
+        ],
+      },
+    ],
+  },
+  en: {
+    title: "Cookie policy",
+    lede: "Which cookies and browser storage this website uses, what for, and how you can manage them.",
+    updated: "Last updated: 28 September 2026",
+    note: "This is a translation for information purposes. The Spanish version prevails in case of discrepancy.",
+    sections: [
+      {
+        title: "What cookies are",
+        paragraphs: [
+          "Cookies and similar technologies, such as browser local storage, are small files or pieces of data a website stores on your device to remember information about your visit. This policy complies with Article 22.2 of the Spanish LSSI-CE, the GDPR and the Spanish Data Protection Agency's guide on the use of cookies.",
+        ],
+      },
+      {
+        title: "What this website uses",
+        paragraphs: [
+          "We use no advertising or social media cookies. Fonts are served from our own domain. We only use the following:",
+        ],
+        table: {
+          head: ["Name", "Provider", "Type and purpose", "Duration"],
+          rows: [
+            ["lt:consent (local storage)", "localtraffic", "Technical. Remembers whether you accept or reject analytics cookies.", "12 months"],
+            ["lt:zona (session storage)", "localtraffic", "Technical. Carries the area you type into the search bar over to the demo form.", "Until used or the tab is closed"],
+            ["_ga", "Google (Google Analytics)", "Analytics. Tells visitors apart anonymously to measure how the website is used.", "2 years"],
+            [`_ga_${GA_ID.replace(/^G-/, "")}`, "Google (Google Analytics)", "Analytics. Keeps the state of the measurement session.", "2 years"],
+          ],
+        },
+      },
+      {
+        title: "Consent",
+        paragraphs: [
+          "Technical storage is needed for the website to work and does not require consent. Analytics cookies are only set if you accept them in the cookie notice; until then, Google Analytics is not even loaded. Rejecting is as easy as accepting, and the website works the same either way.",
+          "We will ask you again after 12 months at the latest.",
+        ],
+      },
+      {
+        title: "How to change or withdraw your consent",
+        paragraphs: [
+          "At any time, from «Cookie settings» in the footer. If you withdraw your consent, we delete the Google Analytics cookies from your browser.",
+          "You can also block or delete cookies in your browser settings (Chrome, Firefox, Safari or Edge, under privacy).",
+        ],
+      },
+      {
+        title: "Third parties and transfers",
+        paragraphs: [
+          "Google Analytics is provided by Google Ireland Limited. Google may process data in the United States under the EU–US Data Privacy Framework. More information in Google's privacy policy (policies.google.com/privacy). Data is kept for 14 months.",
+          "For everything else about how we process your data, see our Privacy policy.",
+        ],
+      },
+    ],
+  },
+};
+
+export default function LegalPage({ kind, lang }: { kind: "legal" | "privacy" | "cookies"; lang: Lang }) {
+  const doc = (kind === "legal" ? LEGAL : kind === "privacy" ? PRIVACY : COOKIES)[lang];
   return (
     <>
       <PageHero
@@ -361,6 +475,28 @@ export default function LegalPage({ kind, lang }: { kind: "legal" | "privacy"; l
                     <li key={l}>{l}</li>
                   ))}
                 </ul>
+              )}
+              {s.table && (
+                <div className="legal__table" role="region" aria-label={s.title} tabIndex={0}>
+                  <table>
+                    <thead>
+                      <tr>
+                        {s.table.head.map((h) => (
+                          <th key={h} scope="col">
+                            {h}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {s.table.rows.map((r) => (
+                        <tr key={r[0]}>
+                          {r.map((c, i) => (i === 0 ? <th key={i} scope="row">{c}</th> : <td key={i}>{c}</td>))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </section>
           ))}
