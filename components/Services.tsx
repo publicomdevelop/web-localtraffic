@@ -3,9 +3,31 @@
 import { useState } from "react";
 import Link from "next/link";
 import SolutionArt from "@/components/illustrations/SolutionArt";
-import { SERVICES } from "@/lib/services";
+import { servicesFor } from "@/lib/services";
+import { servicePath } from "@/lib/i18n";
+import { useLang } from "@/lib/useLang";
+
+const COPY = {
+  es: {
+    title: "Tres formas de trabajar juntos.",
+    lede: "Todas incluyen lo mismo que nos diferencia: un equipo que interpreta los datos y te dice qué significan.",
+    useful: "Útil para",
+    example: "Un ejemplo",
+    more: (n: string) => `Ver ${n} en detalle`,
+  },
+  en: {
+    title: "Three ways to work together.",
+    lede: "All of them include what sets us apart: a team that interprets the data and tells you what it means.",
+    useful: "Useful for",
+    example: "An example",
+    more: (n: string) => `See ${n} in detail`,
+  },
+};
 
 export default function Services() {
+  const lang = useLang();
+  const c = COPY[lang];
+  const SERVICES = servicesFor(lang);
   const [active, setActive] = useState(0);
   const current = SERVICES[active];
 
@@ -13,10 +35,10 @@ export default function Services() {
     <section className="services band--layer" aria-labelledby="services-title">
       <div className="wrap">
         <h2 id="services-title" className="section-title">
-          Tres formas de trabajar juntos.
+          {c.title}
         </h2>
         <p className="section-lede">
-          Todas incluyen lo mismo que nos diferencia: un equipo que interpreta los datos y te dice qué significan.
+          {c.lede}
         </p>
 
         <div className="services__panel">
@@ -40,21 +62,21 @@ export default function Services() {
           </ul>
 
           <div id="service-detail" className="services__detail" key={current.slug} aria-live="polite">
-            <SolutionArt kind={current.art} />
+            <SolutionArt kind={current.art} lang={lang} />
             <div className="services__text">
               <p>{current.body}</p>
               <dl className="services__meta">
                 <div>
-                  <dt>Útil para</dt>
+                  <dt>{c.useful}</dt>
                   <dd>{current.useful}</dd>
                 </div>
                 <div>
-                  <dt>Un ejemplo</dt>
+                  <dt>{c.example}</dt>
                   <dd>{current.example}</dd>
                 </div>
               </dl>
-              <Link className="link-arrow" href={`/servicios/${current.slug}`}>
-                Ver {current.name} en detalle
+              <Link className="link-arrow" href={servicePath(current.slug, lang)}>
+                {c.more(current.name)}
               </Link>
             </div>
           </div>

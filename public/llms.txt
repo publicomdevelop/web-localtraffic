@@ -31,3 +31,13 @@
 - Teléfono: +34 938 148 787
 - Instagram: https://www.instagram.com/localtraffic.es/
 - LinkedIn: https://www.linkedin.com/company/localtraffic
+
+## English
+
+localtraffic works with geospatial data and Human Intelligence: it gathers public and private data about an area, interprets it with experience on the ground and recommends what to do. It analyses the resident profile, the visitor profile and consumer origin (by postcode), and uses the same data to launch and measure geotargeted campaigns. Services: Tailored (one location over a period), Focus (monthly tracking of shopping areas for a year) and On Demand (tailor-made analysis, optionally combined with the client's own data).
+
+- [Home](https://www.localtraffic.es/en)
+- [Approach: Human Intelligence](https://www.localtraffic.es/en/approach)
+- [Services](https://www.localtraffic.es/en/services)
+- [Campaigns](https://www.localtraffic.es/en/campaigns)
+- [Book a demo](https://www.localtraffic.es/en/contact)

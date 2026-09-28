@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const FIELDS = ["nombre", "empresa", "email", "telefono", "zona", "interes"] as const;
+const FIELDS = ["nombre", "empresa", "email", "telefono", "zona", "interes", "idioma"] as const;
 
 const ENTITIES: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
 const escape = (s: string) => s.replace(/[&<>"']/g, (c) => ENTITIES[c] ?? c);

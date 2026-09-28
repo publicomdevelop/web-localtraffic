@@ -2,10 +2,54 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ZONE_KEY } from "@/components/AskBar";
+import { useLang } from "@/lib/useLang";
+
+const COPY = {
+  es: {
+    title: "Pide una demo con tu zona.",
+    lede: "Te enseñamos un análisis de la ubicación, el barrio o el municipio que nos digas.",
+    done: "Recibido.",
+    doneBody: "Te escribimos en breve para concretar la demo.",
+    name: "Nombre",
+    company: "Empresa o entidad",
+    email: "Email",
+    phone: "Teléfono",
+    optional: "(opcional)",
+    zone: "Zona que te interesa",
+    zonePh: "Una ubicación, un barrio o un municipio",
+    interest: "Te interesa",
+    notSure: "Aún no lo sé",
+    sending: "Enviando…",
+    submit: "Pedir demo",
+    error: "No se ha podido enviar. Escríbenos a",
+    legal: "Usaremos tus datos solo para contactarte sobre la demo.",
+  },
+  en: {
+    title: "Book a demo for your area.",
+    lede: "We'll show you an analysis of the location, neighbourhood or town you choose.",
+    done: "Got it.",
+    doneBody: "We'll be in touch shortly to arrange the demo.",
+    name: "Name",
+    company: "Company or organisation",
+    email: "Email",
+    phone: "Phone",
+    optional: "(optional)",
+    zone: "Area you're interested in",
+    zonePh: "A location, a neighbourhood or a town",
+    interest: "You're interested in",
+    notSure: "Not sure yet",
+    sending: "Sending…",
+    submit: "Book a demo",
+    error: "It couldn't be sent. Email us at",
+    legal: "We'll only use your details to contact you about the demo.",
+  },
+};
 
 type Status = "idle" | "sending" | "sent" | "error";
 
 export default function DemoForm() {
+  const lang = useLang();
+  const t = COPY[lang];
   const [status, setStatus] = useState<Status>("idle");
   const [zona, setZona] = useState("");
   const nameRef = useRef<HTMLInputElement>(null);
@@ -31,7 +75,7 @@ export default function DemoForm() {
       const res = await fetch("/api/demo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, idioma: lang }),
       });
       setStatus(res.ok ? "sent" : "error");
     } catch {
@@ -44,10 +88,10 @@ export default function DemoForm() {
       <div className="wrap demo__grid">
         <div className="demo__text">
           <h1 id="demo-title" className="page-title">
-            Pide una demo con tu zona.
+            {t.title}
           </h1>
           <p className="section-lede">
-            Te enseñamos un análisis de la ubicación, el barrio o el municipio que nos digas.
+            {t.lede}
           </p>
           <ul className="demo__contact">
             <li>
@@ -61,44 +105,44 @@ export default function DemoForm() {
 
         {status === "sent" ? (
           <div className="form form--done" role="status">
-            <p className="form__done-title">Recibido.</p>
-            <p>Te escribimos en breve para concretar la demo.</p>
+            <p className="form__done-title">{t.done}</p>
+            <p>{t.doneBody}</p>
           </div>
         ) : (
           <form className="form" onSubmit={onSubmit} noValidate={false}>
             <div className="form__row">
-              <label htmlFor="f-nombre">Nombre</label>
+              <label htmlFor="f-nombre">{t.name}</label>
               <input ref={nameRef} id="f-nombre" name="nombre" required autoComplete="name" />
             </div>
             <div className="form__row">
-              <label htmlFor="f-empresa">Empresa o entidad</label>
+              <label htmlFor="f-empresa">{t.company}</label>
               <input id="f-empresa" name="empresa" required autoComplete="organization" />
             </div>
             <div className="form__pair">
               <div className="form__row">
-                <label htmlFor="f-email">Email</label>
+                <label htmlFor="f-email">{t.email}</label>
                 <input id="f-email" name="email" type="email" required autoComplete="email" />
               </div>
               <div className="form__row">
                 <label htmlFor="f-tel">
-                  Teléfono <span className="form__opt">(opcional)</span>
+                  {t.phone} <span className="form__opt">{t.optional}</span>
                 </label>
                 <input id="f-tel" name="telefono" type="tel" autoComplete="tel" />
               </div>
             </div>
             <div className="form__row">
-              <label htmlFor="f-zona">Zona que te interesa</label>
+              <label htmlFor="f-zona">{t.zone}</label>
               <input
                 id="f-zona"
                 name="zona"
-                placeholder="Una ubicación, un barrio o un municipio"
+                placeholder={t.zonePh}
                 value={zona}
                 onChange={(e) => setZona(e.target.value)}
               />
             </div>
             <fieldset className="form__row form__choices">
-              <legend>Te interesa</legend>
-              {["Tailored", "Focus", "On Demand", "Aún no lo sé"].map((o, i) => (
+              <legend>{t.interest}</legend>
+              {["Tailored", "Focus", "On Demand", t.notSure].map((o, i) => (
                 <label key={o} className="choice">
                   <input type="radio" name="interes" value={o} defaultChecked={i === 3} />
                   <span>{o}</span>
@@ -110,14 +154,14 @@ export default function DemoForm() {
               <input id="f-web" name="web" tabIndex={-1} autoComplete="off" />
             </div>
             <button className="btn btn--primary btn--block" type="submit" disabled={status === "sending"}>
-              {status === "sending" ? "Enviando…" : "Pedir demo"}
+              {status === "sending" ? t.sending : t.submit}
             </button>
             {status === "error" && (
               <p className="form__error" role="alert">
-                No se ha podido enviar. Escríbenos a <a href="mailto:hola@localtraffic.es">hola@localtraffic.es</a>.
+                {t.error} <a href="mailto:hola@localtraffic.es">hola@localtraffic.es</a>.
               </p>
             )}
-            <p className="form__legal">Usaremos tus datos solo para contactarte sobre la demo.</p>
+            <p className="form__legal">{t.legal}</p>
           </form>
         )}
       </div>

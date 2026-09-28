@@ -59,7 +59,7 @@ Antes de presentarlo, repasa el plan y descarta si aparece cualquiera de estos t
 - Tipografías: Outfit (titulares y texto) e IBM Plex Mono (cifras y etiquetas).
 - Idea central: la ciudad ilustrada de noche (`lib/city/`): perfil del residente, perfil del visitante y origen del consumidor. El consumo se pinta por zonas de código postal, nunca por calle.
 - Posicionamiento: Inteligencia Humana (IH): interpretamos los datos. No usar la palabra "consultoría" en la web ni presentarnos como herramienta. Servicios: Tailored, Focus y On Demand. Los datos también sirven para activar campañas.
-- Contenido: no nombrar clientes ni sectores concretos como destinatarios; no listar datasets de forma explícita; no mencionar bancos ni proveedores; no indicar granularidad de los datos (la transaccionalidad es por CP); nada de precios. Solo castellano por ahora.
+- Contenido: no nombrar clientes ni sectores concretos como destinatarios; no listar datasets de forma explícita; no mencionar bancos ni proveedores; no indicar granularidad de los datos (la transaccionalidad es por CP); nada de precios. Castellano e inglés.
 - Formulario de demo: `/api/demo` envía con Resend (`RESEND_API_KEY` en Vercel) a `hola@localtraffic.es` (o `DEMO_TO_EMAIL`).
 - Estructura multipágina: `/`, `/enfoque`, `/servicios`, `/servicios/[slug]` (datos en `lib/services.ts`), `/campanas`, `/contacto`. Nada de one page.
 - Mapas: rejilla recta en perspectiva isométrica con edificios extruidos (sin anillo ni diagonal, sin ondulaciones); el área de influencia del hero es un círculo sobre el suelo (elipse en pantalla, `inGroundCircle`).
@@ -72,3 +72,10 @@ Antes de presentarlo, repasa el plan y descarta si aparece cualquiera de estos t
 - Datos estructurados (JSON-LD): Organization + WebSite en el layout, BreadcrumbList en `PageHero`, Service en cada servicio y FAQPage en `/enfoque`.
 - `app/sitemap.ts`, `app/robots.ts` (permite a los rastreadores de IA), `app/opengraph-image.tsx` y `public/llms.txt` (resumen para asistentes de IA: actualizarlo si cambian servicios o contacto).
 - La web es `noindex` mientras `SITE_INDEXABLE` no sea `true` en Vercel. Activarlo solo cuando `localtraffic.es` apunte a este proyecto. `NEXT_PUBLIC_SITE_URL` por defecto es `https://www.localtraffic.es` (Vercel redirige el dominio sin www a www).
+
+## Idiomas
+
+- Castellano en las URL originales (`app/(es)/…`) e inglés en `/en/…` (`app/(en)/en/…`). Cada grupo tiene su propio layout raíz con `<html lang>`.
+- El contenido de las páginas vive en `components/pages/*Page.tsx` y recibe `lang`. Los componentes de cliente leen el idioma de la URL con `useLang()`.
+- Rutas y equivalencias entre idiomas en `lib/i18n.ts` (`ROUTES`, `route()`, `counterpart()`); metadatos con hreflang en `lib/pageMeta.ts`.
+- Cada texto nuevo se añade en los dos idiomas (objetos `COPY = { es, en }`). Inglés británico.

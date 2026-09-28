@@ -1,12 +1,10 @@
-const int = new Intl.NumberFormat("es-ES", { maximumFractionDigits: 0 });
-const oneDecimal = new Intl.NumberFormat("es-ES", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+import type { Lang } from "@/lib/i18n";
 
-export const formatInt = (v: number) => int.format(Math.round(v));
+const locale = (lang: Lang) => (lang === "en" ? "en-GB" : "es-ES");
 
-export const formatEuros = (v: number) => {
-  if (v >= 1_000_000) return `${oneDecimal.format(v / 1_000_000)} M€`;
-  if (v >= 1_000) return `${int.format(Math.round(v / 1_000))} k€`;
-  return `${int.format(Math.round(v))} €`;
+export const intFormatter = (lang: Lang = "es") => {
+  const f = new Intl.NumberFormat(locale(lang), { maximumFractionDigits: 0 });
+  return (v: number) => f.format(Math.round(v));
 };
 
-export const formatTicket = (v: number) => `${int.format(Math.round(v))} €`;
+export const formatInt = intFormatter("es");

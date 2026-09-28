@@ -1,14 +1,18 @@
 import InView from "@/components/InView";
+import type { Lang } from "@/lib/i18n";
 
-type Study = { title: string; body: string; chart: React.ReactNode };
+type Study = { title: Record<Lang, string>; body: Record<Lang, string>; chart: React.ReactNode };
 
 const line = (vals: number[], w = 220, h = 70) =>
   vals.map((v, i) => `${i ? "L" : "M"}${((i / (vals.length - 1)) * w).toFixed(1)} ${(h - v * h).toFixed(1)}`).join("");
 
 const STUDIES: Study[] = [
   {
-    title: "¿De dónde viene quien compra aquí?",
-    body: "Qué áreas aportan visitantes y gasto, y cuánto pesa el cliente de fuera.",
+    title: { es: "¿De dónde viene quien compra aquí?", en: "Where do the people who buy here come from?" },
+    body: {
+      es: "Qué áreas aportan visitantes y gasto, y cuánto pesa el cliente de fuera.",
+      en: "Which areas bring in visitors and spending, and how much outside customers weigh.",
+    },
     chart: (
       <svg viewBox="0 0 220 70" aria-hidden="true">
         {[1, 0.7, 0.45, 0.3, 0.18].map((v, i) => (
@@ -18,8 +22,11 @@ const STUDIES: Study[] = [
     ),
   },
   {
-    title: "¿Tiene potencial esta ubicación?",
-    body: "Cómo es su entorno frente a otras opciones antes de tomar la decisión.",
+    title: { es: "¿Tiene potencial esta ubicación?", en: "Does this location have potential?" },
+    body: {
+      es: "Cómo es su entorno frente a otras opciones antes de tomar la decisión.",
+      en: "How its surroundings compare with other options before you decide.",
+    },
     chart: (
       <svg viewBox="0 0 220 70" aria-hidden="true">
         <path d="M20 64a90 90 0 0 1 180 0" fill="none" stroke="#ECEDF7" strokeOpacity=".12" strokeWidth="10" strokeLinecap="round" />
@@ -28,8 +35,11 @@ const STUDIES: Study[] = [
     ),
   },
   {
-    title: "¿Cuánta gente atrajo el evento?",
-    body: "Festivales, ferias o campañas comparados con un periodo normal: visitantes, origen y estancia.",
+    title: { es: "¿Cuánta gente atrajo el evento?", en: "How many people did the event bring in?" },
+    body: {
+      es: "Festivales, ferias o campañas comparados con un periodo normal: visitantes, origen y estancia.",
+      en: "Festivals, fairs or campaigns compared with a normal period: visitors, origin and length of stay.",
+    },
     chart: (
       <svg viewBox="0 0 220 70" aria-hidden="true">
         {[0.3, 0.32, 0.28, 0.34, 0.95, 0.8, 0.33, 0.3].map((v, i) => (
@@ -39,8 +49,11 @@ const STUDIES: Study[] = [
     ),
   },
   {
-    title: "¿Qué horas y qué días mueven la zona?",
-    body: "Cuándo llega la gente, cuánto se queda y qué momentos conviene aprovechar para abrir, atender o comunicar.",
+    title: { es: "¿Qué horas y qué días mueven la zona?", en: "Which hours and days drive the area?" },
+    body: {
+      es: "Cuándo llega la gente, cuánto se queda y qué momentos conviene aprovechar para abrir, atender o comunicar.",
+      en: "When people arrive, how long they stay and which moments are worth using to open, serve or advertise.",
+    },
     chart: (
       <svg viewBox="0 0 220 70" aria-hidden="true">
         {[0.35, 0.3, 0.32, 0.38, 0.55, 0.95, 0.6].map((v, i) => (
@@ -51,18 +64,18 @@ const STUDIES: Study[] = [
   },
 ];
 
-export default function StudyTypes() {
+export default function StudyTypes({ lang = "es" }: { lang?: Lang }) {
   return (
     <section className="studies" aria-labelledby="studies-title">
       <div className="wrap">
         <h2 id="studies-title" className="section-title">
-          Preguntas que respondemos
+          {lang === "en" ? "Questions we answer" : "Preguntas que respondemos"}
         </h2>
         <ul className="studies__list">
           {STUDIES.map((s) => (
-            <InView as="li" key={s.title} className="study">
-              <h3 className="study__title">{s.title}</h3>
-              <p className="study__body">{s.body}</p>
+            <InView as="li" key={s.title.es} className="study">
+              <h3 className="study__title">{s.title[lang]}</h3>
+              <p className="study__body">{s.body[lang]}</p>
               <div className="study__chart">{s.chart}</div>
             </InView>
           ))}

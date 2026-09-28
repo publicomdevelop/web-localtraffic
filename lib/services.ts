@@ -1,4 +1,5 @@
 import type { ArtKind } from "@/components/illustrations/SolutionArt";
+import type { Lang } from "@/lib/i18n";
 
 export type ServiceInfo = {
   slug: string;
@@ -14,7 +15,7 @@ export type ServiceInfo = {
   when: string[];
 };
 
-export const SERVICES: ServiceInfo[] = [
+const SERVICES_ES: ServiceInfo[] = [
   {
     slug: "tailored",
     name: "Tailored",
@@ -112,4 +113,107 @@ export const SERVICES: ServiceInfo[] = [
   },
 ];
 
-export const getService = (slug: string) => SERVICES.find((s) => s.slug === slug);
+const SERVICES_EN: ServiceInfo[] = [
+  {
+    slug: "tailored",
+    name: "Tailored",
+    tagline: "A precise snapshot of one location.",
+    intro:
+      "What happens around a specific point over a specific period: who lives there, who visits, how long they stay and where the spending comes from.",
+    body:
+      "You choose a point, its catchment area (on foot, by car, by radius or by administrative area) and a period. We tell you who lives there, who comes and where the spending comes from.",
+    useful: "Deciding on an opening, assessing a site or planning a campaign.",
+    example: "A picture of a shopping neighbourhood during one specific month.",
+    art: "tailored",
+    steps: [
+      { title: "You choose the location", body: "An address, a shop or a point on the map." },
+      { title: "We define the catchment area", body: "On foot, by car, by radius or by administrative area." },
+      { title: "We set the period", body: "The month or season you want to understand." },
+      { title: "We analyse and interpret", body: "We combine the sources and look for what really matters." },
+      { title: "You get the report", body: "With the data and our reading of what it means." },
+    ],
+    includes: [
+      { title: "Resident profile", body: "Population, age, disposable income and what households spend on." },
+      { title: "Visitor profile", body: "Visits, busiest days and hours, length of stay and profile." },
+      { title: "Consumer origin", body: "Which areas bring in the spending and how much each one weighs." },
+      { title: "Surroundings", body: "Activity and points of interest around the location." },
+      { title: "Human Intelligence", body: "Conclusions and recommendations from our team." },
+    ],
+    when: [
+      "Before opening or moving a shop.",
+      "To compare one location with another.",
+      "To plan a campaign in a specific area.",
+      "To understand what happened in a given period.",
+    ],
+  },
+  {
+    slug: "focus",
+    name: "Focus",
+    tagline: "How an area evolves, month by month.",
+    intro:
+      "We follow one or more shopping areas for a year and explain every month what has changed, in which area and why.",
+    body:
+      "We define one or more shopping areas and follow them through the year: visits, visitor profile, opening hours and where spending comes from, with a report every month.",
+    useful: "Seeing the effect of what you do and spotting changes in time.",
+    example: "Monthly tracking of six shopping streets in the same town, compared with each other.",
+    art: "focus",
+    steps: [
+      { title: "We draw the areas", body: "Each shopping area, drawn to measure." },
+      { title: "We measure every month", body: "The same indicators month after month, so they can be compared." },
+      { title: "We compare", body: "Areas with each other, and each area with its previous months." },
+      { title: "We explain it", body: "What went up, what went down and why that may be." },
+    ],
+    includes: [
+      { title: "Visit trends", body: "Month by month and by day of the week." },
+      { title: "Visitor profile", body: "Age, income and length of visit." },
+      { title: "Timing", body: "How visits spread across hours and days." },
+      { title: "Origin", body: "Where visitors come from and how far away they live." },
+      { title: "Area comparison", body: "Every area in a single view." },
+      { title: "Human Intelligence", body: "A monthly reading of what is going on." },
+    ],
+    when: [
+      "To keep a finger on the pulse of a shopping street or centre.",
+      "To measure the effect of actions sustained over time.",
+      "To spot changes before they show up in sales.",
+      "To compare areas with each other using the same criteria.",
+    ],
+  },
+  {
+    slug: "on-demand",
+    name: "On Demand",
+    tagline: "A tailor-made analysis for a specific question.",
+    intro:
+      "When the question doesn't fit a standard report: we design the analysis from scratch, with whatever period, areas and data it needs.",
+    body:
+      "Period, areas and data to measure, including your own if you want to combine them with ours. For questions that don't fit a standard report.",
+    useful: "Measuring the impact of roadworks, an event or a change in mobility.",
+    example: "The impact of a pedestrian zone on foot and road traffic, two and a half years after it opened.",
+    art: "pedestrian",
+    steps: [
+      { title: "You ask the question", body: "What you need to know and which decision depends on it." },
+      { title: "We design the analysis", body: "Areas, periods and comparisons built around that question." },
+      { title: "We combine the data", body: "Ours and, if you want, yours too." },
+      { title: "We present conclusions", body: "What happened, why, and what we recommend you do." },
+    ],
+    includes: [
+      { title: "Area and period to measure", body: "Any shape of area and any time window." },
+      { title: "Everything in Tailored and Focus", body: "Resident, visitor and consumer, as a snapshot or over time." },
+      { title: "Your own data", body: "Combined with ours in the same analysis." },
+      { title: "Custom indicators", body: "Indices built around your goals." },
+      { title: "Human Intelligence", body: "All our experience on the ground." },
+    ],
+    when: [
+      "To measure the impact of roadworks or pedestrianisation.",
+      "To assess an event or a season.",
+      "To compare scenarios before deciding.",
+      "For any question that doesn't have a ready-made report.",
+    ],
+  },
+];
+
+export const SERVICES = SERVICES_ES;
+export const servicesFor = (lang: Lang) => (lang === "en" ? SERVICES_EN : SERVICES_ES);
+export const getService = (slug: string, lang: Lang = "es") => servicesFor(lang).find((s) => s.slug === slug);
+
+/** The line in `includes` that stands for Human Intelligence, highlighted in the UI. */
+export const IH_TITLES = ["Inteligencia Humana", "Human Intelligence"];

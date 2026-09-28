@@ -1,4 +1,5 @@
 import JsonLd from "@/components/JsonLd";
+import type { Lang } from "@/lib/i18n";
 
 const REASONS = [
   {
@@ -54,15 +55,72 @@ export const FAQ = [
   },
 ];
 
-export function Why() {
+const REASONS_EN = [
+  {
+    title: "We interpret, not just measure",
+    body: "Every analysis comes with a clear reading: what is happening, why and what we recommend you do.",
+  },
+  {
+    title: "Many sources, one answer",
+    body: "We combine public and private data so you never rely on a single view.",
+  },
+  {
+    title: "Experience on the ground",
+    body: "We know how local retail works and how a town moves. That doesn't show up in any dataset.",
+  },
+  {
+    title: "From analysis to action",
+    body: "We use the same data to launch campaigns and measure their effect.",
+  },
+  {
+    title: "Reports people understand",
+    body: "Made to present and decide on, not only for data experts.",
+  },
+  {
+    title: "Aggregated, anonymous data",
+    body: "We never work with information about specific individuals.",
+  },
+];
+
+export const FAQ_EN = [
+  {
+    q: "Do I need to learn a tool?",
+    a: "No. We analyse the data for you and hand you conclusions and recommendations, not software you have to learn.",
+  },
+  {
+    q: "What is Human Intelligence?",
+    a: "It is the part no algorithm does: interpreting the data with experience on the ground and turning it into decisions.",
+  },
+  {
+    q: "What's the difference between Tailored, Focus and On Demand?",
+    a: "Tailored is a snapshot of one location over a period. Focus follows one or more areas month by month. On Demand is a tailor-made analysis for a specific question.",
+  },
+  {
+    q: "Is this personal data?",
+    a: "No. All data is aggregated and anonymised: no individual can be identified.",
+  },
+  {
+    q: "Can you use my own data?",
+    a: "Yes. In On Demand analyses we can combine your data with ours.",
+  },
+  {
+    q: "What does the demo look like?",
+    a: "We show you an analysis of the area you choose and work out which service fits the decision you need to make.",
+  },
+];
+
+const faqFor = (lang: Lang) => (lang === "en" ? FAQ_EN : FAQ);
+
+export function Why({ lang = "es" }: { lang?: Lang }) {
+  const reasons = lang === "en" ? REASONS_EN : REASONS;
   return (
     <section className="why" aria-labelledby="why-title">
       <div className="wrap why__grid">
         <h2 id="why-title" className="section-title">
-          Por qué localtraffic
+          {lang === "en" ? "Why localtraffic" : "Por qué localtraffic"}
         </h2>
         <dl className="why__list">
-          {REASONS.map((r) => (
+          {reasons.map((r) => (
             <div key={r.title} className="why__item">
               <dt>{r.title}</dt>
               <dd>{r.body}</dd>
@@ -74,21 +132,23 @@ export function Why() {
   );
 }
 
-export function Faq({ schema = true }: { schema?: boolean }) {
+export function Faq({ schema = true, lang = "es" }: { schema?: boolean; lang?: Lang }) {
+  const faq = faqFor(lang);
   const faqLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: FAQ.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+    inLanguage: lang === "en" ? "en" : "es",
+    mainEntity: faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
   };
   return (
     <section className="faq" aria-labelledby="faq-title">
       {schema && <JsonLd data={faqLd} />}
       <div className="wrap faq__grid">
         <h2 id="faq-title" className="section-title">
-          Preguntas frecuentes
+          {lang === "en" ? "Frequently asked questions" : "Preguntas frecuentes"}
         </h2>
         <div className="faq__list">
-          {FAQ.map((f) => (
+          {faq.map((f) => (
             <details key={f.q} className="faq__item">
               <summary>{f.q}</summary>
               <p>{f.a}</p>

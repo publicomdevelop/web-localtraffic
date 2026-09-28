@@ -5,15 +5,60 @@ import CityCanvas from "@/components/city/CityCanvas";
 import AnimatedNumber from "@/components/AnimatedNumber";
 import { getCity, zoneStats, ISO_RX, UNITS_PER_100M, WORLD_W, WORLD_H, type Vec } from "@/lib/city/model";
 import type { CityRenderer, Layers } from "@/lib/city/renderer";
-import { formatInt } from "@/lib/format";
+import { intFormatter } from "@/lib/format";
+import { useLang } from "@/lib/useLang";
+import { route } from "@/lib/i18n";
 
 type Chip = "residentes" | "visitantes" | "consumo";
 
-const LAYER_BUTTONS: { key: Chip; label: string }[] = [
-  { key: "residentes", label: "Residentes" },
-  { key: "visitantes", label: "Visitantes" },
-  { key: "consumo", label: "Consumo" },
-];
+const CHIPS: Chip[] = ["residentes", "visitantes", "consumo"];
+
+const COPY = {
+  es: {
+    title: "Datos que cambian decisiones.",
+    lede: "Datos geoespaciales con Inteligencia Humana. Reunimos todo lo que se puede saber de un lugar, lo interpretamos y te decimos qué hacer: dónde abrir, qué zona impulsar o qué campaña activar.",
+    demo: "Pedir demo",
+    how: "Cómo trabajamos",
+    pin: "Punto de análisis. Arrástralo o muévelo con las flechas del teclado.",
+    drag: "Arrástrame",
+    layers: "Capas de datos",
+    chips: { residentes: "Residentes", visitantes: "Visitantes", consumo: "Consumo" },
+    statsLabel: "Datos de la zona seleccionada",
+    radius: "Radio de 500 m",
+    around: "alrededor del pin",
+    resident: "Perfil del residente",
+    residents: "Residentes",
+    income: "Renta por hogar",
+    visitor: "Perfil del visitante",
+    visits: "Visitas al mes",
+    stay: "Tiempo medio de visita",
+    consumer: "Origen del consumidor",
+    outside: "Compran desde fuera de la zona",
+    foot: "Ciudad ilustrada con datos de ejemplo. En la demo, tu zona real.",
+  },
+  en: {
+    title: "Data that changes decisions.",
+    lede: "Geospatial data with Human Intelligence. We gather everything there is to know about a place, interpret it and tell you what to do: where to open, which area to boost or which campaign to launch.",
+    demo: "Book a demo",
+    how: "How we work",
+    pin: "Analysis point. Drag it or move it with the arrow keys.",
+    drag: "Drag me",
+    layers: "Data layers",
+    chips: { residentes: "Residents", visitantes: "Visitors", consumo: "Spending" },
+    statsLabel: "Data for the selected area",
+    radius: "500 m radius",
+    around: "around the pin",
+    resident: "Resident profile",
+    residents: "Residents",
+    income: "Household income",
+    visitor: "Visitor profile",
+    visits: "Visits per month",
+    stay: "Average visit length",
+    consumer: "Consumer origin",
+    outside: "Buy from outside the area",
+    foot: "Illustrated city with sample data. In the demo, your real area.",
+  },
+};
 
 /** 500 m around the pin, on the ground. */
 const RADIUS = UNITS_PER_100M * 5;
@@ -24,6 +69,9 @@ const clampPin = (p: Vec): Vec => ({
 });
 
 export default function Hero() {
+  const lang = useLang();
+  const t = COPY[lang];
+  const formatInt = useMemo(() => intFormatter(lang), [lang]);
   const [pin, setPin] = useState<Vec>({ x: 700, y: 470 });
   const [on, setOn] = useState<Record<Chip, boolean>>({
     residentes: false,
@@ -160,18 +208,17 @@ export default function Hero() {
     <section className="hero" aria-labelledby="hero-title">
       <div className="hero__intro wrap">
         <h1 id="hero-title" className="hero__title">
-          Datos que cambian decisiones.
+          {t.title}
         </h1>
         <p className="hero__lede">
-          Datos geoespaciales con Inteligencia Humana. Reunimos todo lo que se puede saber de un lugar, lo
-          interpretamos y te decimos qué hacer: dónde abrir, qué zona impulsar o qué campaña activar.
+          {t.lede}
         </p>
         <div className="hero__actions">
-          <a className="btn btn--primary" href="/contacto">
-            Pedir demo
+          <a className="btn btn--primary" href={route("contact", lang)}>
+            {t.demo}
           </a>
-          <a className="btn btn--ghost" href="/enfoque">
-            Cómo trabajamos
+          <a className="btn btn--ghost" href={route("approach", lang)}>
+            {t.how}
           </a>
         </div>
       </div>
@@ -184,7 +231,7 @@ export default function Hero() {
             ref={pinEl}
             type="button"
             className="map__pin"
-            aria-label="Punto de análisis. Arrástralo o muévelo con las flechas del teclado."
+            aria-label={t.pin}
             onPointerDown={onPinPointerDown}
             onPointerMove={onPinPointerMove}
             onPointerUp={onPinPointerUp}
@@ -201,20 +248,20 @@ export default function Hero() {
               />
               <circle cx="20" cy="19.5" r="6" fill="#ECEDF7" />
             </svg>
-            {!touched && <span className="map__hint">Arrástrame</span>}
+            {!touched && <span className="map__hint">{t.drag}</span>}
           </button>
 
-          <div className="map__layers" role="group" aria-label="Capas de datos">
-            {LAYER_BUTTONS.map((b) => (
+          <div className="map__layers" role="group" aria-label={t.layers}>
+            {CHIPS.map((key) => (
               <button
-                key={b.key}
+                key={key}
                 type="button"
-                className={`chip chip--${b.key}`}
-                aria-pressed={on[b.key]}
-                onClick={() => setOn((s) => ({ ...s, [b.key]: !s[b.key] }))}
+                className={`chip chip--${key}`}
+                aria-pressed={on[key]}
+                onClick={() => setOn((s) => ({ ...s, [key]: !s[key] }))}
               >
                 <span className="chip__dot" aria-hidden="true" />
-                {b.label}
+                {t.chips[key]}
               </button>
             ))}
           </div>
@@ -225,22 +272,22 @@ export default function Hero() {
           </div>
         </div>
 
-        <aside className="stats" aria-live="polite" aria-label="Datos de la zona seleccionada">
+        <aside className="stats" aria-live="polite" aria-label={t.statsLabel}>
           <p className="stats__head">
-            <span className="mono">Radio de 500 m</span>
-            <span className="stats__note">alrededor del pin</span>
+            <span className="mono">{t.radius}</span>
+            <span className="stats__note">{t.around}</span>
           </p>
           <div className="stats__group">
-            <p className="stats__label">Perfil del residente</p>
+            <p className="stats__label">{t.resident}</p>
             <dl className="stats__list">
               <div className="stats__row stats__row--publico">
-                <dt>Residentes</dt>
+                <dt>{t.residents}</dt>
                 <dd>
                   <AnimatedNumber value={stats.residentes} format={formatInt} />
                 </dd>
               </div>
               <div className="stats__row stats__row--publico">
-                <dt>Renta por hogar</dt>
+                <dt>{t.income}</dt>
                 <dd>
                   <AnimatedNumber value={stats.rentaHogar} format={(v) => `${formatInt(v)} €`} />
                 </dd>
@@ -248,16 +295,16 @@ export default function Hero() {
             </dl>
           </div>
           <div className="stats__group">
-            <p className="stats__label">Perfil del visitante</p>
+            <p className="stats__label">{t.visitor}</p>
             <dl className="stats__list">
               <div className="stats__row stats__row--movilidad">
-                <dt>Visitas al mes</dt>
+                <dt>{t.visits}</dt>
                 <dd>
                   <AnimatedNumber value={stats.visitasMes} format={formatInt} />
                 </dd>
               </div>
               <div className="stats__row stats__row--movilidad">
-                <dt>Tiempo medio de visita</dt>
+                <dt>{t.stay}</dt>
                 <dd>
                   <AnimatedNumber value={stats.minutosVisita} format={(v) => `${formatInt(v)} min`} />
                 </dd>
@@ -265,17 +312,17 @@ export default function Hero() {
             </dl>
           </div>
           <div className="stats__group">
-            <p className="stats__label">Origen del consumidor</p>
+            <p className="stats__label">{t.consumer}</p>
             <dl className="stats__list">
               <div className="stats__row stats__row--consumo">
-                <dt>Compran desde fuera de la zona</dt>
+                <dt>{t.outside}</dt>
                 <dd>
                   <AnimatedNumber value={stats.foraneos} format={(v) => `${formatInt(v)} %`} />
                 </dd>
               </div>
             </dl>
           </div>
-          <p className="stats__foot">Ciudad ilustrada con datos de ejemplo. En la demo, tu zona real.</p>
+          <p className="stats__foot">{t.foot}</p>
         </aside>
       </div>
     </section>

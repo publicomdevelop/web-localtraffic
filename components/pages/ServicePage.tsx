@@ -1,42 +1,56 @@
-import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import PageHero from "@/components/PageHero";
 import SolutionArt from "@/components/illustrations/SolutionArt";
-import { CtaBand } from "@/components/Bands";
-import { SERVICES, getService } from "@/lib/services";
 import JsonLd from "@/components/JsonLd";
-import { ORG_ID, pageMeta } from "@/lib/seo";
+import { CtaBand } from "@/components/Bands";
+import { IH_TITLES, servicesFor, type ServiceInfo } from "@/lib/services";
+import { ORG_ID } from "@/lib/seo";
 import { SITE_URL } from "@/lib/site";
+import { route, servicePath, type Lang } from "@/lib/i18n";
 
-export function generateStaticParams() {
-  return SERVICES.map((s) => ({ slug: s.slug }));
-}
+const COPY = {
+  es: {
+    home: "Inicio",
+    services: "Servicios",
+    how: "Cómo funciona.",
+    includes: "Qué incluye.",
+    when: "Cuándo tiene sentido.",
+    example: "Un ejemplo",
+    others: "Otras formas de trabajar juntos",
+    start: (n: string) => `¿Empezamos con ${n}?`,
+    catalog: (n: string) => `Qué incluye ${n}`,
+    country: "España",
+  },
+  en: {
+    home: "Home",
+    services: "Services",
+    how: "How it works.",
+    includes: "What's included.",
+    when: "When it makes sense.",
+    example: "An example",
+    others: "Other ways to work together",
+    start: (n: string) => `Shall we start with ${n}?`,
+    catalog: (n: string) => `What ${n} includes`,
+    country: "Spain",
+  },
+};
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const s = getService(params.slug);
-  return s
-    ? pageMeta({ title: `${s.name}: ${s.tagline.replace(/\.$/, "")}`, description: `${s.tagline} ${s.intro}`, path: `/servicios/${s.slug}` })
-    : {};
-}
-
-export default function ServicePage({ params }: { params: { slug: string } }) {
-  const s = getService(params.slug);
-  if (!s) notFound();
-  const others = SERVICES.filter((o) => o.slug !== s.slug);
-
+export default function ServicePage({ service: s, lang }: { service: ServiceInfo; lang: Lang }) {
+  const t = COPY[lang];
+  const others = servicesFor(lang).filter((o) => o.slug !== s.slug);
   const serviceLd = {
     "@context": "https://schema.org",
     "@type": "Service",
     name: `${s.name} · localtraffic`,
     serviceType: s.tagline,
     description: s.intro,
-    url: `${SITE_URL}/servicios/${s.slug}`,
+    url: `${SITE_URL}${servicePath(s.slug, lang)}`,
+    inLanguage: lang,
     provider: { "@id": ORG_ID },
-    areaServed: { "@type": "Country", name: "España" },
+    areaServed: { "@type": "Country", name: t.country },
     hasOfferCatalog: {
       "@type": "OfferCatalog",
-      name: `Qué incluye ${s.name}`,
+      name: t.catalog(s.name),
       itemListElement: s.includes.map((i) => ({
         "@type": "Offer",
         itemOffered: { "@type": "Service", name: i.title, description: i.body },
@@ -48,20 +62,21 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
     <>
       <JsonLd data={serviceLd} />
       <PageHero
+        lang={lang}
         title={s.name}
         lede={`${s.tagline} ${s.intro}`}
         crumbs={[
-          { href: "/", label: "Inicio" },
-          { href: "/servicios", label: "Servicios" },
-          { href: `/servicios/${s.slug}`, label: s.name },
+          { href: route("home", lang), label: t.home },
+          { href: route("services", lang), label: t.services },
+          { href: servicePath(s.slug, lang), label: s.name },
         ]}
-        art={<SolutionArt kind={s.art} />}
+        art={<SolutionArt kind={s.art} lang={lang} />}
       />
 
       <section className="section" aria-labelledby="how-title">
         <div className="wrap split">
           <h2 id="how-title" className="section-title">
-            Cómo funciona.
+            {t.how}
           </h2>
           <ol className="flow-steps flow-steps--large">
             {s.steps.map((st) => (
@@ -77,11 +92,11 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
       <section className="section band--layer" aria-labelledby="includes-title">
         <div className="wrap">
           <h2 id="includes-title" className="section-title">
-            Qué incluye.
+            {t.includes}
           </h2>
           <dl className="includes">
             {s.includes.map((i) => (
-              <div key={i.title} className={`includes__item${i.title === "Inteligencia Humana" ? " includes__item--ih" : ""}`}>
+              <div key={i.title} className={`includes__item${IH_TITLES.includes(i.title) ? " includes__item--ih" : ""}`}>
                 <dt>{i.title}</dt>
                 <dd>{i.body}</dd>
               </div>
@@ -94,7 +109,7 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
         <div className="wrap split">
           <div>
             <h2 id="when-title" className="section-title">
-              Cuándo tiene sentido.
+              {t.when}
             </h2>
             <ul className="when">
               {s.when.map((w) => (
@@ -102,8 +117,8 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
               ))}
             </ul>
           </div>
-          <aside className="example" aria-label="Un ejemplo">
-            <p className="mono example__label">Un ejemplo</p>
+          <aside className="example" aria-label={t.example}>
+            <p className="mono example__label">{t.example}</p>
             <p className="example__text">{s.example}</p>
           </aside>
         </div>
@@ -112,12 +127,12 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
       <section className="section section--tight" aria-labelledby="others-title">
         <div className="wrap">
           <h2 id="others-title" className="others__title">
-            Otras formas de trabajar juntos
+            {t.others}
           </h2>
           <ul className="others">
             {others.map((o) => (
               <li key={o.slug}>
-                <Link href={`/servicios/${o.slug}`} className="others__link">
+                <Link href={servicePath(o.slug, lang)} className="others__link">
                   <span className="others__name">{o.name}</span>
                   <span className="others__tagline">{o.tagline}</span>
                 </Link>
@@ -127,7 +142,7 @@ export default function ServicePage({ params }: { params: { slug: string } }) {
         </div>
       </section>
 
-      <CtaBand title={`¿Empezamos con ${s.name}?`} />
+      <CtaBand title={t.start(s.name)} />
     </>
   );
 }

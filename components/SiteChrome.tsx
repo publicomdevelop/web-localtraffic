@@ -2,7 +2,49 @@ import Image from "next/image";
 import Link from "next/link";
 import NavLinks from "@/components/NavLinks";
 import SocialLinks from "@/components/Social";
+import LangSwitch from "@/components/LangSwitch";
 import { LOGIN_URL } from "@/lib/site";
+import { route, servicePath, type Lang } from "@/lib/i18n";
+import { servicesFor } from "@/lib/services";
+
+const COPY = {
+  es: {
+    skip: "Saltar al contenido",
+    home: "localtraffic, inicio",
+    login: "Acceso clientes",
+    newTab: " (se abre en otra pestaña)",
+    demo: "Pedir demo",
+    claim: "Datos que cambian decisiones.",
+    web: "Web",
+    footerNav: "Pie de página",
+    services: "Servicios",
+    contact: "Contacto",
+    links: [
+      { key: "home" as const, label: "Inicio" },
+      { key: "approach" as const, label: "Enfoque" },
+      { key: "services" as const, label: "Servicios" },
+      { key: "campaigns" as const, label: "Campañas" },
+    ],
+  },
+  en: {
+    skip: "Skip to content",
+    home: "localtraffic, home",
+    login: "Client login",
+    newTab: " (opens in a new tab)",
+    demo: "Book a demo",
+    claim: "Data that changes decisions.",
+    web: "Site",
+    footerNav: "Footer",
+    services: "Services",
+    contact: "Contact",
+    links: [
+      { key: "home" as const, label: "Home" },
+      { key: "approach" as const, label: "Approach" },
+      { key: "services" as const, label: "Services" },
+      { key: "campaigns" as const, label: "Campaigns" },
+    ],
+  },
+};
 
 function LoginIcon() {
   return (
@@ -13,82 +55,73 @@ function LoginIcon() {
   );
 }
 
-export const NAV = [
-  { href: "/enfoque", label: "Enfoque" },
-  { href: "/servicios", label: "Servicios" },
-  { href: "/campanas", label: "Campañas" },
-];
-
-export function SiteHeader() {
+export function SiteHeader({ lang = "es" }: { lang?: Lang }) {
+  const t = COPY[lang];
   return (
     <header className="header">
       <a className="skip" href="#contenido">
-        Saltar al contenido
+        {t.skip}
       </a>
       <div className="header__inner wrap">
-        <Link href="/" className="header__logo" aria-label="localtraffic, inicio">
+        <Link href={route("home", lang)} className="header__logo" aria-label={t.home}>
           <Image src="/logo-localtraffic.png" alt="" width={148} height={32} priority />
         </Link>
         <NavLinks />
+        <LangSwitch />
         <a className="header__login" href={LOGIN_URL} target="_blank" rel="noopener noreferrer">
           <LoginIcon />
-          <span>Acceso clientes</span>
-          <span className="sr-only"> (se abre en otra pestaña)</span>
+          <span>{t.login}</span>
+          <span className="sr-only">{t.newTab}</span>
         </a>
-        <Link className="btn btn--primary btn--small" href="/contacto">
-          Pedir demo
+        <Link className="btn btn--primary btn--small" href={route("contact", lang)}>
+          {t.demo}
         </Link>
       </div>
     </header>
   );
 }
 
-export function SiteFooter() {
+export function SiteFooter({ lang = "es" }: { lang?: Lang }) {
+  const t = COPY[lang];
   return (
     <footer className="footer">
       <div className="wrap footer__inner">
         <div className="footer__brand">
           <Image src="/logo-localtraffic.png" alt="localtraffic" width={130} height={28} />
-          <p className="footer__claim">Datos que cambian decisiones.</p>
-          <SocialLinks />
+          <p className="footer__claim">{t.claim}</p>
+          <SocialLinks lang={lang} />
         </div>
-        <nav aria-label="Pie de página" className="footer__nav">
-          <p className="footer__head">Web</p>
+        <nav aria-label={t.footerNav} className="footer__nav">
+          <p className="footer__head">{t.web}</p>
           <ul>
-            <li>
-              <Link href="/">Inicio</Link>
-            </li>
-            {NAV.map((n) => (
-              <li key={n.href}>
-                <Link href={n.href}>{n.label}</Link>
+            {t.links.map((l) => (
+              <li key={l.key}>
+                <Link href={route(l.key, lang)}>{l.label}</Link>
               </li>
             ))}
             <li>
-              <Link href="/contacto">Pedir demo</Link>
+              <Link href={route("contact", lang)}>{t.demo}</Link>
             </li>
             <li>
               <a href={LOGIN_URL} target="_blank" rel="noopener noreferrer">
-                Acceso clientes<span className="sr-only"> (se abre en otra pestaña)</span>
+                {t.login}
+                <span className="sr-only">{t.newTab}</span>
               </a>
             </li>
           </ul>
         </nav>
         <div className="footer__nav">
-          <p className="footer__head">Servicios</p>
+          <p className="footer__head">{t.services}</p>
           <ul>
-            <li>
-              <Link href="/servicios/tailored">Tailored</Link>
-            </li>
-            <li>
-              <Link href="/servicios/focus">Focus</Link>
-            </li>
-            <li>
-              <Link href="/servicios/on-demand">On Demand</Link>
-            </li>
+            {servicesFor(lang).map((s) => (
+              <li key={s.slug}>
+                <Link href={servicePath(s.slug, lang)}>{s.name}</Link>
+              </li>
+            ))}
           </ul>
         </div>
         <div className="footer__nav">
-          <p className="footer__head">Contacto</p>
+          <p className="footer__head">{t.contact}</p>
           <ul className="footer__contact">
             <li>
               <a href="tel:+34938148787">938 148 787</a>

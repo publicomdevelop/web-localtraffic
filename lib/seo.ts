@@ -1,26 +1,42 @@
 import type { Metadata } from "next";
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, CONTACT, SOCIAL_URLS } from "@/lib/site";
+import { languageAlternates, type Lang } from "@/lib/i18n";
 
 // Pages that set their own openGraph lose the file-based image, so it is listed explicitly.
 const OG_IMAGE = { url: "/opengraph-image", width: 1200, height: 630, alt: "localtraffic · Datos que cambian decisiones" };
 
-/** Title, description, canonical and Open Graph for one page. */
-export function pageMeta({ title, description, path }: { title?: string; description: string; path: string }): Metadata {
-  const ogTitle = title ? `${title} · ${SITE_NAME}` : `${SITE_NAME} · Datos que cambian decisiones`;
+/** Title, description, canonical, hreflang and Open Graph for one page. */
+export function pageMeta({
+  title,
+  description,
+  lang = "es",
+  paths,
+}: {
+  title?: string;
+  description: string;
+  lang?: Lang;
+  /** The page's URL in each language. */
+  paths: { es: string; en: string };
+}): Metadata {
+  const path = paths[lang];
+  const claim = lang === "en" ? "Data that changes decisions" : "Datos que cambian decisiones";
+  const ogTitle = title ? `${title} · ${SITE_NAME}` : `${SITE_NAME} · ${claim}`;
+  const image = { ...OG_IMAGE, url: lang === "en" ? "/en/opengraph-image" : OG_IMAGE.url, alt: `${SITE_NAME} · ${claim}` };
   return {
-    ...(title ? { title } : {}),
+    ...(title ? { title } : { title: { absolute: `${SITE_NAME} · ${claim}` } }),
     description,
-    alternates: { canonical: path },
+    alternates: { canonical: path, languages: languageAlternates(paths.es, paths.en) },
     openGraph: {
       type: "website",
-      locale: "es_ES",
+      locale: lang === "en" ? "en_GB" : "es_ES",
+      alternateLocale: lang === "en" ? ["es_ES"] : ["en_GB"],
       siteName: SITE_NAME,
       url: path,
       title: ogTitle,
       description,
-      images: [OG_IMAGE],
+      images: [image],
     },
-    twitter: { card: "summary_large_image", title: ogTitle, description, images: [OG_IMAGE.url] },
+    twitter: { card: "summary_large_image", title: ogTitle, description, images: [image.url] },
   };
 }
 
@@ -54,7 +70,7 @@ export const organizationLd = {
     contactType: "sales",
     telephone: CONTACT.phone,
     email: CONTACT.email,
-    availableLanguage: ["es"],
+    availableLanguage: ["es", "en"],
     areaServed: "ES",
   },
 };
@@ -65,6 +81,6 @@ export const websiteLd = {
   "@id": `${SITE_URL}/#website`,
   name: SITE_NAME,
   url: SITE_URL,
-  inLanguage: "es-ES",
+  inLanguage: ["es-ES", "en-GB"],
   publisher: { "@id": ORG_ID },
 };

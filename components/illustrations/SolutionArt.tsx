@@ -1,5 +1,52 @@
 import { MapCrop, blockArea, blockSet, project, VB_H, VB_W, type Crop } from "./MapCrop";
 import { getCity, mulberry32 } from "@/lib/city/model";
+import type { Lang } from "@/lib/i18n";
+
+const TEXT = {
+  es: {
+    expansion: "Tres ubicaciones candidatas comparadas; una destaca con la mejor puntuación",
+    network: "Red de tiendas con dos puntos de venta por debajo del potencial de su zona",
+    campaign: "Zonas hexagonales coloreadas según potencial para una campaña",
+    impact: "Gráfico de visitas antes, durante y después de una campaña",
+    influence: "Flujos de visitantes desde distintos barrios hacia un centro comercial",
+    axis: "Eje comercial con barras de gasto por tramo",
+    event: "Visitantes por día con un pico el día del festival",
+    pedestrian: "Una calle antes y después de peatonalizarla: menos coches y más peatones",
+    tailored: "Área de influencia a pie alrededor de una ubicación, manzana a manzana, durante un periodo",
+    focus: "Cuatro áreas comerciales sobre el plano y su evolución mensual durante un año",
+    campaignWord: "campaña",
+    normal: "periodo normal",
+    festival: "festival",
+    before: "antes",
+    after: "después",
+    modes: ["A pie", "En coche", "Radio", "Área administrativa"],
+    period: "periodo: 1 mes",
+    zones: ["Eje 1", "Zona 2", "Zona 3", "Eje 4"],
+    months: ["E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"],
+  },
+  en: {
+    expansion: "Three candidate locations compared; one stands out with the best score",
+    network: "A store network with two shops performing below the potential of their area",
+    campaign: "Hexagonal zones coloured by potential for a campaign",
+    impact: "Visits before, during and after a campaign",
+    influence: "Visitor flows from different neighbourhoods into a shopping centre",
+    axis: "A shopping street with spending bars along it",
+    event: "Visitors per day, peaking on festival day",
+    pedestrian: "A street before and after pedestrianisation: fewer cars and more people on foot",
+    tailored: "Walking catchment area around a location, block by block, over a period",
+    focus: "Four shopping areas on the map and how they evolve month by month over a year",
+    campaignWord: "campaign",
+    normal: "normal period",
+    festival: "festival",
+    before: "before",
+    after: "after",
+    modes: ["On foot", "By car", "Radius", "Admin. area"],
+    period: "period: 1 month",
+    zones: ["Street 1", "Area 2", "Area 3", "Street 4"],
+    months: ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"],
+  },
+};
+type ArtText = (typeof TEXT)["es"];
 
 export type ArtKind =
   | "expansion"
@@ -41,14 +88,14 @@ function Frame({ kind, children, label }: { kind: ArtKind; children: React.React
   );
 }
 
-function Expansion() {
+function Expansion({ t }: { t: ArtText }) {
   const spots = [
     { x: 150, y: 120, score: 47 },
     { x: 330, y: 250, score: 64 },
     { x: 250, y: 170, score: 82, best: true },
   ];
   return (
-    <Frame kind="expansion" label="Tres ubicaciones candidatas comparadas; una destaca con la mejor puntuación">
+    <Frame kind="expansion" label={t.expansion}>
       {spots.map((s) => (
         <g key={s.score} className={s.best ? "pulse-group" : undefined}>
           <circle cx={s.x} cy={s.y} r={s.best ? 62 : 44} fill={s.best ? BLUE : INK} fillOpacity={s.best ? 0.16 : 0.04} stroke={s.best ? SIGNAL : INK} strokeOpacity={s.best ? 0.9 : 0.25} strokeDasharray="4 4" />
@@ -63,7 +110,7 @@ function Expansion() {
   );
 }
 
-function Network() {
+function Network({ t }: { t: ArtText }) {
   const r = mulberry32(3);
   const stores = Array.from({ length: 11 }, (_, i) => ({
     x: 50 + r() * 380,
@@ -72,7 +119,7 @@ function Network() {
     low: i === 2 || i === 7,
   }));
   return (
-    <Frame kind="network" label="Red de tiendas con dos puntos de venta por debajo del potencial de su zona">
+    <Frame kind="network" label={t.network}>
       {stores.map((s, i) => (
         <g key={i}>
           <circle cx={s.x} cy={s.y} r={8 + s.perf * 16} fill={s.low ? SPEND : BLUE} fillOpacity={s.low ? 0.22 : 0.3} />
@@ -84,7 +131,7 @@ function Network() {
   );
 }
 
-function Campaign() {
+function Campaign({ t }: { t: ArtText }) {
   const size = 28;
   const hexes: { x: number; y: number; v: number }[] = [];
   const h = Math.sqrt(3) * size;
@@ -103,7 +150,7 @@ function Campaign() {
       return `${(x + Math.cos(a) * (size - 2)).toFixed(1)},${(y + Math.sin(a) * (size - 2)).toFixed(1)}`;
     }).join(" ");
   return (
-    <Frame kind="campaign" label="Zonas hexagonales coloreadas según potencial para una campaña">
+    <Frame kind="campaign" label={t.campaign}>
       {hexes.map((c, i) => (
         <polygon
           key={i}
@@ -120,28 +167,28 @@ function Campaign() {
   );
 }
 
-function Impact() {
+function Impact({ t }: { t: ArtText }) {
   const pts = [60, 62, 58, 61, 63, 60, 74, 88, 95, 92, 86, 84, 83, 85];
   const x = (i: number) => 40 + i * 30;
   const y = (v: number) => 300 - (v - 40) * 3.2;
   const d = pts.map((v, i) => `${i ? "L" : "M"}${x(i)} ${y(v)}`).join("");
   return (
-    <Frame kind="impact" label="Gráfico de visitas antes, durante y después de una campaña">
+    <Frame kind="impact" label={t.impact}>
       <rect x="0" y="0" width={VB_W} height={VB_H} fill="#0E0B1C" fillOpacity=".55" />
       <rect x={x(6) - 10} y="40" width={x(9) - x(6) + 20} height="270" fill={BLUE} fillOpacity=".14" />
       <text x={x(6) - 4} y="58" className="art__label" fill={SIGNAL}>
-        campaña
+        {t.campaignWord}
       </text>
       <line x1="40" x2="440" y1={y(61)} y2={y(61)} stroke={INK} strokeOpacity=".3" strokeDasharray="3 5" />
       <path d={d} className="draw" pathLength={1} fill="none" stroke={SPEND} strokeWidth="3" strokeLinejoin="round" />
       <text x="44" y={y(61) - 8} className="art__label" fill="rgba(236,237,247,.6)">
-        periodo normal
+        {t.normal}
       </text>
     </Frame>
   );
 }
 
-function Influence() {
+function Influence({ t }: { t: ArtText }) {
   const r = mulberry32(9);
   const origins = Array.from({ length: 14 }, () => {
     const a = r() * Math.PI * 2;
@@ -149,7 +196,7 @@ function Influence() {
     return { x: 240 + Math.cos(a) * d * 1.3, y: 180 + Math.sin(a) * d * 0.8, w: 0.3 + r() * 0.7 };
   });
   return (
-    <Frame kind="influence" label="Flujos de visitantes desde distintos barrios hacia un centro comercial">
+    <Frame kind="influence" label={t.influence}>
       <ellipse cx="240" cy="180" rx="210" ry="130" fill={BLUE} fillOpacity=".06" stroke={SIGNAL} strokeOpacity=".4" strokeDasharray="4 6" />
       <ellipse cx="240" cy="180" rx="120" ry="75" fill={BLUE} fillOpacity=".1" stroke={SIGNAL} strokeOpacity=".5" strokeDasharray="4 6" />
       {origins.map((o, i) => {
@@ -167,7 +214,7 @@ function Influence() {
   );
 }
 
-function Axis() {
+function Axis({ t }: { t: ArtText }) {
   const city = getCity();
   const crop = CROPS.axis;
   const street = city.paths[0].points.map((p) => project(crop, p));
@@ -175,7 +222,7 @@ function Axis() {
   const r = mulberry32(5);
   const bars = street.filter((p) => p.x > 20 && p.x < 460 && p.y > 20 && p.y < 340);
   return (
-    <Frame kind="axis" label="Eje comercial con barras de gasto por tramo de calle">
+    <Frame kind="axis" label={t.axis}>
       <path d={d} fill="none" stroke={SIGNAL} strokeWidth="5" strokeLinecap="round" strokeOpacity=".8" />
       {bars.map((p, i) => {
         const h = 30 + r() * 90;
@@ -187,10 +234,10 @@ function Axis() {
   );
 }
 
-function EventArt() {
+function EventArt({ t }: { t: ArtText }) {
   const days = [42, 45, 40, 47, 44, 118, 96, 50, 46, 43];
   return (
-    <Frame kind="event" label="Visitantes por día con un pico el día del festival">
+    <Frame kind="event" label={t.event}>
       <rect x="0" y="0" width={VB_W} height={VB_H} fill="#0E0B1C" fillOpacity=".6" />
       {days.map((v, i) => {
         const h = v * 2.1;
@@ -200,25 +247,25 @@ function EventArt() {
         );
       })}
       <text x={48 + 5 * 40} y={318 - 118 * 2.1 - 10} className="art__label" fill={INK}>
-        festival
+        {t.festival}
       </text>
       <line x1="36" x2="444" y1="318" y2="318" stroke={INK} strokeOpacity=".25" />
     </Frame>
   );
 }
 
-function Pedestrian() {
+function Pedestrian({ t }: { t: ArtText }) {
   const r = mulberry32(12);
   const walkers = Array.from({ length: 36 }, () => ({ x: 250 + r() * 210, y: 150 + r() * 60 }));
   return (
-    <Frame kind="pedestrian" label="Una calle antes y después de peatonalizarla: menos coches y más peatones">
+    <Frame kind="pedestrian" label={t.pedestrian}>
       <rect x="20" y="150" width="440" height="60" fill={INK} fillOpacity=".05" />
       <line x1="240" x2="240" y1="40" y2="320" stroke={INK} strokeOpacity=".35" strokeDasharray="4 4" />
       <text x="40" y="70" className="art__label" fill="rgba(236,237,247,.7)">
-        antes
+        {t.before}
       </text>
       <text x="262" y="70" className="art__label" fill={SIGNAL}>
-        después
+        {t.after}
       </text>
       {[0, 1, 2, 3, 4, 5].map((i) => (
         <rect key={i} className="car" style={{ animationDelay: `${i * 0.5}s` }} x={30 + i * 34} y={i % 2 ? 188 : 164} width="18" height="8" rx="2" fill={INK} fillOpacity=".75" />
@@ -230,7 +277,7 @@ function Pedestrian() {
   );
 }
 
-function Tailored() {
+function Tailored({ t }: { t: ArtText }) {
   const city = getCity();
   const crop = CROPS.tailored;
   // Walking on a street grid: every block within 3 blocks (Manhattan distance)
@@ -245,9 +292,9 @@ function Tailored() {
   }
   const area = blockSet(crop, blocks);
   const o = project(crop, city.cells[cj * city.nx + ci].center);
-  const modes = ["A pie", "En coche", "Radio", "Área administrativa"];
+  const modes = t.modes;
   return (
-    <Frame kind="tailored" label="Área de influencia a pie alrededor de una ubicación, manzana a manzana, durante un periodo">
+    <Frame kind="tailored" label={t.tailored}>
       <path d={area.ground} fill={BLUE} fillOpacity=".22" />
       <path d={area.streets} stroke={SIGNAL} strokeOpacity=".45" strokeWidth="1.2" fill="none" />
       <path d={area.roofs} fill={SIGNAL} fillOpacity=".55" className="draw-soft" />
@@ -266,21 +313,21 @@ function Tailored() {
       <g transform="translate(16 318)">
         <rect width="150" height="26" rx="6" fill="#18142C" stroke={INK} strokeOpacity=".2" />
         <text x="12" y="17" className="art__label" fill={INK}>
-          periodo: 1 mes
+          {t.period}
         </text>
       </g>
     </Frame>
   );
 }
 
-function Focus() {
+function Focus({ t }: { t: ArtText }) {
   const crop = CROPS.focus;
   // Commercial areas as groups of blocks on the ground: two axes and two squares.
   const zones = [
-    { cells: [17, 17, 20, 17], tone: SIGNAL, label: "Eje 1" },
-    { cells: [21, 16, 22, 17], tone: INK, label: "Zona 2" },
-    { cells: [15, 20, 16, 21], tone: BLUE, label: "Zona 3" },
-    { cells: [14, 18, 17, 18], tone: SPEND, label: "Eje 4" },
+    { cells: [17, 17, 20, 17], tone: SIGNAL, label: t.zones[0] },
+    { cells: [21, 16, 22, 17], tone: INK, label: t.zones[1] },
+    { cells: [15, 20, 16, 21], tone: BLUE, label: t.zones[2] },
+    { cells: [14, 18, 17, 18], tone: SPEND, label: t.zones[3] },
   ].map((z) => ({ ...z, area: blockArea(crop, z.cells[0], z.cells[1], z.cells[2], z.cells[3]) }));
   const series = [
     [0.5, 0.52, 0.55, 0.6, 0.58, 0.64, 0.7, 0.68, 0.72, 0.75, 0.78, 0.8],
@@ -291,7 +338,7 @@ function Focus() {
   const cx = (i: number) => 40 + i * 36;
   const cy = (v: number) => 340 - v * 90;
   return (
-    <Frame kind="focus" label="Cuatro áreas comerciales sobre el plano y su evolución mensual durante un año">
+    <Frame kind="focus" label={t.focus}>
       {zones.map((z) => (
         <g key={z.label}>
           <path d={z.area.outline} fill={z.tone} fillOpacity=".16" />
@@ -316,7 +363,7 @@ function Focus() {
           style={{ animationDelay: `${k * 0.15}s` }}
         />
       ))}
-      {["E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"].map((m, i) => (
+      {t.months.map((m, i) => (
         <text key={i} x={cx(i)} y="354" textAnchor="middle" className="art__tick" fill="rgba(236,237,247,.45)">
           {m}
         </text>
@@ -325,27 +372,28 @@ function Focus() {
   );
 }
 
-export default function SolutionArt({ kind }: { kind: ArtKind }) {
+export default function SolutionArt({ kind, lang = "es" }: { kind: ArtKind; lang?: Lang }) {
+  const t = TEXT[lang];
   switch (kind) {
     case "expansion":
-      return <Expansion />;
+      return <Expansion t={t} />;
     case "network":
-      return <Network />;
+      return <Network t={t} />;
     case "campaign":
-      return <Campaign />;
+      return <Campaign t={t} />;
     case "impact":
-      return <Impact />;
+      return <Impact t={t} />;
     case "influence":
-      return <Influence />;
+      return <Influence t={t} />;
     case "axis":
-      return <Axis />;
+      return <Axis t={t} />;
     case "event":
-      return <EventArt />;
+      return <EventArt t={t} />;
     case "pedestrian":
-      return <Pedestrian />;
+      return <Pedestrian t={t} />;
     case "tailored":
-      return <Tailored />;
+      return <Tailored t={t} />;
     case "focus":
-      return <Focus />;
+      return <Focus t={t} />;
   }
 }

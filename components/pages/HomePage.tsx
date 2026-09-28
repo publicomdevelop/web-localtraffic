@@ -1,26 +1,22 @@
-import type { Metadata } from "next";
 import Hero from "@/components/Hero";
-import { pageMeta } from "@/lib/seo";
-import { SITE_DESCRIPTION } from "@/lib/site";
 import Approach from "@/components/Approach";
 import LayerStory from "@/components/LayerStory";
 import Services from "@/components/Services";
 import Campaigns from "@/components/Campaigns";
 import StudyTypes from "@/components/StudyTypes";
 import { Marquee, CtaBand } from "@/components/Bands";
+import type { Lang } from "@/lib/i18n";
 
-export const metadata: Metadata = pageMeta({ description: SITE_DESCRIPTION, path: "/" });
-
-export default function Home() {
+export default function HomePage({ lang }: { lang: Lang }) {
   return (
     <>
       <Hero />
       <Marquee />
-      <Approach />
+      <Approach lang={lang} />
       <LayerStory />
       <Services />
-      <Campaigns />
-      <StudyTypes />
+      <Campaigns lang={lang} />
+      <StudyTypes lang={lang} />
       <CtaBand />
     </>
   );

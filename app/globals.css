@@ -2930,6 +2930,40 @@ canvas {
   }
 }
 
+/* Language switch ---------------------------------------------------------- */
+
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono), monospace;
+  font-size: 13px;
+  color: var(--ink-3);
+  text-decoration: none;
+}
+
+.lang-switch .is-current {
+  color: var(--ink);
+}
+
+.lang-switch:hover span {
+  color: var(--ink);
+}
+
+.lang-switch__sep {
+  opacity: 0.5;
+}
+
+.mobile-menu .lang-switch {
+  font-size: 18px;
+}
+
+@media (max-width: 720px) {
+  .header__inner > .lang-switch {
+    display: none;
+  }
+}
+
 /* Reduced motion: everything is readable standing still ------------------- */
 
 @media (prefers-reduced-motion: reduce) {

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { langFromPath, route } from "@/lib/i18n";
 
 export const ZONE_KEY = "lt:zona";
 
@@ -31,7 +32,9 @@ export default function AskBar() {
     return () => io.disconnect();
   }, [path]);
 
-  const hidden = covered || path === "/contacto";
+  const lang = langFromPath(path);
+  const en = lang === "en";
+  const hidden = covered || path === route("contact", "es") || path === route("contact", "en");
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,13 +43,13 @@ export default function AskBar() {
     } catch {
       // Storage can be blocked; the form still opens, just without the zone filled in.
     }
-    router.push("/contacto");
+    router.push(route("contact", lang));
   };
 
   return (
     <form className={`askbar${hidden ? " is-hidden" : ""}`} onSubmit={onSubmit} aria-hidden={hidden || undefined}>
       <label htmlFor="askbar-input" className="sr-only">
-        ¿Qué zona quieres analizar?
+        {en ? "Which area do you want to analyse?" : "¿Qué zona quieres analizar?"}
       </label>
       <svg viewBox="0 0 40 52" width="14" height="18" aria-hidden="true" className="askbar__pin">
         <path d="M20 1C9.5 1 1 9.4 1 19.8c0 7.4 4.3 12.3 9.3 18.6L20 51l9.7-12.6c5-6.3 9.3-11.2 9.3-18.6C39 9.4 30.5 1 20 1Z" fill="#3340F5" />
@@ -56,11 +59,11 @@ export default function AskBar() {
         id="askbar-input"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        placeholder="¿Qué zona quieres analizar?"
+        placeholder={en ? "Which area do you want to analyse?" : "¿Qué zona quieres analizar?"}
         tabIndex={hidden ? -1 : 0}
       />
       <button type="submit" className="askbar__go" tabIndex={hidden ? -1 : 0}>
-        Pedir demo
+        {en ? "Book a demo" : "Pedir demo"}
       </button>
     </form>
   );

@@ -20,12 +20,13 @@ function Icon({ name }: { name: "instagram" | "linkedin" }) {
   );
 }
 
-export default function SocialLinks({ className = "social" }: { className?: string }) {
+export default function SocialLinks({ className = "social", lang = "es" }: { className?: string; lang?: "es" | "en" }) {
+  const newTab = lang === "en" ? "opens in a new tab" : "se abre en otra pestaña";
   return (
     <ul className={className}>
       {SOCIAL.map((s) => (
         <li key={s.href}>
-          <a href={s.href} target="_blank" rel="noopener noreferrer" aria-label={`${s.label} (se abre en otra pestaña)`}>
+          <a href={s.href} target="_blank" rel="noopener noreferrer" aria-label={`${s.label} (${newTab})`}>
             <Icon name={s.icon} />
           </a>
         </li>

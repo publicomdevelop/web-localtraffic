@@ -9,11 +9,13 @@ export default function PageHero({
   lede,
   crumbs = [],
   art,
+  lang = "es",
 }: {
   title: string;
   lede: string;
   crumbs?: Crumb[];
   art?: React.ReactNode;
+  lang?: "es" | "en";
 }) {
   return (
     <section className="page-hero band--grid">
@@ -23,7 +25,7 @@ export default function PageHero({
       <div className={`wrap page-hero__inner${art ? " page-hero__inner--art" : ""}`}>
         <div>
           {crumbs.length > 0 && (
-            <nav aria-label="Estás en" className="crumbs">
+            <nav aria-label={lang === "en" ? "You are here" : "Estás en"} className="crumbs">
               <ol>
                 {crumbs.map((c) => (
                   <li key={c.href}>
