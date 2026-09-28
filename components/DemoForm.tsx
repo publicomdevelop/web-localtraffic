@@ -2,11 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ZONE_KEY } from "@/components/AskBar";
+import PhonePrefix from "@/components/PhonePrefix";
 import { useLang } from "@/lib/useLang";
 import { route } from "@/lib/i18n";
 import {
   DEFAULT_PREFIX,
-  PREFIXES,
   formatPhone,
   maxDigits,
   validateDemo,
@@ -23,7 +23,7 @@ const COPY = {
     doneBody: "Te hemos enviado un correo de confirmación y te escribiremos en breve para concretar la demo.",
     book: "Elige ya día y hora",
     bookIntro: "¿Prefieres no esperar? Reserva directamente un hueco en nuestra agenda.",
-    name: "Nombre",
+    name: "Nombre completo",
     company: "Empresa o entidad",
     email: "Email",
     phone: "Teléfono",
@@ -48,7 +48,7 @@ const COPY = {
     doneBody: "We've sent you a confirmation email and will be in touch shortly to arrange the demo.",
     book: "Pick a day and time now",
     bookIntro: "Rather not wait? Book a slot in our calendar straight away.",
-    name: "Name",
+    name: "Full name",
     company: "Company or organisation",
     email: "Email",
     phone: "Phone",
@@ -269,22 +269,7 @@ export default function DemoForm() {
                   {t.phone} <span className="form__opt">{t.optional}</span>
                 </label>
                 <div className="phone">
-                  <label htmlFor="f-prefijo" className="sr-only">
-                    {t.prefix}
-                  </label>
-                  <select
-                    id="f-prefijo"
-                    className="phone__prefix"
-                    value={values.prefijo}
-                    onChange={(e) => onPrefix(e.target.value)}
-                    autoComplete="tel-country-code"
-                  >
-                    {PREFIXES.map((p) => (
-                      <option key={p.dial} value={p.dial}>
-                        {p.dial} {p[lang]}
-                      </option>
-                    ))}
-                  </select>
+                  <PhonePrefix value={values.prefijo} onChange={onPrefix} lang={lang} label={t.prefix} />
                   <input
                     {...field("telefono")}
                     className="phone__number"

@@ -1,28 +1,28 @@
 // Demo form rules, shared by the browser (inline errors) and the API (the
 // source of truth, since anyone can call it directly).
 
-export type PhonePrefix = { dial: string; es: string; en: string };
+export type PhonePrefix = { dial: string; iso: string; es: string; en: string };
 
 /** Spain first and selected by default; then nearby and common markets. */
 export const PREFIXES: PhonePrefix[] = [
-  { dial: "+34", es: "España", en: "Spain" },
-  { dial: "+376", es: "Andorra", en: "Andorra" },
-  { dial: "+351", es: "Portugal", en: "Portugal" },
-  { dial: "+33", es: "Francia", en: "France" },
-  { dial: "+39", es: "Italia", en: "Italy" },
-  { dial: "+49", es: "Alemania", en: "Germany" },
-  { dial: "+44", es: "Reino Unido", en: "United Kingdom" },
-  { dial: "+353", es: "Irlanda", en: "Ireland" },
-  { dial: "+32", es: "Bélgica", en: "Belgium" },
-  { dial: "+31", es: "Países Bajos", en: "Netherlands" },
-  { dial: "+41", es: "Suiza", en: "Switzerland" },
-  { dial: "+1", es: "EE. UU. / Canadá", en: "USA / Canada" },
-  { dial: "+52", es: "México", en: "Mexico" },
-  { dial: "+54", es: "Argentina", en: "Argentina" },
-  { dial: "+56", es: "Chile", en: "Chile" },
-  { dial: "+57", es: "Colombia", en: "Colombia" },
-  { dial: "+51", es: "Perú", en: "Peru" },
-  { dial: "+212", es: "Marruecos", en: "Morocco" },
+  { dial: "+34", iso: "ES", es: "España", en: "Spain" },
+  { dial: "+376", iso: "AD", es: "Andorra", en: "Andorra" },
+  { dial: "+351", iso: "PT", es: "Portugal", en: "Portugal" },
+  { dial: "+33", iso: "FR", es: "Francia", en: "France" },
+  { dial: "+39", iso: "IT", es: "Italia", en: "Italy" },
+  { dial: "+49", iso: "DE", es: "Alemania", en: "Germany" },
+  { dial: "+44", iso: "GB", es: "Reino Unido", en: "United Kingdom" },
+  { dial: "+353", iso: "IE", es: "Irlanda", en: "Ireland" },
+  { dial: "+32", iso: "BE", es: "Bélgica", en: "Belgium" },
+  { dial: "+31", iso: "NL", es: "Países Bajos", en: "Netherlands" },
+  { dial: "+41", iso: "CH", es: "Suiza", en: "Switzerland" },
+  { dial: "+1", iso: "US", es: "EE. UU. / Canadá", en: "USA / Canada" },
+  { dial: "+52", iso: "MX", es: "México", en: "Mexico" },
+  { dial: "+54", iso: "AR", es: "Argentina", en: "Argentina" },
+  { dial: "+56", iso: "CL", es: "Chile", en: "Chile" },
+  { dial: "+57", iso: "CO", es: "Colombia", en: "Colombia" },
+  { dial: "+51", iso: "PE", es: "Perú", en: "Peru" },
+  { dial: "+212", iso: "MA", es: "Marruecos", en: "Morocco" },
 ];
 
 export const DEFAULT_PREFIX = "+34";
@@ -38,7 +38,8 @@ export type Errors = Partial<Record<Field, string>>;
 
 const MSG = {
   es: {
-    nameReq: "Escribe tu nombre.",
+    nameReq: "Escribe tu nombre y apellido.",
+    nameFull: "Escribe nombre y apellido.",
     nameBad: "Usa solo letras, espacios, guiones o apóstrofos.",
     companyReq: "Escribe el nombre de tu empresa o entidad.",
     emailReq: "Escribe tu email.",
@@ -49,7 +50,8 @@ const MSG = {
     tooLong: "Es demasiado largo.",
   },
   en: {
-    nameReq: "Please enter your name.",
+    nameReq: "Please enter your first and last name.",
+    nameFull: "Please enter your first and last name.",
     nameBad: "Use letters, spaces, hyphens or apostrophes only.",
     companyReq: "Please enter your company or organisation.",
     emailReq: "Please enter your email.",
@@ -71,6 +73,7 @@ export function validateDemo(d: DemoInput, lang: "es" | "en" = "es"): Errors {
   if (!name) e.nombre = m.nameReq;
   else if (name.length > 80) e.nombre = m.tooLong;
   else if (!/^[\p{L}\p{M}][\p{L}\p{M}' .-]*$/u.test(name) || name.replace(/[^\p{L}]/gu, "").length < 2) e.nombre = m.nameBad;
+  else if (name.split(/\s+/).filter((w) => w.replace(/[^\p{L}]/gu, "").length >= 2).length < 2) e.nombre = m.nameFull;
 
   const company = d.empresa.trim();
   if (company.length < 2) e.empresa = m.companyReq;
