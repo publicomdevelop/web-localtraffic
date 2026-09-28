@@ -197,7 +197,7 @@ export class CityRenderer {
 
   private seedCars() {
     this.model.paths.forEach((path, pi) => {
-      const n = Math.round(path.length / 38);
+      const n = Math.round(path.length / 20);
       for (let i = 0; i < n; i++) {
         this.cars.push({
           path: pi,
@@ -352,7 +352,7 @@ export class CityRenderer {
         ctx.beginPath();
         cell.poly.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
         ctx.closePath();
-        ctx.fillStyle = `rgba(${BLUE}, ${(0.08 + cell.pop * 0.5) * L.publico})`;
+        ctx.fillStyle = `rgba(${BLUE}, ${(0.03 + Math.pow(cell.pop, 2.4) * 0.85) * L.publico})`;
         ctx.fill();
       });
     }
@@ -369,31 +369,48 @@ export class CityRenderer {
 
     if (L.trafico > 0.01) {
       ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      for (const path of model.paths) {
+        ctx.beginPath();
+        path.points.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+        ctx.strokeStyle = `rgba(${INK}, ${0.07 * L.trafico})`;
+        ctx.lineWidth = 12;
+        ctx.stroke();
+      }
       for (const c of this.cars) {
         const path = model.paths[c.path];
         const { p, dir } = pointOnPath(path, c.s);
         const nx = -dir.y * 3.2 * c.lane;
         const ny = dir.x * 3.2 * c.lane;
-        const len = 9 * c.lane;
+        const len = 16 * c.lane;
+        const tone = c.lane === 1 ? INK : "255, 120, 140";
         ctx.beginPath();
         ctx.moveTo(p.x + nx, p.y + ny);
         ctx.lineTo(p.x + nx - dir.x * len, p.y + ny - dir.y * len);
-        ctx.strokeStyle =
-          c.lane === 1 ? `rgba(${INK}, ${0.85 * L.trafico})` : `rgba(${SPEND}, ${0.45 * L.trafico})`;
-        ctx.lineWidth = 1.8;
+        ctx.strokeStyle = `rgba(${tone}, ${0.18 * L.trafico})`;
+        ctx.lineWidth = 6;
+        ctx.stroke();
+        ctx.strokeStyle = `rgba(${tone}, ${(c.lane === 1 ? 0.95 : 0.7) * L.trafico})`;
+        ctx.lineWidth = 2;
         ctx.stroke();
       }
     }
 
     if (L.movilidad > 0.01) {
-      ctx.fillStyle = `rgba(${SIGNAL}, ${0.9 * L.movilidad})`;
-      const r = Math.max(1.1, 1.6 / Math.sqrt(s));
+      const r = Math.max(1.7, 2.4 / Math.sqrt(s));
+      const glow = `rgba(${SIGNAL}, ${0.16 * L.movilidad})`;
+      const core = `rgba(${SIGNAL}, ${0.95 * L.movilidad})`;
       for (const w of this.walkers) {
         const e = model.edges[w.edge];
         const a = model.nodes[w.from];
         const b = model.nodes[w.from === e.a ? e.b : e.a];
         const x = a.x + (b.x - a.x) * w.t;
         const y = a.y + (b.y - a.y) * w.t;
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(x, y, r * 2.6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = core;
         ctx.beginPath();
         ctx.arc(x, y, r, 0, Math.PI * 2);
         ctx.fill();
