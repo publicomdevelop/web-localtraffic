@@ -45,7 +45,7 @@ export default function DemoForm() {
             Pide una demo con tu zona.
           </h2>
           <p className="section-lede">
-            Te enseñamos los datos de la calle, el barrio o el municipio que nos digas.
+            Te enseñamos un análisis de la ubicación, el barrio o el municipio que nos digas.
           </p>
           <ul className="demo__contact">
             <li>
@@ -89,16 +89,16 @@ export default function DemoForm() {
               <input
                 id="f-zona"
                 name="zona"
-                placeholder="Una calle, un barrio o un municipio"
+                placeholder="Una ubicación, un barrio o un municipio"
                 value={zona}
                 onChange={(e) => setZona(e.target.value)}
               />
             </div>
             <fieldset className="form__row form__choices">
-              <legend>Somos</legend>
-              {["Retail o marca", "Agencia de marketing", "Administración pública", "Otro"].map((o, i) => (
+              <legend>Te interesa</legend>
+              {["Tailored", "Focus", "On Demand", "Aún no lo sé"].map((o, i) => (
                 <label key={o} className="choice">
-                  <input type="radio" name="perfil" value={o} defaultChecked={i === 0} />
+                  <input type="radio" name="interes" value={o} defaultChecked={i === 3} />
                   <span>{o}</span>
                 </label>
               ))}

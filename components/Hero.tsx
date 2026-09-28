@@ -4,13 +4,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import CityCanvas from "@/components/city/CityCanvas";
 import AnimatedNumber from "@/components/AnimatedNumber";
 import { getCity, isochrone, zoneStats, UNITS_PER_100M, WORLD_W, WORLD_H, type Vec } from "@/lib/city/model";
-import type { CityRenderer, Layers, LayerKey } from "@/lib/city/renderer";
-import { formatEuros, formatInt, formatTicket } from "@/lib/format";
+import type { CityRenderer, Layers } from "@/lib/city/renderer";
+import { formatInt } from "@/lib/format";
 
-const LAYER_BUTTONS: { key: Exclude<LayerKey, "publico">; label: string }[] = [
+type Chip = "residentes" | "visitantes" | "consumo";
+
+const LAYER_BUTTONS: { key: Chip; label: string }[] = [
+  { key: "residentes", label: "Residentes" },
+  { key: "visitantes", label: "Visitantes" },
   { key: "consumo", label: "Consumo" },
-  { key: "movilidad", label: "Movilidad" },
-  { key: "trafico", label: "Tráfico" },
 ];
 
 const clampPin = (p: Vec): Vec => ({
@@ -20,10 +22,10 @@ const clampPin = (p: Vec): Vec => ({
 
 export default function Hero() {
   const [pin, setPin] = useState<Vec>({ x: 700, y: 470 });
-  const [on, setOn] = useState<Record<Exclude<LayerKey, "publico">, boolean>>({
+  const [on, setOn] = useState<Record<Chip, boolean>>({
+    residentes: false,
+    visitantes: true,
     consumo: true,
-    movilidad: true,
-    trafico: true,
   });
   const [narrow, setNarrow] = useState(false);
   const [touched, setTouched] = useState(false);
@@ -48,10 +50,10 @@ export default function Hero() {
 
   const layers: Layers = useMemo(
     () => ({
-      consumo: on.consumo ? 1 : 0,
-      movilidad: on.movilidad ? 0.9 : 0,
-      trafico: on.trafico ? 0.9 : 0,
-      publico: 0,
+      consumo: on.consumo ? 0.85 : 0,
+      movilidad: on.visitantes ? 0.9 : 0,
+      trafico: on.visitantes ? 0.7 : 0,
+      publico: on.residentes ? 0.8 : 0,
     }),
     [on],
   );
@@ -158,15 +160,15 @@ export default function Hero() {
           Datos que cambian decisiones.
         </h1>
         <p className="hero__lede">
-          Sabemos cuánto se gasta, quién pasa y cuántos coches circulan por cualquier calle. Lo convertimos en
-          respuestas para marcas, retailers y ayuntamientos.
+          Consultoría de datos geoespaciales con Inteligencia Humana. Reunimos todo lo que se puede saber de un
+          lugar, lo interpretamos y te decimos qué hacer: dónde abrir, qué zona impulsar o qué campaña activar.
         </p>
         <div className="hero__actions">
           <a className="btn btn--primary" href="#demo">
             Pedir demo
           </a>
-          <a className="btn btn--ghost" href="#datos">
-            Qué datos tenemos
+          <a className="btn btn--ghost" href="#enfoque">
+            Cómo trabajamos
           </a>
         </div>
       </div>
@@ -225,39 +227,52 @@ export default function Hero() {
             <span className="mono">10 min a pie</span>
             <span className="stats__note">desde el pin</span>
           </p>
-          <dl className="stats__list">
-            <div className="stats__row stats__row--consumo">
-              <dt>Gasto con tarjeta al mes</dt>
-              <dd>
-                <AnimatedNumber value={stats.gastoMes} format={formatEuros} />
-              </dd>
-            </div>
-            <div className="stats__row stats__row--consumo">
-              <dt>Ticket medio</dt>
-              <dd>
-                <AnimatedNumber value={stats.ticketMedio} format={formatTicket} />
-              </dd>
-            </div>
-            <div className="stats__row stats__row--movilidad">
-              <dt>Peatones al día</dt>
-              <dd>
-                <AnimatedNumber value={stats.peatonesDia} format={formatInt} />
-              </dd>
-            </div>
-            <div className="stats__row stats__row--trafico">
-              <dt>Vehículos al día</dt>
-              <dd>
-                <AnimatedNumber value={stats.cochesDia} format={formatInt} />
-              </dd>
-            </div>
-            <div className="stats__row stats__row--publico">
-              <dt>Residentes</dt>
-              <dd>
-                <AnimatedNumber value={stats.poblacion} format={formatInt} />
-              </dd>
-            </div>
-          </dl>
-          <p className="stats__foot">Ciudad ilustrada con datos de ejemplo. En la demo, los de tu zona.</p>
+          <div className="stats__group">
+            <p className="stats__label">Perfil del residente</p>
+            <dl className="stats__list">
+              <div className="stats__row stats__row--publico">
+                <dt>Residentes</dt>
+                <dd>
+                  <AnimatedNumber value={stats.residentes} format={formatInt} />
+                </dd>
+              </div>
+              <div className="stats__row stats__row--publico">
+                <dt>Renta por hogar</dt>
+                <dd>
+                  <AnimatedNumber value={stats.rentaHogar} format={(v) => `${formatInt(v)} €`} />
+                </dd>
+              </div>
+            </dl>
+          </div>
+          <div className="stats__group">
+            <p className="stats__label">Perfil del visitante</p>
+            <dl className="stats__list">
+              <div className="stats__row stats__row--movilidad">
+                <dt>Visitas al mes</dt>
+                <dd>
+                  <AnimatedNumber value={stats.visitasMes} format={formatInt} />
+                </dd>
+              </div>
+              <div className="stats__row stats__row--movilidad">
+                <dt>Tiempo medio de visita</dt>
+                <dd>
+                  <AnimatedNumber value={stats.minutosVisita} format={(v) => `${formatInt(v)} min`} />
+                </dd>
+              </div>
+            </dl>
+          </div>
+          <div className="stats__group">
+            <p className="stats__label">Origen del consumidor</p>
+            <dl className="stats__list">
+              <div className="stats__row stats__row--consumo">
+                <dt>Compran desde fuera de la zona</dt>
+                <dd>
+                  <AnimatedNumber value={stats.foraneos} format={(v) => `${formatInt(v)} %`} />
+                </dd>
+              </div>
+            </dl>
+          </div>
+          <p className="stats__foot">Ciudad ilustrada con datos de ejemplo. En la demo, tu zona real.</p>
         </aside>
       </div>
     </section>

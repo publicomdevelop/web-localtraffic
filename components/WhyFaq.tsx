@@ -1,23 +1,23 @@
 const REASONS = [
   {
-    title: "Consumo real, no estimado",
-    body: "Trabajamos con transacciones con tarjeta en comercios y venta física, no con encuestas ni modelos teóricos.",
+    title: "Interpretamos, no solo medimos",
+    body: "Cada análisis llega con una lectura clara: qué está pasando, por qué y qué te recomendamos hacer.",
   },
   {
-    title: "Al detalle de la calle",
-    body: "Los datos llegan a tramo de calle, no se quedan en el municipio o el código postal.",
+    title: "Muchas fuentes, una respuesta",
+    body: "Cruzamos datos públicos y privados para no depender de una sola mirada.",
   },
   {
-    title: "Todo en el mismo mapa",
-    body: "Fuentes públicas y privadas cruzadas, sin tener que juntar hojas de cálculo.",
+    title: "Experiencia sobre el terreno",
+    body: "Conocemos cómo funciona el comercio local y cómo se mueve una ciudad. Eso no sale en ningún dato.",
   },
   {
-    title: "Analistas, no solo un panel",
-    body: "Cada estudio lo prepara una persona que conoce el territorio y te explica qué significa cada dato.",
+    title: "Del análisis a la acción",
+    body: "Usamos los mismos datos para activar campañas y medir su efecto.",
   },
   {
     title: "Informes que se entienden",
-    body: "Pensados para presentarlos a dirección o en un pleno, no solo para expertos en datos.",
+    body: "Pensados para presentarlos y decidir, no solo para expertos en datos.",
   },
   {
     title: "Datos agregados y anónimos",
@@ -27,28 +27,28 @@ const REASONS = [
 
 const FAQ = [
   {
-    q: "¿De dónde salen los datos de consumo?",
-    a: "De transacciones con tarjeta en comercios y venta física, agregadas por zona, categoría de gasto y periodo.",
+    q: "¿Sois una herramienta?",
+    a: "No. Somos una consultoría: analizamos los datos por ti y te entregamos conclusiones y recomendaciones, no un programa que tengas que aprender a usar.",
+  },
+  {
+    q: "¿Qué es la Inteligencia Humana?",
+    a: "Es la parte que no hace ningún algoritmo: interpretar los datos con experiencia sobre el terreno y convertirlos en decisiones.",
+  },
+  {
+    q: "¿Qué diferencia hay entre Tailored, Focus y On Demand?",
+    a: "Tailored es una foto de una ubicación en un periodo. Focus sigue una o varias zonas mes a mes. On Demand es un análisis a medida para una pregunta concreta.",
   },
   {
     q: "¿Son datos personales?",
     a: "No. Todos los datos están agregados y anonimizados: no se puede identificar a ninguna persona.",
   },
   {
-    q: "¿Qué zonas podéis analizar?",
-    a: "Cualquier calle, barrio o municipio de España. En la demo lo vemos con la zona que te interese.",
-  },
-  {
-    q: "¿Tengo que instalar algo?",
-    a: "No. Recibes un informe y, si lo necesitas, acceso a un panel con tus zonas.",
-  },
-  {
-    q: "¿Trabajáis con administraciones públicas?",
-    a: "Sí. Ayuntamientos, cámaras de comercio y asociaciones de comerciantes nos encargan estudios para entender sus áreas comerciales y medir el efecto de sus acciones.",
+    q: "¿Podéis usar mis propios datos?",
+    a: "Sí. En los análisis On Demand podemos cruzar tus datos con los nuestros.",
   },
   {
     q: "¿Cómo es la demo?",
-    a: "Una videollamada en la que vemos datos reales de la zona que nos digas y hablamos de qué necesitas decidir.",
+    a: "Te enseñamos un análisis de la zona que nos digas y vemos qué servicio encaja con lo que necesitas decidir.",
   },
 ];
 

@@ -11,9 +11,9 @@ export function SiteHeader() {
           <Image src="/logo-localtraffic.png" alt="" width={148} height={32} priority />
         </a>
         <nav aria-label="Principal" className="header__nav">
-          <a href="#datos">Datos</a>
-          <a href="#soluciones">Soluciones</a>
-          <a href="#estudios">Estudios</a>
+          <a href="#enfoque">Enfoque</a>
+          <a href="#servicios">Servicios</a>
+          <a href="#campanas">Campañas</a>
         </nav>
         <a className="btn btn--primary btn--small" href="#demo">
           Pedir demo

@@ -3,7 +3,6 @@ import {
   type Isochrone,
   type Vec,
   mulberry32,
-  pickShop,
   pointOnPath,
 } from "./model";
 
@@ -19,7 +18,6 @@ const NIGHT = "#0E0B1C";
 
 type Walker = { edge: number; from: number; t: number; speed: number };
 type Car = { path: number; s: number; speed: number; lane: 1 | -1 };
-type Flash = { p: Vec; age: number; life: number; size: number };
 
 const BASE_SCALE = 1.6;
 
@@ -30,11 +28,10 @@ const BASE_SCALE = 1.6;
 export class CityRenderer {
   private ctx: CanvasRenderingContext2D;
   private base: HTMLCanvasElement;
-  private heat: HTMLCanvasElement;
+  private time = 0;
   private rand = mulberry32(7);
   private walkers: Walker[] = [];
   private cars: Car[] = [];
-  private flashes: Flash[] = [];
   private raf = 0;
   private last = 0;
   private running = false;
@@ -64,7 +61,6 @@ export class CityRenderer {
     this.layers = { ...options.layers };
     this.targetLayers = { ...options.layers };
     this.base = this.renderBase();
-    this.heat = this.renderHeat();
     this.seedWalkers(options.walkers);
     this.seedCars();
   }
@@ -110,7 +106,7 @@ export class CityRenderer {
       }
       cell.lots.forEach((lot, li) => {
         poly(lot);
-        const shade = 0.035 + ((ci * 7 + li * 3) % 5) * 0.008;
+        const shade = 0.04 + ((ci * 7 + li * 3) % 3) * 0.005;
         g.fillStyle = `rgba(${INK}, ${shade})`;
         g.fill();
       });
@@ -147,29 +143,6 @@ export class CityRenderer {
     // Shop fronts: tiny ticks along commercial streets.
     g.fillStyle = `rgba(${INK}, 0.22)`;
     model.shops.forEach((s) => g.fillRect(s.p.x - 1, s.p.y - 1, 2, 2));
-    return c;
-  }
-
-  private renderHeat(): HTMLCanvasElement {
-    const { model } = this;
-    const scale = 0.5;
-    const c = document.createElement("canvas");
-    c.width = Math.round(model.width * scale);
-    c.height = Math.round(model.height * scale);
-    const g = c.getContext("2d");
-    if (!g) return c;
-    g.scale(scale, scale);
-    g.globalCompositeOperation = "lighter";
-    model.shops.forEach((s) => {
-      const r = 34 + s.weight * 20;
-      const grd = g.createRadialGradient(s.p.x, s.p.y, 0, s.p.x, s.p.y, r);
-      grd.addColorStop(0, `rgba(${SPEND}, ${0.045 + s.weight * 0.075})`);
-      grd.addColorStop(1, `rgba(${SPEND}, 0)`);
-      g.fillStyle = grd;
-      g.beginPath();
-      g.arc(s.p.x, s.p.y, r, 0, Math.PI * 2);
-      g.fill();
-    });
     return c;
   }
 
@@ -275,6 +248,7 @@ export class CityRenderer {
   // --- simulation --------------------------------------------------------
 
   private step(dt: number) {
+    this.time += dt;
     const k = 1 - Math.exp(-dt * 3.2);
     (Object.keys(this.layers) as LayerKey[]).forEach((key) => {
       this.layers[key] += (this.targetLayers[key] - this.layers[key]) * k;
@@ -315,19 +289,6 @@ export class CityRenderer {
 
     for (const c of this.cars) c.s += c.speed * c.lane * dt;
 
-    if (this.layers.consumo > 0.05) {
-      const rate = 26 * this.layers.consumo;
-      let spawn = rate * dt;
-      while (spawn > 0) {
-        if (this.rand() < spawn) {
-          const shop = pickShop(model, this.rand());
-          this.flashes.push({ p: shop.p, age: 0, life: 1.1 + this.rand() * 0.6, size: 6 + shop.weight * 12 });
-        }
-        spawn -= 1;
-      }
-    }
-    for (const f of this.flashes) f.age += dt;
-    this.flashes = this.flashes.filter((f) => f.age < f.life);
   }
 
   // --- drawing -----------------------------------------------------------
@@ -357,13 +318,7 @@ export class CityRenderer {
       });
     }
 
-    if (L.consumo > 0.01) {
-      ctx.globalAlpha = L.consumo;
-      ctx.globalCompositeOperation = "lighter";
-      ctx.drawImage(this.heat, 0, 0, model.width, model.height);
-      ctx.globalCompositeOperation = "source-over";
-      ctx.globalAlpha = 1;
-    }
+    if (L.consumo > 0.01) this.drawSpendZones(L.consumo);
 
     if (this.iso) this.drawIsochrone(this.iso, s);
 
@@ -417,32 +372,6 @@ export class CityRenderer {
       }
     }
 
-    if (L.consumo > 0.01) {
-      for (const f of this.flashes) {
-        const t = f.age / f.life;
-        const alpha = (1 - t) * L.consumo;
-        ctx.beginPath();
-        ctx.arc(f.p.x, f.p.y, 1.5 + f.size * t, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(${SPEND}, ${alpha * 0.8})`;
-        ctx.lineWidth = 1.2;
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(f.p.x, f.p.y, 2.2, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 190, 160, ${alpha})`;
-        ctx.fill();
-      }
-      if (this.reducedMotion) {
-        // Static fallback: show the busiest shops as solid dots.
-        ctx.fillStyle = `rgba(${SPEND}, ${0.9 * L.consumo})`;
-        model.shops.forEach((shop) => {
-          if (shop.weight > 0.6) {
-            ctx.beginPath();
-            ctx.arc(shop.p.x, shop.p.y, 2.2, 0, Math.PI * 2);
-            ctx.fill();
-          }
-        });
-      }
-    }
     ctx.restore();
 
     // Soft vignette keeps the edges quiet behind overlaid UI.
@@ -460,6 +389,62 @@ export class CityRenderer {
     ctx.fillRect(0, 0, this.w, this.h);
 
     this.onFrame?.();
+  }
+
+  /** Card spending is known per postal code, so it is drawn as areas, not streets. */
+  private drawSpendZones(alpha: number) {
+    const { ctx, model } = this;
+    model.cells.forEach((cell) => {
+      const z = model.zones[cell.zone];
+      ctx.beginPath();
+      cell.quad.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+      ctx.closePath();
+      ctx.fillStyle = `rgba(${SPEND}, ${(0.03 + z.spend * z.spend * 0.42) * alpha})`;
+      ctx.fill();
+    });
+    ctx.beginPath();
+    for (const [a, b] of model.zoneBorders) {
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+    }
+    ctx.setLineDash([5, 5]);
+    ctx.strokeStyle = `rgba(${SPEND}, ${0.5 * alpha})`;
+    ctx.lineWidth = 1.3;
+    ctx.stroke();
+
+    // Where the spenders come from: flows from each postal area to the main hub.
+    const hub = model.hubs[0];
+    ctx.lineCap = "round";
+    ctx.setLineDash([7, 11]);
+    ctx.lineDashOffset = this.reducedMotion ? 0 : -this.time * 26;
+    model.zones.forEach((z) => {
+      if (!z.cells.length) return;
+      const dx = hub.x - z.centroid.x;
+      const dy = hub.y - z.centroid.y;
+      const d = Math.hypot(dx, dy);
+      if (d < 90) return;
+      const cx = (z.centroid.x + hub.x) / 2 - dy * 0.22;
+      const cy = (z.centroid.y + hub.y) / 2 + dx * 0.22;
+      ctx.beginPath();
+      ctx.moveTo(z.centroid.x, z.centroid.y);
+      ctx.quadraticCurveTo(cx, cy, hub.x, hub.y);
+      ctx.strokeStyle = `rgba(255, 170, 130, ${(0.25 + z.spend * 0.6) * alpha})`;
+      ctx.lineWidth = 1 + z.spend * 3;
+      ctx.stroke();
+    });
+    ctx.setLineDash([]);
+    ctx.lineDashOffset = 0;
+    model.zones.forEach((z) => {
+      if (!z.cells.length) return;
+      ctx.beginPath();
+      ctx.arc(z.centroid.x, z.centroid.y, 3.5, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${SPEND}, ${0.9 * alpha})`;
+      ctx.fill();
+    });
+    ctx.beginPath();
+    ctx.arc(hub.x, hub.y, 7, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 190, 160, ${alpha})`;
+    ctx.fill();
   }
 
   private drawIsochrone(iso: Isochrone, s: number) {

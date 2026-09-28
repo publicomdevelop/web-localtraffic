@@ -7,8 +7,8 @@ const line = (vals: number[], w = 220, h = 70) =>
 
 const STUDIES: Study[] = [
   {
-    title: "Impacto de una peatonalización",
-    body: "Peatones, vehículos y gasto antes y después del cambio, en la calle y en las de alrededor.",
+    title: "¿Qué ha cambiado desde la obra?",
+    body: "Antes y después de una peatonalización, una reforma o un cambio de movilidad, en la zona y a su alrededor.",
     chart: (
       <svg viewBox="0 0 220 70" aria-hidden="true">
         <path className="chart-line" pathLength={1} d={line([0.3, 0.32, 0.29, 0.31, 0.3, 0.55, 0.68, 0.72, 0.75, 0.74])} stroke="#8A92FF" />
@@ -18,8 +18,8 @@ const STUDIES: Study[] = [
     ),
   },
   {
-    title: "Impacto de un evento",
-    body: "Festivales, ferias o campañas comparados con un periodo normal: visitantes, origen y gasto.",
+    title: "¿Cuánta gente atrajo el evento?",
+    body: "Festivales, ferias o campañas comparados con un periodo normal: visitantes, origen y estancia.",
     chart: (
       <svg viewBox="0 0 220 70" aria-hidden="true">
         {[0.3, 0.32, 0.28, 0.34, 0.95, 0.8, 0.33, 0.3].map((v, i) => (
@@ -29,8 +29,8 @@ const STUDIES: Study[] = [
     ),
   },
   {
-    title: "Origen de los visitantes",
-    body: "De qué municipios y barrios llegan, cuánto se quedan y cuánto gastan según su procedencia.",
+    title: "¿De dónde viene quien compra aquí?",
+    body: "Qué áreas aportan visitantes y gasto, y cuánto pesa el cliente de fuera.",
     chart: (
       <svg viewBox="0 0 220 70" aria-hidden="true">
         {[1, 0.7, 0.45, 0.3, 0.18].map((v, i) => (
@@ -40,8 +40,8 @@ const STUDIES: Study[] = [
     ),
   },
   {
-    title: "Potencial de una ubicación",
-    body: "Qué puede facturar un local según el gasto, el tráfico y la competencia de su zona.",
+    title: "¿Tiene potencial esta ubicación?",
+    body: "Cómo es su entorno frente a otras opciones antes de tomar la decisión.",
     chart: (
       <svg viewBox="0 0 220 70" aria-hidden="true">
         <path d="M20 64a90 90 0 0 1 180 0" fill="none" stroke="#ECEDF7" strokeOpacity=".12" strokeWidth="10" strokeLinecap="round" />
@@ -56,7 +56,7 @@ export default function StudyTypes() {
     <section className="studies" aria-labelledby="studies-title">
       <div className="wrap">
         <h2 id="studies-title" className="section-title">
-          Estudios que hacemos
+          Preguntas que respondemos
         </h2>
         <ul className="studies__list">
           {STUDIES.map((s) => (

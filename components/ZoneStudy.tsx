@@ -2,19 +2,19 @@ import InView from "@/components/InView";
 import { MapCrop } from "@/components/illustrations/MapCrop";
 
 const INCLUDES = [
-  "Área de influencia a pie y en coche",
-  "Gasto con tarjeta por categoría y ticket medio",
-  "Peatones y vehículos por tramo de calle",
-  "Perfil y origen de quienes la visitan",
-  "Comparativa con otras zonas que elijas",
+  "Área de influencia a pie, en coche o a medida",
+  "Perfil del residente",
+  "Perfil del visitante: visitas, horarios y estancia",
+  "Origen del consumidor",
+  "Nuestra lectura: qué significa y qué haríamos",
 ];
 
-const CATEGORIES = [
-  { label: "Alimentación", v: 0.92 },
-  { label: "Restauración", v: 0.74 },
-  { label: "Moda", v: 0.58 },
-  { label: "Hogar", v: 0.36 },
-  { label: "Salud", v: 0.28 },
+const DURATION = [
+  { label: "0-29 min", v: 0.9 },
+  { label: "30-59 min", v: 0.42 },
+  { label: "60-89 min", v: 0.24 },
+  { label: "90-119 min", v: 0.16 },
+  { label: "120+ min", v: 0.3 },
 ];
 
 const WEEK = [0.52, 0.48, 0.55, 0.6, 0.78, 1, 0.66];
@@ -28,8 +28,8 @@ export default function ZoneStudy() {
             Tu zona, en una demo.
           </h2>
           <p className="section-lede">
-            Dinos una calle, un barrio o un municipio. En la demo te enseñamos lo que vemos en ella con datos reales, no
-            con un ejemplo.
+            Dinos una ubicación, un barrio o un municipio. En la demo te enseñamos lo que vemos en ella con datos
+            reales, no con un ejemplo.
           </p>
           <ul className="checklist">
             {INCLUDES.map((i) => (
@@ -45,7 +45,7 @@ export default function ZoneStudy() {
           <div className="report__sheet report__sheet--back" aria-hidden="true" />
           <div className="report__sheet">
             <header className="report__head">
-              <span className="mono">Estudio de zona</span>
+              <span className="mono">Perfil del visitante</span>
               <span className="report__tag">Ejemplo</span>
             </header>
             <svg viewBox="0 0 480 200" className="report__map" aria-hidden="true">
@@ -58,23 +58,23 @@ export default function ZoneStudy() {
             </svg>
             <dl className="report__kpis">
               <div>
-                <dt>Gasto mensual</dt>
-                <dd>1,8 M€</dd>
+                <dt>Visitas en el mes</dt>
+                <dd>96.400</dd>
               </div>
               <div>
-                <dt>Ticket medio</dt>
-                <dd>27 €</dd>
+                <dt>Tiempo medio</dt>
+                <dd>52 min</dd>
               </div>
               <div>
-                <dt>Peatones/día</dt>
-                <dd>9.400</dd>
+                <dt>Edad media</dt>
+                <dd>43 años</dd>
               </div>
             </dl>
             <div className="report__charts">
               <div>
-                <p className="report__label">Gasto por categoría</p>
+                <p className="report__label">Duración de la visita</p>
                 <ul className="hbars">
-                  {CATEGORIES.map((c, i) => (
+                  {DURATION.map((c, i) => (
                     <li key={c.label}>
                       <span>{c.label}</span>
                       <span className="hbars__track">
@@ -88,7 +88,7 @@ export default function ZoneStudy() {
                 </ul>
               </div>
               <div>
-                <p className="report__label">Gasto por día</p>
+                <p className="report__label">Visitas por día</p>
                 <div className="vbars" aria-hidden="true">
                   {WEEK.map((v, i) => (
                     <span

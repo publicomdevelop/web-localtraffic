@@ -1,5 +1,5 @@
 import { MapCrop, project, VB_H, VB_W, type Crop } from "./MapCrop";
-import { getCity, mulberry32 } from "@/lib/city/model";
+import { getCity, isochrone, mulberry32 } from "@/lib/city/model";
 
 export type ArtKind =
   | "expansion"
@@ -9,7 +9,9 @@ export type ArtKind =
   | "influence"
   | "axis"
   | "event"
-  | "pedestrian";
+  | "pedestrian"
+  | "tailored"
+  | "focus";
 
 const CROPS: Record<ArtKind, Crop> = {
   expansion: { cx: 760, cy: 500, k: 1.1 },
@@ -20,6 +22,8 @@ const CROPS: Record<ArtKind, Crop> = {
   axis: { cx: 700, cy: 470, k: 1.5 },
   event: { cx: 420, cy: 700, k: 1.1 },
   pedestrian: { cx: 700, cy: 470, k: 2 },
+  tailored: { cx: 1060, cy: 600, k: 1.25 },
+  focus: { cx: 800, cy: 520, k: 0.7 },
 };
 
 const BLUE = "#3340F5";
@@ -226,6 +230,91 @@ function Pedestrian() {
   );
 }
 
+function Tailored() {
+  const city = getCity();
+  const crop = CROPS.tailored;
+  const origin = { x: 1060, y: 600 };
+  const iso = isochrone(city, origin);
+  const poly = iso.polygon.map((p) => project(crop, p));
+  const d = poly.map((p, i) => `${i ? "L" : "M"}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join("") + "Z";
+  const segs = iso.segments
+    .map(([a, b]) => {
+      const pa = project(crop, a);
+      const pb = project(crop, b);
+      return `M${pa.x.toFixed(1)} ${pa.y.toFixed(1)}L${pb.x.toFixed(1)} ${pb.y.toFixed(1)}`;
+    })
+    .join("");
+  const o = project(crop, origin);
+  const modes = ["A pie", "En coche", "Radio", "Área administrativa"];
+  return (
+    <Frame kind="tailored" label="Área de influencia a pie alrededor de una ubicación durante un periodo">
+      <path d={d} fill={BLUE} fillOpacity=".18" stroke={SIGNAL} strokeDasharray="5 5" className="iso-grow" />
+      <path d={segs} stroke={SIGNAL} strokeOpacity=".75" strokeWidth="2" fill="none" strokeLinecap="round" className="draw-soft" />
+      <circle cx={o.x} cy={o.y} r="7" fill={BLUE} stroke={INK} strokeWidth="2" />
+      <g transform="translate(16 16)">
+        {modes.map((m, i) => (
+          <g key={m} transform={`translate(${[0, 62, 140, 196][i]} 0)`}>
+            <rect width={[54, 70, 48, 130][i]} height="24" rx="12" fill={i === 0 ? INK : "#18142C"} stroke={INK} strokeOpacity=".2" />
+            <text x={[54, 70, 48, 130][i] / 2} y="16" textAnchor="middle" className="art__chip" fill={i === 0 ? "#0E0B1C" : "rgba(236,237,247,.7)"}>
+              {m}
+            </text>
+          </g>
+        ))}
+      </g>
+      <g transform="translate(16 318)">
+        <rect width="150" height="26" rx="6" fill="#18142C" stroke={INK} strokeOpacity=".2" />
+        <text x="12" y="17" className="art__label" fill={INK}>
+          periodo: 1 mes
+        </text>
+      </g>
+    </Frame>
+  );
+}
+
+function Focus() {
+  const zones = [
+    { x: 120, y: 110, w: 80, h: 50 },
+    { x: 250, y: 90, w: 70, h: 60 },
+    { x: 330, y: 170, w: 90, h: 44 },
+    { x: 150, y: 190, w: 76, h: 48 },
+  ];
+  const series = [
+    [0.5, 0.52, 0.55, 0.6, 0.58, 0.64, 0.7, 0.68, 0.72, 0.75, 0.78, 0.8],
+    [0.62, 0.6, 0.58, 0.61, 0.6, 0.57, 0.55, 0.56, 0.54, 0.55, 0.53, 0.52],
+    [0.3, 0.33, 0.35, 0.34, 0.4, 0.46, 0.52, 0.6, 0.58, 0.61, 0.66, 0.7],
+    [0.42, 0.44, 0.43, 0.45, 0.44, 0.46, 0.45, 0.47, 0.48, 0.47, 0.49, 0.5],
+  ];
+  const tones = [SIGNAL, INK, SPEND, BLUE];
+  const cx = (i: number) => 40 + i * 36;
+  const cy = (v: number) => 340 - v * 90;
+  return (
+    <Frame kind="focus" label="Cuatro zonas comerciales y su evolución mensual durante un año">
+      <rect x="0" y="236" width={VB_W} height="124" fill="#0E0B1C" fillOpacity=".85" />
+      {zones.map((z, i) => (
+        <rect key={i} x={z.x} y={z.y} width={z.w} height={z.h} rx="8" fill={tones[i]} fillOpacity=".14" stroke={tones[i]} strokeOpacity=".8" strokeDasharray="4 4" />
+      ))}
+      {series.map((vals, k) => (
+        <path
+          key={k}
+          d={vals.map((v, i) => `${i ? "L" : "M"}${cx(i)} ${cy(v)}`).join("")}
+          fill="none"
+          stroke={tones[k]}
+          strokeWidth="2.2"
+          strokeLinejoin="round"
+          pathLength={1}
+          className="draw"
+          style={{ animationDelay: `${k * 0.15}s` }}
+        />
+      ))}
+      {["E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"].map((m, i) => (
+        <text key={i} x={cx(i)} y="354" textAnchor="middle" className="art__tick" fill="rgba(236,237,247,.45)">
+          {m}
+        </text>
+      ))}
+    </Frame>
+  );
+}
+
 export default function SolutionArt({ kind }: { kind: ArtKind }) {
   switch (kind) {
     case "expansion":
@@ -244,5 +333,9 @@ export default function SolutionArt({ kind }: { kind: ArtKind }) {
       return <EventArt />;
     case "pedestrian":
       return <Pedestrian />;
+    case "tailored":
+      return <Tailored />;
+    case "focus":
+      return <Focus />;
   }
 }

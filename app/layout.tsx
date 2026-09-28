@@ -6,9 +6,9 @@ const outfit = Outfit({ subsets: ["latin"], variable: "--font-sans", display: "s
 const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-mono", display: "swap" });
 
 export const metadata: Metadata = {
-  title: "localtraffic · Datos de consumo, movilidad y tráfico por calle",
+  title: "localtraffic · Datos que cambian decisiones",
   description:
-    "Datos de consumo con tarjeta, movilidad y tráfico a nivel de calle para retailers, marcas y ayuntamientos. Pide una demo con tu zona.",
+    "Consultoría de datos geoespaciales con Inteligencia Humana: perfil del residente, perfil del visitante y origen del consumidor para decidir y activar campañas.",
 };
 
 export const viewport: Viewport = { themeColor: "#0E0B1C" };
