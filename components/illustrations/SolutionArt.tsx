@@ -234,7 +234,7 @@ function Tailored() {
   const city = getCity();
   const crop = CROPS.tailored;
   const origin = { x: 1060, y: 600 };
-  const iso = isochrone(city, origin);
+  const iso = isochrone(city, origin, 260);
   const poly = iso.polygon.map((p) => project(crop, p));
   const d = poly.map((p, i) => `${i ? "L" : "M"}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join("") + "Z";
   const segs = iso.segments

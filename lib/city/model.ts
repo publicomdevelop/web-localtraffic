@@ -24,6 +24,8 @@ export type Cell = {
   pop: number;
   park: boolean;
   lots: Lot[];
+  /** Building height (screen px at zoom 1) for each lot, for the isometric extrusion. */
+  heights: number[];
   /** 0..1 household income, for the resident profile. */
   income: number;
   /** Index of the postal-code zone this block belongs to. */
@@ -59,8 +61,23 @@ export type CityModel = {
 
 export const WORLD_W = 1600;
 export const WORLD_H = 1000;
-/** World units per 100 m, used by the scale bar and the isochrone budget. */
-export const UNITS_PER_100M = 26;
+/** Ground units per 100 m, used by the scale bar, the catchment and the isochrone budget. */
+export const UNITS_PER_100M = 50;
+
+/**
+ * The city is drawn in isometric projection. A ground circle of radius R shows
+ * up as an ellipse with these semi-axis factors.
+ */
+const COS30 = Math.cos(Math.PI / 6);
+export const ISO_RX = Math.SQRT2 * COS30;
+export const ISO_RY = Math.SQRT2 * 0.5;
+
+/** Is `p` inside the ground circle of radius `r` around `c` (an ellipse on screen)? */
+export function inGroundCircle(p: Vec, c: Vec, r: number) {
+  const dx = (p.x - c.x) / (r * ISO_RX);
+  const dy = (p.y - c.y) / (r * ISO_RY);
+  return dx * dx + dy * dy <= 1;
+}
 
 export function mulberry32(seed: number) {
   let t = seed >>> 0;
@@ -120,14 +137,11 @@ export function getCity(): CityModel {
 
 function buildCity(seed: number): CityModel {
   const rand = mulberry32(seed);
-  const NX = 30;
-  const NY = 22;
-  const S = 72;
+  const NX = 40;
+  const NY = 40;
+  const S = 60;
   const cx = WORLD_W / 2;
   const cy = WORLD_H / 2;
-  const angle = -0.17;
-  const cos = Math.cos(angle);
-  const sin = Math.sin(angle);
   const hubs: Vec[] = [
     { x: 700, y: 470 },
     { x: 1070, y: 610 },
@@ -147,14 +161,15 @@ function buildCity(seed: number): CityModel {
   const nodes: Vec[] = [];
   for (let j = 0; j <= NY; j++) {
     for (let i = 0; i <= NX; i++) {
-      const wx = (i - NX / 2) * S + (rand() - 0.5) * 6;
-      const wy = (j - NY / 2) * S + (rand() - 0.5) * 6;
-      nodes.push({ x: cx + wx * cos - wy * sin, y: cy + wx * sin + wy * cos });
+      // Perfectly straight grid, projected isometrically.
+      const gx = (i - NX / 2) * S;
+      const gy = (j - NY / 2) * S;
+      nodes.push({ x: cx + (gx - gy) * COS30, y: cy + (gx + gy) * 0.5 });
     }
   }
 
-  const AV_ROWS = [5, 11, 17];
-  const AV_COLS = [7, 15, 23];
+  const AV_ROWS = [12, 20, 28];
+  const AV_COLS = [12, 20, 28];
   const edges: Edge[] = [];
   const addEdge = (a: number, b: number, avenue: boolean) => {
     const pa = nodes[a];
@@ -182,8 +197,8 @@ function buildCity(seed: number): CityModel {
   });
 
   const zoneSeeds: Vec[] = [];
-  for (let k = 0; k < 11; k++) {
-    zoneSeeds.push({ x: 140 + rand() * (WORLD_W - 280), y: 110 + rand() * (WORLD_H - 220) });
+  for (let k = 0; k < 16; k++) {
+    zoneSeeds.push({ x: 60 + rand() * (WORLD_W - 120), y: 40 + rand() * (WORLD_H - 80) });
   }
   zoneSeeds.push({ x: 720, y: 480 }, { x: 1060, y: 610 });
 
@@ -202,7 +217,9 @@ function buildCity(seed: number): CityModel {
         (0.25 + 0.75 * Math.exp(-(dCenter * dCenter) / (2 * 420 * 420))) * (0.55 + rand() * 0.45) + commerce * 0.15,
       );
       const lots: Lot[] = [];
-      if (!park) {
+      const heights: number[] = [];
+      const onScreen = center.x > -160 && center.x < WORLD_W + 160 && center.y > -160 && center.y < WORLD_H + 160;
+      if (!park && onScreen) {
         const splitsU = 1 + Math.floor(rand() * 3);
         const splitsV = 1 + Math.floor(rand() * 2);
         for (let a = 0; a < splitsU; a++) {
@@ -212,6 +229,7 @@ function buildCity(seed: number): CityModel {
             const v0 = lerp(m, 1 - m, b / splitsV) + 0.015;
             const v1 = lerp(m, 1 - m, (b + 1) / splitsV) - 0.015;
             lots.push([inset(u0, v0), inset(u1, v0), inset(u1, v1), inset(u0, v1)]);
+            heights.push(4 + commerce * 26 + rand() * 9);
           }
         }
       }
@@ -232,6 +250,7 @@ function buildCity(seed: number): CityModel {
         pop,
         park,
         lots,
+        heights,
         income,
         zone,
       });
@@ -275,7 +294,12 @@ function buildCity(seed: number): CityModel {
   });
 
   const zones: Zone[] = zoneSeeds.map(() => ({ centroid: { x: 0, y: 0 }, spend: 0, cells: [] }));
-  cells.forEach((c, k) => zones[c.zone].cells.push(k));
+  // Only blocks inside the visible city count towards an area's centre and spend.
+  cells.forEach((c, k) => {
+    if (c.center.x > -80 && c.center.x < WORLD_W + 80 && c.center.y > -80 && c.center.y < WORLD_H + 80) {
+      zones[c.zone].cells.push(k);
+    }
+  });
   zones.forEach((z) => {
     if (!z.cells.length) return;
     let x = 0;
@@ -432,15 +456,14 @@ export type ZoneStats = {
 };
 
 /** Example figures for the area around a point. Illustrative, not real data. */
-export function zoneStats(model: CityModel, origin: Vec, radius = UNITS_PER_100M * 7): ZoneStats {
-  const r2 = radius * radius;
-  const within = (p: Vec) => (p.x - origin.x) ** 2 + (p.y - origin.y) ** 2 <= r2;
+export function zoneStats(model: CityModel, origin: Vec, radius = UNITS_PER_100M * 5): ZoneStats {
+  const within = (p: Vec) => inGroundCircle(p, origin, radius);
   let pop = 0;
   let income = 0;
   let n = 0;
   model.cells.forEach((c) => {
     if (!within(c.center)) return;
-    pop += c.pop * 1150;
+    pop += c.pop * 520;
     income += c.income;
     n++;
   });
@@ -451,7 +474,7 @@ export function zoneStats(model: CityModel, origin: Vec, radius = UNITS_PER_100M
     const a = model.nodes[e.a];
     const b = model.nodes[e.b];
     if (!within({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 })) return;
-    visits += 900 + e.commerce * 21000;
+    visits += 420 + e.commerce * 9800;
     commerce += e.commerce;
     edges++;
   });

@@ -212,7 +212,6 @@ canvas {
 
 .header__nav {
   display: flex;
-  gap: 28px;
   margin-left: auto;
   font-size: 15px;
 }
@@ -2622,6 +2621,278 @@ canvas {
   }
 }
 
+/* Mega menu ---------------------------------------------------------------- */
+
+.header__links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.header__links a,
+.header__mega-toggle {
+  color: var(--ink-2);
+  text-decoration: none;
+}
+
+.header__mega-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.header__links a:hover,
+.header__mega-toggle:hover,
+.header__mega-toggle[aria-expanded="true"] {
+  color: var(--ink);
+}
+
+.header__mega-toggle svg {
+  transition: transform 0.25s var(--ease-out);
+}
+
+.header__mega-toggle[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+.header__mega-toggle[aria-current="page"] {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--blue);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 8px;
+}
+
+.mega {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 68px;
+  background: rgb(14 11 28 / 0.97);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--line-2);
+  box-shadow: 0 30px 60px rgb(0 0 0 / 0.5);
+}
+
+.mega.is-open {
+  animation: mega-in 0.3s var(--ease-out);
+}
+
+@keyframes mega-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+.mega__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 1.1fr);
+  gap: 48px;
+  padding: 32px 0 36px;
+}
+
+.mega__head {
+  font-family: var(--font-mono), monospace;
+  font-size: 13px;
+  color: var(--ink-3);
+  margin-bottom: 16px;
+}
+
+.mega__services ul {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.mega a {
+  color: var(--ink);
+}
+
+.mega .link-arrow {
+  color: var(--signal);
+}
+
+.mega__service {
+  display: block;
+  text-decoration: none;
+  border-radius: 14px;
+}
+
+.mega__thumb {
+  display: block;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid var(--line-2);
+  transition: border-color 0.2s;
+}
+
+.mega__thumb .art {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform 0.5s var(--ease-out);
+}
+
+.mega__service:hover .mega__thumb {
+  border-color: var(--signal);
+}
+
+.mega__service:hover .art {
+  transform: scale(1.04);
+}
+
+.mega__name,
+.mega__page {
+  display: block;
+  margin-top: 12px;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+.mega__tagline {
+  display: block;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+.mega__services .link-arrow {
+  margin-top: 20px;
+}
+
+.mega__side {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--line);
+  padding-left: 40px;
+}
+
+.mega__pages li + li {
+  margin-top: 8px;
+}
+
+.mega__pages a {
+  display: block;
+  text-decoration: none;
+}
+
+.mega__pages .mega__page {
+  margin-top: 0;
+}
+
+.mega__pages a:hover .mega__page {
+  color: var(--signal);
+}
+
+.mega__cta {
+  margin-top: 24px;
+  padding: 18px;
+  border-radius: 14px;
+  background: var(--layer);
+  border: 1px solid var(--line-2);
+}
+
+.mega__cta p {
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.mega .social {
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+/* Social ------------------------------------------------------------------- */
+
+.social {
+  display: flex;
+  gap: 10px;
+}
+
+.footer__brand .social {
+  margin-top: 20px;
+}
+
+.social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--line-2);
+  color: var(--ink-2);
+  transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+}
+
+.social a:hover {
+  color: #fff;
+  border-color: var(--blue);
+  background: var(--blue);
+}
+
+.mobile-menu .mobile-menu__sub {
+  padding-left: 20px;
+  font-size: 18px;
+  color: var(--ink-2);
+}
+
+.mobile-menu .social {
+  padding-top: 20px;
+}
+
+.mobile-menu .social a {
+  padding: 0;
+  border-bottom: 1px solid var(--line-2);
+  font-size: inherit;
+}
+
+@media (max-width: 720px) {
+  .mega {
+    display: none;
+  }
+}
+
+/* Page change -------------------------------------------------------------- */
+
+.curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+  background: var(--blue);
+  transform-origin: top;
+  animation: curtain 0.7s cubic-bezier(0.7, 0, 0.2, 1) both;
+}
+
+@keyframes curtain {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(0);
+  }
+}
+
+.page-enter {
+  animation: page-in 0.8s var(--ease-out) 0.25s backwards;
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+}
+
 /* Reduced motion: everything is readable standing still ------------------- */
 
 @media (prefers-reduced-motion: reduce) {
@@ -2636,6 +2907,9 @@ canvas {
   .pulse,
   .map__hint {
     animation: none !important;
+  }
+  .curtain {
+    display: none;
   }
   .draw {
     stroke-dashoffset: 0;

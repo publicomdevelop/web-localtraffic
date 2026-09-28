@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import NavLinks from "@/components/NavLinks";
+import SocialLinks from "@/components/Social";
 
 export const NAV = [
   { href: "/enfoque", label: "Enfoque" },
@@ -18,7 +19,7 @@ export function SiteHeader() {
         <Link href="/" className="header__logo" aria-label="localtraffic, inicio">
           <Image src="/logo-localtraffic.png" alt="" width={148} height={32} priority />
         </Link>
-        <NavLinks items={NAV} />
+        <NavLinks />
         <Link className="btn btn--primary btn--small" href="/contacto">
           Pedir demo
         </Link>
@@ -34,6 +35,7 @@ export function SiteFooter() {
         <div className="footer__brand">
           <Image src="/logo-localtraffic.png" alt="localtraffic" width={130} height={28} />
           <p className="footer__claim">Datos que cambian decisiones.</p>
+          <SocialLinks />
         </div>
         <nav aria-label="Pie de página" className="footer__nav">
           <p className="footer__head">Web</p>

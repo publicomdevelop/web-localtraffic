@@ -1,9 +1,4 @@
-import {
-  type CityModel,
-  type Vec,
-  mulberry32,
-  pointOnPath,
-} from "./model";
+import { type CityModel, type Vec, ISO_RX, ISO_RY, mulberry32, pointOnPath } from "./model";
 
 export type LayerKey = "consumo" | "movilidad" | "trafico" | "publico";
 export type Layers = Record<LayerKey, number>;
@@ -27,6 +22,8 @@ const BASE_SCALE = 1.6;
 export class CityRenderer {
   private ctx: CanvasRenderingContext2D;
   private base: HTMLCanvasElement;
+  private publicTint: HTMLCanvasElement;
+  private spendTint: HTMLCanvasElement;
   private time = 0;
   private rand = mulberry32(7);
   private walkers: Walker[] = [];
@@ -61,20 +58,38 @@ export class CityRenderer {
     this.layers = { ...options.layers };
     this.targetLayers = { ...options.layers };
     this.base = this.renderBase();
+    this.publicTint = this.renderTint("publico");
+    this.spendTint = this.renderTint("consumo");
     this.seedWalkers(options.walkers);
     this.seedCars();
   }
 
   // --- setup -------------------------------------------------------------
 
-  private renderBase(): HTMLCanvasElement {
+  private makeLayer(): [HTMLCanvasElement, CanvasRenderingContext2D | null] {
     const { model } = this;
     const c = document.createElement("canvas");
     c.width = Math.round(model.width * BASE_SCALE);
     c.height = Math.round(model.height * BASE_SCALE);
     const g = c.getContext("2d");
+    g?.scale(BASE_SCALE, BASE_SCALE);
+    return [c, g];
+  }
+
+  /** Every lot, back to front, so nearer buildings overlap the ones behind. */
+  private sortedLots() {
+    const out: { pts: Vec[]; h: number; cell: number }[] = [];
+    this.model.cells.forEach((cell, ci) => {
+      cell.lots.forEach((pts, li) => out.push({ pts, h: cell.heights[li], cell: ci }));
+    });
+    out.sort((a, b) => a.pts[2].y - b.pts[2].y);
+    return out;
+  }
+
+  private renderBase(): HTMLCanvasElement {
+    const { model } = this;
+    const [c, g] = this.makeLayer();
     if (!g) return c;
-    g.scale(BASE_SCALE, BASE_SCALE);
     g.fillStyle = NIGHT;
     g.fillRect(0, 0, model.width, model.height);
 
@@ -83,51 +98,101 @@ export class CityRenderer {
       pts.forEach((p, i) => (i ? g.lineTo(p.x, p.y) : g.moveTo(p.x, p.y)));
       g.closePath();
     };
+    const up = (p: Vec, h: number) => ({ x: p.x, y: p.y - h });
 
-    // Blocks: lots with slightly varied lightness read as buildings.
+    // Parks sit on the ground, dotted with trees.
     model.cells.forEach((cell, ci) => {
-      if (cell.park) {
-        poly(cell.poly);
-        g.fillStyle = `rgba(${SIGNAL}, 0.035)`;
+      if (!cell.park) return;
+      poly(cell.poly);
+      g.fillStyle = `rgba(${SIGNAL}, 0.04)`;
+      g.fill();
+      const r = mulberry32(ci + 11);
+      g.fillStyle = `rgba(${SIGNAL}, 0.18)`;
+      const q = cell.poly;
+      for (let k = 0; k < 22; k++) {
+        const u = 0.15 + r() * 0.7;
+        const v = 0.15 + r() * 0.7;
+        const x = q[0].x + (q[1].x - q[0].x) * u + (q[3].x - q[0].x) * v;
+        const y = q[0].y + (q[1].y - q[0].y) * u + (q[3].y - q[0].y) * v;
+        g.beginPath();
+        g.ellipse(x, y - 2, 2.2, 1.6, 0, 0, Math.PI * 2);
         g.fill();
-        const r = mulberry32(ci + 11);
-        g.fillStyle = `rgba(${SIGNAL}, 0.16)`;
-        for (let k = 0; k < 26; k++) {
-          const u = 0.15 + r() * 0.7;
-          const v = 0.15 + r() * 0.7;
-          const q = cell.poly;
-          const x = q[0].x + (q[1].x - q[0].x) * u + (q[3].x - q[0].x) * v;
-          const y = q[0].y + (q[1].y - q[0].y) * u + (q[3].y - q[0].y) * v;
-          g.beginPath();
-          g.arc(x, y, 1.2 + r() * 1.4, 0, Math.PI * 2);
-          g.fill();
-        }
-        return;
       }
-      cell.lots.forEach((lot, li) => {
-        poly(lot);
-        const shade = 0.04 + ((ci * 7 + li * 3) % 3) * 0.005;
-        g.fillStyle = `rgba(${INK}, ${shade})`;
-        g.fill();
-      });
     });
 
-    // Streets.
+    // Streets on the ground.
     g.lineCap = "round";
     model.edges.forEach((e) => {
       const a = model.nodes[e.a];
       const b = model.nodes[e.b];
+      if (Math.max(a.x, b.x) < -40 || Math.min(a.x, b.x) > model.width + 40) return;
+      if (Math.max(a.y, b.y) < -40 || Math.min(a.y, b.y) > model.height + 40) return;
       g.beginPath();
       g.moveTo(a.x, a.y);
       g.lineTo(b.x, b.y);
-      g.strokeStyle = e.avenue ? `rgba(${INK}, 0.16)` : `rgba(${INK}, 0.075)`;
-      g.lineWidth = e.avenue ? 3.2 : 1.2;
+      g.strokeStyle = e.avenue ? `rgba(${INK}, 0.18)` : `rgba(${INK}, 0.08)`;
+      g.lineWidth = e.avenue ? 3.4 : 1.2;
       g.stroke();
     });
 
-    // Shop fronts: tiny ticks along commercial streets.
-    g.fillStyle = `rgba(${INK}, 0.22)`;
-    model.shops.forEach((s) => g.fillRect(s.p.x - 1, s.p.y - 1, 2, 2));
+    // Buildings: isometric boxes. Top face lit, the two visible sides in shade.
+    for (const { pts, h } of this.sortedLots()) {
+      const [p0, p1, p2, p3] = pts;
+      poly([p1, p2, up(p2, h), up(p1, h)]);
+      g.fillStyle = "#1a1630";
+      g.fill();
+      poly([p2, p3, up(p3, h), up(p2, h)]);
+      g.fillStyle = "#141026";
+      g.fill();
+      poly([up(p0, h), up(p1, h), up(p2, h), up(p3, h)]);
+      g.fillStyle = "#231e3b";
+      g.fill();
+      g.strokeStyle = `rgba(${INK}, 0.07)`;
+      g.lineWidth = 0.6;
+      g.stroke();
+    }
+    return c;
+  }
+
+  /** Static tint of building roofs (residents) or of postal-code areas (spend). */
+  private renderTint(kind: "publico" | "consumo"): HTMLCanvasElement {
+    const { model } = this;
+    const [c, g] = this.makeLayer();
+    if (!g) return c;
+    const poly = (pts: Vec[]) => {
+      g.beginPath();
+      pts.forEach((p, i) => (i ? g.lineTo(p.x, p.y) : g.moveTo(p.x, p.y)));
+      g.closePath();
+    };
+    if (kind === "consumo") {
+      // Ground first, then the zone borders along the streets.
+      model.cells.forEach((cell) => {
+        const z = model.zones[cell.zone];
+        poly(cell.quad);
+        g.fillStyle = `rgba(${SPEND}, ${0.02 + z.spend * z.spend * 0.22})`;
+        g.fill();
+      });
+      g.beginPath();
+      for (const [a, b] of model.zoneBorders) {
+        g.moveTo(a.x, a.y);
+        g.lineTo(b.x, b.y);
+      }
+      g.setLineDash([5, 5]);
+      g.strokeStyle = `rgba(${SPEND}, 0.55)`;
+      g.lineWidth = 1.3;
+      g.stroke();
+      g.setLineDash([]);
+    }
+    for (const { pts, h, cell } of this.sortedLots()) {
+      const roof = pts.map((p) => ({ x: p.x, y: p.y - h }));
+      poly(roof);
+      const c0 = model.cells[cell];
+      g.fillStyle =
+        kind === "publico"
+          ? `rgba(${BLUE}, ${0.06 + Math.pow(c0.pop, 2.2) * 0.85})`
+          : `rgba(${SPEND}, ${0.03 + Math.pow(model.zones[c0.zone].spend, 2) * 0.5})`;
+      g.fill();
+    }
     return c;
   }
 
@@ -155,7 +220,7 @@ export class CityRenderer {
 
   private seedCars() {
     this.model.paths.forEach((path, pi) => {
-      const n = Math.round(path.length / 20);
+      const n = Math.round(path.length / 30);
       for (let i = 0; i < n; i++) {
         this.cars.push({
           path: pi,
@@ -294,13 +359,9 @@ export class CityRenderer {
     const L = this.layers;
 
     if (L.publico > 0.01) {
-      model.cells.forEach((cell) => {
-        ctx.beginPath();
-        cell.poly.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
-        ctx.closePath();
-        ctx.fillStyle = `rgba(${BLUE}, ${(0.03 + Math.pow(cell.pop, 2.4) * 0.85) * L.publico})`;
-        ctx.fill();
-      });
+      ctx.globalAlpha = L.publico;
+      ctx.drawImage(this.publicTint, 0, 0, model.width, model.height);
+      ctx.globalAlpha = 1;
     }
 
     if (L.consumo > 0.01) this.drawSpendZones(L.consumo);
@@ -379,23 +440,9 @@ export class CityRenderer {
   /** Card spending is known per postal code, so it is drawn as areas, not streets. */
   private drawSpendZones(alpha: number) {
     const { ctx, model } = this;
-    model.cells.forEach((cell) => {
-      const z = model.zones[cell.zone];
-      ctx.beginPath();
-      cell.quad.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
-      ctx.closePath();
-      ctx.fillStyle = `rgba(${SPEND}, ${(0.02 + z.spend * z.spend * 0.26) * alpha})`;
-      ctx.fill();
-    });
-    ctx.beginPath();
-    for (const [a, b] of model.zoneBorders) {
-      ctx.moveTo(a.x, a.y);
-      ctx.lineTo(b.x, b.y);
-    }
-    ctx.setLineDash([5, 5]);
-    ctx.strokeStyle = `rgba(${SPEND}, ${0.5 * alpha})`;
-    ctx.lineWidth = 1.3;
-    ctx.stroke();
+    ctx.globalAlpha = alpha;
+    ctx.drawImage(this.spendTint, 0, 0, model.width, model.height);
+    ctx.globalAlpha = 1;
 
     // Where the spenders come from: flows from each postal area to the main hub.
     const hub = model.hubs[0];
@@ -432,33 +479,37 @@ export class CityRenderer {
     ctx.fill();
   }
 
+  /** The pin's area of influence: a circle on the ground, so an ellipse on screen. */
   private drawCatchment(c: Vec, r: number, s: number) {
     const { ctx, model } = this;
-    ctx.beginPath();
-    ctx.arc(c.x, c.y, r, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(${BLUE}, 0.13)`;
+    const rx = r * ISO_RX;
+    const ry = r * ISO_RY;
+    const shape = () => {
+      ctx.beginPath();
+      ctx.ellipse(c.x, c.y, rx, ry, 0, 0, Math.PI * 2);
+    };
+    shape();
+    ctx.fillStyle = `rgba(${BLUE}, 0.14)`;
     ctx.fill();
 
-    // Streets inside the circle light up.
     ctx.save();
-    ctx.beginPath();
-    ctx.arc(c.x, c.y, r, 0, Math.PI * 2);
+    shape();
     ctx.clip();
     ctx.lineCap = "round";
-    ctx.strokeStyle = `rgba(${SIGNAL}, 0.5)`;
+    ctx.strokeStyle = `rgba(${SIGNAL}, 0.55)`;
     ctx.lineWidth = 2.2 / Math.sqrt(s);
     ctx.beginPath();
     for (const e of model.edges) {
       const a = model.nodes[e.a];
       const b = model.nodes[e.b];
+      if (Math.abs(a.x - c.x) > rx + 80 || Math.abs(a.y - c.y) > ry + 80) continue;
       ctx.moveTo(a.x, a.y);
       ctx.lineTo(b.x, b.y);
     }
     ctx.stroke();
     ctx.restore();
 
-    ctx.beginPath();
-    ctx.arc(c.x, c.y, r, 0, Math.PI * 2);
+    shape();
     ctx.setLineDash([6 / s, 5 / s]);
     ctx.strokeStyle = `rgba(${SIGNAL}, 0.9)`;
     ctx.lineWidth = 1.6 / s;

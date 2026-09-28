@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import CityCanvas from "@/components/city/CityCanvas";
 import AnimatedNumber from "@/components/AnimatedNumber";
-import { getCity, zoneStats, UNITS_PER_100M, WORLD_W, WORLD_H, type Vec } from "@/lib/city/model";
+import { getCity, zoneStats, ISO_RX, UNITS_PER_100M, WORLD_W, WORLD_H, type Vec } from "@/lib/city/model";
 import type { CityRenderer, Layers } from "@/lib/city/renderer";
 import { formatInt } from "@/lib/format";
 
@@ -15,8 +15,8 @@ const LAYER_BUTTONS: { key: Chip; label: string }[] = [
   { key: "consumo", label: "Consumo" },
 ];
 
-/** 800 m around the pin. */
-const RADIUS = UNITS_PER_100M * 8;
+/** 500 m around the pin, on the ground. */
+const RADIUS = UNITS_PER_100M * 5;
 
 const clampPin = (p: Vec): Vec => ({
   x: Math.min(WORLD_W - 140, Math.max(140, p.x)),
@@ -150,7 +150,7 @@ export default function Hero() {
       const r = renderer.current;
       if (!r) return;
       const a = r.worldToScreen({ x: 0, y: 0 });
-      const b = r.worldToScreen({ x: UNITS_PER_100M * 2, y: 0 });
+      const b = r.worldToScreen({ x: UNITS_PER_100M * 2 * ISO_RX, y: 0 });
       setBarPx(Math.round(b.x - a.x));
     }, 500);
     return () => window.clearInterval(id);
@@ -227,7 +227,7 @@ export default function Hero() {
 
         <aside className="stats" aria-live="polite" aria-label="Datos de la zona seleccionada">
           <p className="stats__head">
-            <span className="mono">Radio de 800 m</span>
+            <span className="mono">Radio de 500 m</span>
             <span className="stats__note">alrededor del pin</span>
           </p>
           <div className="stats__group">
