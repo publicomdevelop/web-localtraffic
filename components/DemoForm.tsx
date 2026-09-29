@@ -84,10 +84,12 @@ type BodyProps = {
   locationText: string;
   /** Location controls shown at the top of the form (page variant). */
   locationSlot?: React.ReactNode;
+  /** Called once the request has been sent. */
+  onSent?: () => void;
 };
 
 /** Demo request form: validation, phone prefix, and the chosen location + area. */
-export function DemoFormBody({ variant = "page", place, area, locationText, locationSlot }: BodyProps) {
+export function DemoFormBody({ variant = "page", place, area, locationText, locationSlot, onSent }: BodyProps) {
   const lang = useLang();
   const t = COPY[lang];
   const [status, setStatus] = useState<Status>("idle");
@@ -214,6 +216,7 @@ export function DemoFormBody({ variant = "page", place, area, locationText, loca
       });
       if (res.ok) {
         setStatus("sent");
+        onSent?.();
       } else {
         const body = (await res.json().catch(() => ({}))) as {
           error?: string;

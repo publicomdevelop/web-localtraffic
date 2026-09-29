@@ -42,6 +42,24 @@ export default function DemoDock() {
   const dock = useRef<HTMLFormElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const from = useRef<DOMRect | null>(null);
+  const closeTimer = useRef<number>();
+
+  const reset = () => {
+    setQuery("");
+    setPlace(null);
+    setArea(DEFAULT_AREA);
+  };
+
+  // After a successful request: show "Recibido" for 3 s, close, and start clean.
+  const onSent = () => {
+    window.clearTimeout(closeTimer.current);
+    closeTimer.current = window.setTimeout(() => {
+      setOpen(false);
+      reset();
+    }, 3000);
+  };
+
+  useEffect(() => () => window.clearTimeout(closeTimer.current), []);
 
   useEffect(() => {
     setCovered(false);
@@ -162,7 +180,7 @@ export default function DemoDock() {
                 <MapPreview place={place} area={area} lang={lang} />
               </div>
               <div className="dpanel__form">
-                <DemoFormBody variant="panel" place={place} area={area} locationText={query} />
+                <DemoFormBody variant="panel" place={place} area={area} locationText={query} onSent={onSent} />
               </div>
             </div>
           </div>

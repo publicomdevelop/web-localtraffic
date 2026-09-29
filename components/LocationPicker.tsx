@@ -75,6 +75,9 @@ export default function LocationPicker({ lang, query, onQuery, place, onPlace, a
   const [menu, setMenu] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
   const skipNext = useRef(false);
+  // Suggestions only open while the visitor is typing in this very field,
+  // never when the picker mounts with an address already chosen.
+  const focused = useRef(false);
 
   // Debounced search; stale requests are aborted.
   useEffect(() => {
@@ -82,8 +85,9 @@ export default function LocationPicker({ lang, query, onQuery, place, onPlace, a
       skipNext.current = false;
       return;
     }
-    if (!mapboxReady() || query.trim().length < 3) {
+    if (!mapboxReady() || query.trim().length < 3 || !focused.current || (place && query === place.address)) {
       setItems([]);
+      setOpen(false);
       return;
     }
     const ctrl = new AbortController();
@@ -92,7 +96,7 @@ export default function LocationPicker({ lang, query, onQuery, place, onPlace, a
         const found = await searchAddress(query, lang, ctrl.signal);
         setItems(found);
         setActive(-1);
-        setOpen(true);
+        if (focused.current) setOpen(true);
       } catch {
         // Aborted or offline: keep what we had.
       }
@@ -101,6 +105,7 @@ export default function LocationPicker({ lang, query, onQuery, place, onPlace, a
       window.clearTimeout(timer);
       ctrl.abort();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, lang]);
 
   useEffect(() => {
@@ -161,7 +166,13 @@ export default function LocationPicker({ lang, query, onQuery, place, onPlace, a
             onQuery(e.target.value);
             if (place) onPlace(null);
           }}
-          onFocus={() => items.length && setOpen(true)}
+          onFocus={() => {
+            focused.current = true;
+            if (items.length && !(place && query === place.address)) setOpen(true);
+          }}
+          onBlur={() => {
+            focused.current = false;
+          }}
           onKeyDown={onKey}
           maxLength={160}
         />
