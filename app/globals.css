@@ -4053,6 +4053,13 @@ canvas {
   }
 }
 
+/* In the two-column demo panel the form column is narrow: email and phone stack. */
+@media (max-width: 1240px) {
+  .dpanel .form__pair {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Reduced motion: everything is readable standing still ------------------- */
 
 @media (prefers-reduced-motion: reduce) {
