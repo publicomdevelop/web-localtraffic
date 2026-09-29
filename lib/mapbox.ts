@@ -34,6 +34,8 @@ export async function searchAddress(query: string, lang: "es" | "en", signal?: A
     language: lang,
     autocomplete: "true",
     limit: "5",
+    // Rank results near the visitor first (approximate location from the IP, done by Mapbox).
+    proximity: "ip",
     types: "address,street,neighborhood,locality,place,postcode",
     access_token: TOKEN,
   });

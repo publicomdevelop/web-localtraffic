@@ -157,7 +157,7 @@ const PRIVACY: Record<Lang, Doc> = {
       {
         title: "Qué datos tratamos",
         paragraphs: [
-          "Solo tratamos los datos que nos das tú. Si rellenas el formulario de demo: nombre, empresa o entidad, email, teléfono (opcional), la zona que te interesa y el servicio que te interesa. Si nos escribes por email o nos llamas, los datos que incluyas en tu mensaje. No tratamos categorías especiales de datos.",
+          "Solo tratamos los datos que nos das tú. Si rellenas el formulario de demo: nombre, empresa o entidad, email, teléfono (opcional), la dirección o zona que te interesa con su área de influencia (a pie, en coche o área administrativa) y el servicio que te interesa. Si nos escribes por email o nos llamas, los datos que incluyas en tu mensaje. No tratamos categorías especiales de datos.",
           "Si aceptas las cookies analíticas, Google Analytics recoge datos de navegación: páginas vistas, duración de la visita, tipo de dispositivo y navegador, ubicación aproximada (ciudad o país) e identificadores en línea asignados a tu navegador. No sirven para identificarte por tu nombre.",
           "Los datos que mostramos en la web sobre zonas, visitantes o consumo son agregados y anónimos y no permiten identificar a ninguna persona.",
         ],
@@ -191,6 +191,7 @@ const PRIVACY: Record<Lang, Doc> = {
         list: [
           "Vercel Inc., que aloja la web.",
           "Resend, que envía a nuestro buzón el correo con tu solicitud.",
+          "Mapbox, Inc., que busca la dirección que escribes, la sitúa en el mapa y calcula su área de influencia. Para ello recibe el texto de la búsqueda y la dirección IP de tu navegador.",
           "Google Ireland Limited, que presta el servicio de Google Analytics, solo si aceptas las cookies analíticas.",
         ],
       },
@@ -263,7 +264,7 @@ const PRIVACY: Record<Lang, Doc> = {
       {
         title: "What data we process",
         paragraphs: [
-          "We only process the data you give us. If you fill in the demo form: name, company or organisation, email, phone (optional), the area you are interested in and the service you are interested in. If you email or call us, whatever data you include in your message. We do not process special categories of data.",
+          "We only process the data you give us. If you fill in the demo form: name, company or organisation, email, phone (optional), the address or area you are interested in with its catchment area (on foot, by car or administrative) and the service you are interested in. If you email or call us, whatever data you include in your message. We do not process special categories of data.",
           "If you accept analytics cookies, Google Analytics collects browsing data: pages viewed, visit length, device and browser type, approximate location (city or country) and online identifiers assigned to your browser. It cannot identify you by name.",
           "The data we show on the website about areas, visitors or spending is aggregated and anonymous and cannot identify anyone.",
         ],
@@ -297,6 +298,7 @@ const PRIVACY: Record<Lang, Doc> = {
         list: [
           "Vercel Inc., which hosts the website.",
           "Resend, which delivers the email with your request to our inbox.",
+          "Mapbox, Inc., which looks up the address you type, places it on the map and works out its catchment area. To do so it receives the search text and your browser's IP address.",
           "Google Ireland Limited, which provides Google Analytics, only if you accept analytics cookies.",
         ],
       },
