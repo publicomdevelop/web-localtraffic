@@ -485,7 +485,7 @@ export class CityRenderer {
       ctx.beginPath();
       q.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
       ctx.closePath();
-      ctx.fillStyle = `rgba(255, 150, 110, ${0.28 * alpha})`;
+      ctx.fillStyle = `rgba(255, 150, 110, ${0.42 * alpha})`;
       ctx.fill();
     });
 
@@ -505,8 +505,8 @@ export class CityRenderer {
       ctx.beginPath();
       ctx.moveTo(z.centroid.x, z.centroid.y);
       ctx.quadraticCurveTo(cx, cy, hub.x, hub.y);
-      ctx.strokeStyle = `rgba(255, 170, 130, ${(0.25 + weight * 0.6) * alpha})`;
-      ctx.lineWidth = 1 + weight * 3.2;
+      ctx.strokeStyle = `rgba(255, 180, 140, ${(0.5 + weight * 0.5) * alpha})`;
+      ctx.lineWidth = 1.6 + weight * 4;
       ctx.stroke();
     });
     ctx.setLineDash([]);
