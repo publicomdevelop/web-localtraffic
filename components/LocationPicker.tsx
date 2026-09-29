@@ -75,9 +75,10 @@ export default function LocationPicker({ lang, query, onQuery, place, onPlace, a
   const [menu, setMenu] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
   const skipNext = useRef(false);
+  const fieldId = inputId ?? `${id}-q`;
   // Suggestions only open while the visitor is typing in this very field,
   // never when the picker mounts with an address already chosen.
-  const focused = useRef(false);
+  const isTyping = () => typeof document !== "undefined" && document.activeElement?.id === fieldId;
 
   // Debounced search; stale requests are aborted.
   useEffect(() => {
@@ -85,7 +86,7 @@ export default function LocationPicker({ lang, query, onQuery, place, onPlace, a
       skipNext.current = false;
       return;
     }
-    if (!mapboxReady() || query.trim().length < 3 || !focused.current || (place && query === place.address)) {
+    if (!mapboxReady() || query.trim().length < 3 || !isTyping() || (place && query === place.address)) {
       setItems([]);
       setOpen(false);
       return;
@@ -96,7 +97,7 @@ export default function LocationPicker({ lang, query, onQuery, place, onPlace, a
         const found = await searchAddress(query, lang, ctrl.signal);
         setItems(found);
         setActive(-1);
-        if (focused.current) setOpen(true);
+        if (isTyping()) setOpen(true);
       } catch {
         // Aborted or offline: keep what we had.
       }
@@ -147,12 +148,12 @@ export default function LocationPicker({ lang, query, onQuery, place, onPlace, a
   return (
     <div className={`loc${compact ? " loc--compact" : ""}${dropUp ? " loc--up" : ""}`} ref={wrap}>
       <div className="loc__field">
-        <label htmlFor={inputId ?? `${id}-q`} className="sr-only">
+        <label htmlFor={fieldId} className="sr-only">
           {t.label}
         </label>
         <input
           ref={inputRef}
-          id={inputId ?? `${id}-q`}
+          id={fieldId}
           className="loc__input"
           value={query}
           placeholder={t.placeholder}
@@ -167,11 +168,7 @@ export default function LocationPicker({ lang, query, onQuery, place, onPlace, a
             if (place) onPlace(null);
           }}
           onFocus={() => {
-            focused.current = true;
             if (items.length && !(place && query === place.address)) setOpen(true);
-          }}
-          onBlur={() => {
-            focused.current = false;
           }}
           onKeyDown={onKey}
           maxLength={160}
