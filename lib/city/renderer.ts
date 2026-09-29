@@ -450,36 +450,69 @@ export class CityRenderer {
   }
 
   /** Card spending is known per postal code, so it is drawn as areas, not streets. */
+  private destCache: { key: string; zone: number } | null = null;
+
+  /** Postal area under a point (nearest block), cached while the point doesn't move. */
+  private zoneAt(p: Vec) {
+    const key = `${Math.round(p.x)},${Math.round(p.y)}`;
+    if (this.destCache?.key === key) return this.destCache.zone;
+    let best = 0;
+    let bestD = Infinity;
+    this.model.cells.forEach((c) => {
+      const d = (c.center.x - p.x) ** 2 + (c.center.y - p.y) ** 2;
+      if (d < bestD) {
+        bestD = d;
+        best = c.zone;
+      }
+    });
+    this.destCache = { key, zone: best };
+    return best;
+  }
+
   private drawSpendZones(alpha: number) {
     const { ctx, model } = this;
     ctx.globalAlpha = alpha;
     ctx.drawImage(this.spendTint, 0, 0, model.width, model.height);
     ctx.globalAlpha = 1;
 
-    // Where the spenders come from: flows from each postal area to the main hub.
-    const hub = model.hubs[0];
+    // Spending flows into the pin when there is one (hero), otherwise into the
+    // main shopping hub. The destination postcode is highlighted.
+    const hub = this.catchment?.center ?? model.hubs[0];
+    const destZone = this.zoneAt(hub);
+    const dest = model.zones[destZone];
+    dest.cells.forEach((k) => {
+      const q = model.cells[k].quad;
+      ctx.beginPath();
+      q.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+      ctx.closePath();
+      ctx.fillStyle = `rgba(255, 150, 110, ${0.28 * alpha})`;
+      ctx.fill();
+    });
+
     ctx.lineCap = "round";
     ctx.setLineDash([7, 11]);
     ctx.lineDashOffset = this.reducedMotion ? 0 : -this.time * 26;
-    model.zones.forEach((z) => {
-      if (!z.cells.length) return;
+    model.zones.forEach((z, zi) => {
+      if (!z.cells.length || zi === destZone) return;
       const dx = hub.x - z.centroid.x;
       const dy = hub.y - z.centroid.y;
       const d = Math.hypot(dx, dy);
-      if (d < 90) return;
+      if (d < 60 || d > 900) return;
       const cx = (z.centroid.x + hub.x) / 2 - dy * 0.22;
       const cy = (z.centroid.y + hub.y) / 2 + dx * 0.22;
+      // Nearer and higher-spending areas send more.
+      const weight = z.spend * (1 - d / 1100);
       ctx.beginPath();
       ctx.moveTo(z.centroid.x, z.centroid.y);
       ctx.quadraticCurveTo(cx, cy, hub.x, hub.y);
-      ctx.strokeStyle = `rgba(255, 170, 130, ${(0.25 + z.spend * 0.6) * alpha})`;
-      ctx.lineWidth = 1 + z.spend * 3;
+      ctx.strokeStyle = `rgba(255, 170, 130, ${(0.25 + weight * 0.6) * alpha})`;
+      ctx.lineWidth = 1 + weight * 3.2;
       ctx.stroke();
     });
     ctx.setLineDash([]);
     ctx.lineDashOffset = 0;
-    model.zones.forEach((z) => {
-      if (!z.cells.length) return;
+    model.zones.forEach((z, zi) => {
+      if (!z.cells.length || zi === destZone) return;
       ctx.beginPath();
       ctx.arc(z.centroid.x, z.centroid.y, 3.5, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(${SPEND}, ${0.9 * alpha})`;

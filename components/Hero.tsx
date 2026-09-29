@@ -74,9 +74,9 @@ export default function Hero() {
   const formatInt = useMemo(() => intFormatter(lang), [lang]);
   const [pin, setPin] = useState<Vec>({ x: 700, y: 470 });
   const [on, setOn] = useState<Record<Chip, boolean>>({
-    residentes: false,
+    residentes: true,
     visitantes: true,
-    consumo: true,
+    consumo: false,
   });
   const [narrow, setNarrow] = useState(false);
   const [touched, setTouched] = useState(false);
