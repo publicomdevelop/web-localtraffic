@@ -85,3 +85,9 @@ Antes de presentarlo, repasa el plan y descarta si aparece cualquiera de estos t
 - Google Analytics 4 (`GA_ID` en `lib/site.ts`, `G-GPP24MSVBB`) solo se carga tras aceptar el banner (`components/CookieBanner.tsx`, `components/Analytics.tsx`, `lib/consent.ts`). No añadir scripts de terceros que pongan cookies sin pasar por ese consentimiento.
 - Si se añade cualquier cookie o herramienta nueva, actualizar la tabla de la Política de cookies y la de privacidad (`components/pages/LegalPage.tsx`).
 - Dirección para Google: Carrer Sant Antoni 2, 08800 Vilanova i la Geltrú (oficina, no la de facturación).
+
+## Tema claro / oscuro
+
+- La web arranca en oscuro; el conmutador (`components/ThemeToggle.tsx`, abajo a la derecha) permite pasar a claro y se recuerda por navegador (`lt:theme`).
+- No escribir colores fijos en CSS: usar los tokens de `:root` (`--ink`, `--ink-rgb`, `--layer`, `--night-rgb`, `--line`…), que cambian con `[data-theme="light"]`.
+- Mapas, ilustraciones y el bloque azul se quedan oscuros en ambos modos (ámbito oscuro en `globals.css`: `.map`, `.story__sticky`, `.mega__thumb`).
