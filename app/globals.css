@@ -4084,10 +4084,6 @@ canvas {
   font-size: 14px;
 }
 
-.dpanel--static .dpanel__label {
-  margin-top: 6px;
-}
-
 /* Reduced motion: everything is readable standing still ------------------- */
 
 @media (prefers-reduced-motion: reduce) {
