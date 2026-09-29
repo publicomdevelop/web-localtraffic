@@ -3,6 +3,7 @@ import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
 import AskBar from "@/components/AskBar";
 import Analytics from "@/components/Analytics";
 import CookieBanner from "@/components/CookieBanner";
+import ThemeToggle from "@/components/ThemeToggle";
 import JsonLd from "@/components/JsonLd";
 import { INDEXABLE, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import { organizationLd, websiteLd } from "@/lib/seo";
@@ -25,7 +26,15 @@ export const viewport: Viewport = { themeColor: "#0E0B1C" };
 /** The <html> shell shared by the Spanish and English root layouts. */
 export default function Document({ lang, children }: { lang: Lang; children: React.ReactNode }) {
   return (
-    <html lang={lang} className={`${outfit.variable} ${mono.variable}`}>
+    <html lang={lang} className={`${outfit.variable} ${mono.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Apply the saved light/dark choice before first paint, so there is no flash. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "try{var t=localStorage.getItem('lt:theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}",
+          }}
+        />
+      </head>
       <body>
         <JsonLd data={[organizationLd, websiteLd]} />
         <SiteHeader lang={lang} />
@@ -33,6 +42,7 @@ export default function Document({ lang, children }: { lang: Lang; children: Rea
         <SiteFooter lang={lang} />
         <AskBar />
         <CookieBanner />
+        <ThemeToggle />
         <Analytics />
       </body>
     </html>

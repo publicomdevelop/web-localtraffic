@@ -5,16 +5,61 @@
   --signal: #8a92ff;
   --ink: #ecedf7;
   --spend: #ff6b3d;
+  --error: #ffb199;
+  --error-line: #ff8a6b;
 
-  --ink-2: rgb(236 237 247 / 0.68);
-  --ink-3: rgb(236 237 247 / 0.45);
-  --line: rgb(236 237 247 / 0.1);
-  --line-2: rgb(236 237 247 / 0.18);
+  --ink-rgb: 236 237 247;
+  --night-rgb: 14 11 28;
+  --layer-rgb: 24 20 44;
+  --shadow: rgb(0 0 0 / 0.5);
+
+  --ink-2: rgb(var(--ink-rgb) / 0.68);
+  --ink-3: rgb(var(--ink-rgb) / 0.45);
+  --line: rgb(var(--ink-rgb) / 0.1);
+  --line-2: rgb(var(--ink-rgb) / 0.18);
 
   --radius: 14px;
   --gutter: clamp(16px, 4vw, 40px);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   color-scheme: dark;
+}
+
+/* Light version: same brand, light page. Maps and illustrations stay dark,
+   like product screens on paper (see the dark scope below). */
+:root[data-theme="light"] {
+  --night: #f4f4f8;
+  --layer: #ffffff;
+  --signal: #3340f5;
+  --ink: #1e1633;
+  --spend: #c2410c;
+  --error: #b42318;
+  --error-line: #d92d20;
+  --ink-rgb: 30 22 51;
+  --night-rgb: 244 244 248;
+  --layer-rgb: 255 255 255;
+  --shadow: rgb(30 22 51 / 0.14);
+  --ink-2: rgb(var(--ink-rgb) / 0.76);
+  --ink-3: rgb(var(--ink-rgb) / 0.62);
+  --line: rgb(var(--ink-rgb) / 0.1);
+  --line-2: rgb(var(--ink-rgb) / 0.16);
+  color-scheme: light;
+}
+
+/* Dark scope: everything drawn on top of the dark city keeps the dark palette. */
+:root[data-theme="light"] :is(.map, .story__sticky, .mega__thumb) {
+  --night: #0e0b1c;
+  --layer: #18142c;
+  --signal: #8a92ff;
+  --ink: #ecedf7;
+  --spend: #ff6b3d;
+  --ink-rgb: 236 237 247;
+  --night-rgb: 14 11 28;
+  --layer-rgb: 24 20 44;
+  --ink-2: rgb(var(--ink-rgb) / 0.68);
+  --ink-3: rgb(var(--ink-rgb) / 0.45);
+  --line: rgb(var(--ink-rgb) / 0.1);
+  --line-2: rgb(var(--ink-rgb) / 0.18);
+  color: var(--ink);
 }
 
 *,
@@ -195,7 +240,7 @@ canvas {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgb(14 11 28 / 0.78);
+  background: rgb(var(--night-rgb) / 0.78);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
@@ -363,7 +408,7 @@ canvas {
   padding: 0 14px;
   border-radius: 999px;
   border: 1px solid var(--line-2);
-  background: rgb(24 20 44 / 0.85);
+  background: rgb(var(--layer-rgb) / 0.85);
   color: var(--ink-3);
   font: inherit;
   font-size: 14px;
@@ -595,7 +640,7 @@ canvas {
 .story__progress li {
   padding: 5px 11px;
   border-radius: 999px;
-  background: rgb(24 20 44 / 0.8);
+  background: rgb(var(--layer-rgb) / 0.8);
   color: var(--ink-3);
   border: 1px solid var(--line);
   transition: color 0.3s, border-color 0.3s;
@@ -615,7 +660,7 @@ canvas {
   gap: 10px;
   padding: 8px 14px;
   border-radius: 999px;
-  background: rgb(24 20 44 / 0.85);
+  background: rgb(var(--layer-rgb) / 0.85);
   font-size: 14px;
   color: var(--ink-2);
 }
@@ -753,7 +798,7 @@ canvas {
   .story__card {
     padding: 20px;
     border-radius: var(--radius);
-    background: rgb(24 20 44 / 0.94);
+    background: rgb(var(--layer-rgb) / 0.94);
     border: 1px solid var(--line-2);
   }
 }
@@ -1498,7 +1543,7 @@ canvas {
 }
 
 .form__error {
-  color: #ffb199;
+  color: var(--error);
   font-size: 15px;
 }
 
@@ -1546,11 +1591,11 @@ canvas {
   width: min(520px, 100% - 32px);
   padding: 6px 6px 6px 16px;
   border-radius: 999px;
-  background: rgb(24 20 44 / 0.92);
+  background: rgb(var(--layer-rgb) / 0.92);
   border: 1px solid var(--line-2);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 16px 40px rgb(0 0 0 / 0.45);
+  box-shadow: 0 16px 40px var(--shadow);
   transform: translateX(-50%);
   transition: transform 0.4s var(--ease-out), opacity 0.3s;
 }
@@ -1923,7 +1968,7 @@ canvas {
   width: 70%;
   margin: -110px 0 0 auto;
   position: relative;
-  box-shadow: 0 20px 40px rgb(0 0 0 / 0.5);
+  box-shadow: 0 20px 40px var(--shadow);
 }
 
 @media (max-width: 900px) {
@@ -2026,8 +2071,8 @@ canvas {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background-image: linear-gradient(rgb(236 237 247 / 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(236 237 247 / 0.045) 1px, transparent 1px);
+  background-image: linear-gradient(rgb(var(--ink-rgb) / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--ink-rgb) / 0.045) 1px, transparent 1px);
   background-size: 72px 72px;
   -webkit-mask-image: radial-gradient(ellipse 70% 80% at 70% 40%, #000 20%, transparent 75%);
   mask-image: radial-gradient(ellipse 70% 80% at 70% 40%, #000 20%, transparent 75%);
@@ -2067,7 +2112,7 @@ canvas {
 
 .marquee__word--outline {
   color: transparent;
-  -webkit-text-stroke: 1.5px rgb(236 237 247 / 0.55);
+  -webkit-text-stroke: 1.5px rgb(var(--ink-rgb) / 0.55);
 }
 
 .marquee__pin {
@@ -2137,7 +2182,7 @@ canvas {
 
 .btn--light {
   background: #fff;
-  color: var(--night);
+  color: #0e0b1c;
 }
 
 .btn--light:hover {
@@ -2681,11 +2726,11 @@ canvas {
   left: 0;
   right: 0;
   top: 68px;
-  background: rgb(14 11 28 / 0.97);
+  background: rgb(var(--night-rgb) / 0.97);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--line-2);
-  box-shadow: 0 30px 60px rgb(0 0 0 / 0.5);
+  box-shadow: 0 30px 60px var(--shadow);
 }
 
 .mega.is-open {
@@ -3046,7 +3091,7 @@ canvas {
   border-radius: 18px;
   background: var(--layer);
   border: 1px solid var(--line-2);
-  box-shadow: 0 24px 60px rgb(0 0 0 / 0.55);
+  box-shadow: 0 24px 60px var(--shadow);
   animation: mega-in 0.3s var(--ease-out);
 }
 
@@ -3206,11 +3251,11 @@ canvas {
 
 .form__field-error {
   font-size: 14px;
-  color: #ffb199;
+  color: var(--error);
 }
 
 .form input[aria-invalid="true"] {
-  border-color: #ff8a6b;
+  border-color: var(--error-line);
 }
 
 .phone {
@@ -3267,7 +3312,7 @@ canvas {
   width: 22px;
   height: auto;
   border-radius: 3px;
-  box-shadow: 0 0 0 1px rgb(236 237 247 / 0.15);
+  box-shadow: 0 0 0 1px rgb(var(--ink-rgb) / 0.15);
   flex: none;
 }
 
@@ -3283,7 +3328,7 @@ canvas {
   border-radius: 14px;
   background: var(--layer);
   border: 1px solid var(--line-2);
-  box-shadow: 0 24px 50px rgb(0 0 0 / 0.55);
+  box-shadow: 0 24px 50px var(--shadow);
   animation: mega-in 0.2s var(--ease-out);
   scrollbar-width: thin;
 }
@@ -3494,6 +3539,73 @@ canvas {
   .legal__table td::before {
     content: attr(data-label) ": ";
     color: var(--ink-3);
+  }
+}
+
+/* Light theme details --------------------------------------------------------- */
+
+.logo--light {
+  display: none;
+}
+
+:root[data-theme="light"] .logo--dark {
+  display: none;
+}
+
+:root[data-theme="light"] .logo--light {
+  display: block;
+}
+
+/* The convergence diagram has no background of its own: give it a dark screen. */
+:root[data-theme="light"] .converge {
+  background: #0e0b1c;
+  border-radius: 20px;
+  padding: 12px;
+}
+
+/* Small inline charts drawn with the light ink colour. */
+:root[data-theme="light"] .study__chart [stroke="#ECEDF7"] {
+  stroke: var(--ink);
+}
+
+:root[data-theme="light"] .header {
+  box-shadow: 0 1px 0 var(--line);
+}
+
+.theme-toggle {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--line-2);
+  background: rgb(var(--layer-rgb) / 0.92);
+  color: var(--ink);
+  box-shadow: 0 10px 30px var(--shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: transform 0.2s var(--ease-out);
+}
+
+.theme-toggle:hover {
+  transform: translateY(-2px);
+}
+
+.has-cookie-banner .theme-toggle {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .theme-toggle {
+    right: 16px;
+    bottom: 84px;
+    width: 40px;
+    height: 40px;
   }
 }
 

@@ -73,7 +73,8 @@ export function SiteHeader({ lang = "es" }: { lang?: Lang }) {
       </a>
       <div className="header__inner wrap">
         <Link href={route("home", lang)} className="header__logo" aria-label={t.home}>
-          <Image src="/logo-localtraffic.png" alt="" width={148} height={32} priority />
+          <Image className="logo--dark" src="/logo-localtraffic.png" alt="" width={148} height={32} priority />
+          <Image className="logo--light" src="/logo-localtraffic-dark.png" alt="" width={148} height={32} priority />
         </Link>
         <NavLinks />
         <LangSwitch />
@@ -96,7 +97,8 @@ export function SiteFooter({ lang = "es" }: { lang?: Lang }) {
     <footer className="footer">
       <div className="wrap footer__inner">
         <div className="footer__brand">
-          <Image src="/logo-localtraffic.png" alt="localtraffic" width={130} height={28} />
+          <Image className="logo--dark" src="/logo-localtraffic.png" alt="localtraffic" width={130} height={28} />
+          <Image className="logo--light" src="/logo-localtraffic-dark.png" alt="localtraffic" width={130} height={28} />
           <p className="footer__claim">{t.claim}</p>
           <SocialLinks lang={lang} />
         </div>
