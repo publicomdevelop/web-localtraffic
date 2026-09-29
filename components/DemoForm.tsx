@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { ZONE_KEY } from "@/components/AskBar";
 import PhonePrefix from "@/components/PhonePrefix";
+import LocationPicker, { MapPreview } from "@/components/LocationPicker";
+import { DEFAULT_AREA, type Area, type Place } from "@/lib/location";
 import { useLang } from "@/lib/useLang";
 import { route } from "@/lib/i18n";
 import {
@@ -73,7 +75,19 @@ type Status = "idle" | "sending" | "sent" | "error";
 /** Optional scheduling link (Google Calendar, Cal.com, Calendly…), set in Vercel. */
 const BOOKING_URL = process.env.NEXT_PUBLIC_BOOKING_URL || "";
 
-export default function DemoForm() {
+type BodyProps = {
+  /** "page" for /contacto, "panel" inside the floating dock panel. */
+  variant?: "page" | "panel";
+  place: Place | null;
+  area: Area;
+  /** Free text of the address field (sent as "zona" even if no suggestion was picked). */
+  locationText: string;
+  /** Location controls shown at the top of the form (page variant). */
+  locationSlot?: React.ReactNode;
+};
+
+/** Demo request form: validation, phone prefix, and the chosen location + area. */
+export function DemoFormBody({ variant = "page", place, area, locationText, locationSlot }: BodyProps) {
   const lang = useLang();
   const t = COPY[lang];
   const [status, setStatus] = useState<Status>("idle");
@@ -97,6 +111,14 @@ export default function DemoForm() {
   };
 
   useEffect(() => {
+    setValues((v) => ({ ...v, zona: locationText.slice(0, 160) }));
+  }, [locationText]);
+
+  useEffect(() => {
+    if (variant === "panel") {
+      refs.nombre.current?.focus({ preventScroll: true });
+      return;
+    }
     try {
       const saved = sessionStorage.getItem(ZONE_KEY);
       if (saved) {
@@ -176,6 +198,18 @@ export default function DemoForm() {
           interes: form.get("interes"),
           web: form.get("web"),
           idioma: lang,
+          ...(place
+            ? {
+                direccion: place.address,
+                lng: place.lng,
+                lat: place.lat,
+                cp: place.postcode ?? "",
+                municipio: place.municipality ?? "",
+                modo: area.mode,
+                minutos: area.minutes,
+                admin: area.admin,
+              }
+            : {}),
         }),
       });
       if (res.ok) {
@@ -204,23 +238,7 @@ export default function DemoForm() {
   const hasErrors = Object.keys(errors).some((k) => touched[k as Field]);
 
   return (
-    <section id="demo" className="demo" data-hide-askbar aria-labelledby="demo-title">
-      <div className="wrap demo__grid">
-        <div className="demo__text">
-          <h1 id="demo-title" className="page-title">
-            {t.title}
-          </h1>
-          <p className="section-lede">{t.lede}</p>
-          <ul className="demo__contact">
-            <li>
-              <a href="tel:+34938148787">938 148 787</a>
-            </li>
-            <li>
-              <a href="mailto:hola@localtraffic.es">hola@localtraffic.es</a>
-            </li>
-          </ul>
-        </div>
-
+    <>
         {status === "sent" ? (
           <div className="form form--done" role="status">
             <p className="form__done-title">{t.done}</p>
@@ -235,7 +253,7 @@ export default function DemoForm() {
             )}
           </div>
         ) : (
-          <form className="form" onSubmit={onSubmit} noValidate>
+          <form className={`form${variant === "panel" ? " form--panel" : ""}`} onSubmit={onSubmit} noValidate>
             <div className="form__row">
               <label htmlFor="f-nombre">{t.name}</label>
               <input {...field("nombre")} autoComplete="name" maxLength={80} onChange={(e) => update("nombre", e.target.value)} />
@@ -283,16 +301,7 @@ export default function DemoForm() {
                 {errorFor("telefono")}
               </div>
             </div>
-            <div className="form__row">
-              <label htmlFor="f-zona">{t.zone}</label>
-              <input
-                {...field("zona")}
-                placeholder={t.zonePh}
-                maxLength={160}
-                onChange={(e) => update("zona", e.target.value)}
-              />
-              {errorFor("zona")}
-            </div>
+            {locationSlot}
             <fieldset className="form__row form__choices">
               <legend>{t.interest}</legend>
               {["Tailored", "Focus", "On Demand", t.notSure].map((o, i) => (
@@ -325,6 +334,58 @@ export default function DemoForm() {
             </p>
           </form>
         )}
+    </>
+  );
+}
+
+/** /contacto: heading, contact details and the form with its own location picker. */
+export default function DemoForm() {
+  const lang = useLang();
+  const t = COPY[lang];
+  const [query, setQuery] = useState("");
+  const [place, setPlace] = useState<Place | null>(null);
+  const [area, setArea] = useState<Area>(DEFAULT_AREA);
+
+  return (
+    <section id="demo" className="demo" data-hide-askbar aria-labelledby="demo-title">
+      <div className="wrap demo__grid">
+        <div className="demo__text">
+          <h1 id="demo-title" className="page-title">
+            {t.title}
+          </h1>
+          <p className="section-lede">{t.lede}</p>
+          <ul className="demo__contact">
+            <li>
+              <a href="tel:+34938148787">938 148 787</a>
+            </li>
+            <li>
+              <a href="mailto:hola@localtraffic.es">hola@localtraffic.es</a>
+            </li>
+          </ul>
+        </div>
+        <div className="demo__card">
+          <DemoFormBody
+            place={place}
+            area={area}
+            locationText={query}
+            locationSlot={
+              <div className="form__row">
+                <label htmlFor="f-zona">{t.zone}</label>
+                <LocationPicker
+                  lang={lang}
+                  inputId="f-zona"
+                  query={query}
+                  onQuery={setQuery}
+                  place={place}
+                  onPlace={setPlace}
+                  area={area}
+                  onArea={setArea}
+                />
+                {place && <MapPreview place={place} area={area} lang={lang} />}
+              </div>
+            }
+          />
+        </div>
       </div>
     </section>
   );

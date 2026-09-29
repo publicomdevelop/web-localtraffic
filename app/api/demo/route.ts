@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { confirmationEmail, internalEmail, type DemoRequest } from "@/lib/email";
 import { DEFAULT_PREFIX, validateDemo } from "@/lib/demoValidation";
+import { parseLocation } from "@/lib/location";
 
 const FIELDS = ["nombre", "empresa", "email", "telefono", "zona", "interes", "idioma"] as const;
 
@@ -65,12 +66,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "not-configured" }, { status: 500 });
   }
 
-  const team = internalEmail(data);
+  const location = parseLocation(body);
+  const team = internalEmail(data, location);
   const failed = await send(apiKey, { from: FROM, to: [TEAM], reply_to: data.email, subject: team.subject, html: team.html });
   if (failed) return NextResponse.json({ error: "send-failed", ...failed }, { status: 502 });
 
   // The request already reached the team; a failed confirmation is only logged.
-  const confirm = confirmationEmail(data, process.env.NEXT_PUBLIC_BOOKING_URL || undefined);
+  const confirm = confirmationEmail(data, process.env.NEXT_PUBLIC_BOOKING_URL || undefined, location);
   await send(apiKey, { from: FROM, to: [data.email], reply_to: TEAM, subject: confirm.subject, html: confirm.html });
 
   return NextResponse.json({ ok: true });

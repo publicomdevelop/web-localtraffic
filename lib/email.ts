@@ -1,4 +1,7 @@
 import { COMPANY, SITE_URL } from "@/lib/site";
+import { areaSummary, googleMapsUrl, mapUrl, type Area, type Place } from "@/lib/location";
+
+type Location = { place: Place; area: Area } | null;
 
 // Branded HTML emails for the demo form. Table layout and inline styles, the
 // only thing email clients (Outlook included) render reliably.
@@ -59,8 +62,26 @@ const LABELS: [keyof DemoRequest, string][] = [
   ["idioma", "Idioma de la web"],
 ];
 
+/** Map of the requested area (served by our /api/map, so no token travels in the email). */
+// `withAddress` is off in the confirmation: the address is free text sent by the
+// browser, so it is never echoed to an email address someone else may have typed.
+function locationBlock(loc: Location, lang: Lang, withAddress = true) {
+  if (!loc) return "";
+  const { place, area } = loc;
+  const summary = areaSummary(area, place, lang);
+  const title = withAddress ? `<p style="margin:0;font-size:15px;font-weight:bold;color:${INK};">${esc(place.address)}</p>` : "";
+  const open = lang === "en" ? "Open in Google Maps" : "Abrir en Google Maps";
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px;border:1px solid ${LINE};border-radius:12px;overflow:hidden;">
+<tr><td><img src="${esc(mapUrl(place, area, SITE_URL))}" width="536" alt="${esc(withAddress ? `${place.address} · ${summary}` : summary)}" style="display:block;width:100%;height:auto;border:0;"></td></tr>
+<tr><td style="padding:14px 16px;font-family:Helvetica,Arial,sans-serif;">
+${title}
+<p style="margin:4px 0 0;font-size:14px;color:${MUTED};">${esc(summary)}${place.postcode && area.mode !== "admin" ? ` · CP ${esc(place.postcode)}` : ""}</p>
+<p style="margin:8px 0 0;font-size:13px;"><a href="${esc(googleMapsUrl(place))}" style="color:${BLUE};">${open}</a></p>
+</td></tr></table>`;
+}
+
 /** Internal notification to the localtraffic team. */
-export function internalEmail(d: DemoRequest) {
+export function internalEmail(d: DemoRequest, loc: Location = null) {
   const rows = LABELS.map(
     ([k, label]) =>
       `<tr><td style="padding:10px 16px 10px 0;border-bottom:1px solid ${LINE};color:${MUTED};font-size:14px;white-space:nowrap;vertical-align:top;">${label}</td>` +
@@ -68,6 +89,7 @@ export function internalEmail(d: DemoRequest) {
   ).join("");
   const body = `<p style="margin:0 0 6px;font-size:13px;letter-spacing:.02em;color:${BLUE};font-weight:bold;">Nueva solicitud de demo</p>
 <h1 style="margin:0 0 20px;font-size:24px;line-height:1.2;color:${INK};">${esc(d.empresa)}${d.zona ? ` · ${esc(d.zona)}` : ""}</h1>
+${locationBlock(loc, "es")}
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows}</table>
 <p style="margin:20px 0 0;font-size:14px;color:${MUTED};">Responde a este correo para escribir directamente a ${esc(d.nombre)}.</p>`;
   return {
@@ -80,7 +102,7 @@ export function internalEmail(d: DemoRequest) {
  * Confirmation to the person who asked for the demo. It only echoes their first
  * name (trimmed, no links), so the form can't be used to send spam to others.
  */
-export function confirmationEmail(d: DemoRequest, bookingUrl?: string) {
+export function confirmationEmail(d: DemoRequest, bookingUrl?: string, loc: Location = null) {
   const lang: Lang = d.idioma === "en" ? "en" : "es";
   const first = (d.nombre.split(/\s+/)[0] || "").replace(/[^\p{L}\p{M}'-]/gu, "").slice(0, 30);
   const t =
@@ -94,6 +116,7 @@ export function confirmationEmail(d: DemoRequest, bookingUrl?: string) {
           book: "Pick a slot now",
           bookText: "If you'd rather not wait, you can book a slot in our calendar right away:",
           p3: "If you want to tell us anything beforehand, just reply to this email.",
+          areaIntro: "This is the area you asked us about:",
           sign: "The localtraffic team",
           ih: "Human Intelligence applied to geospatial data",
         }
@@ -106,6 +129,7 @@ export function confirmationEmail(d: DemoRequest, bookingUrl?: string) {
           book: "Elige día y hora",
           bookText: "Si prefieres no esperar, puedes reservar ya un hueco en nuestra agenda:",
           p3: "Si quieres adelantarnos algo, responde a este correo.",
+          areaIntro: "Esta es la zona que nos has pedido:",
           sign: "El equipo de localtraffic",
           ih: "Inteligencia Humana aplicada a los datos geoespaciales",
         };
@@ -113,6 +137,7 @@ export function confirmationEmail(d: DemoRequest, bookingUrl?: string) {
   const body = `<p style="margin:0 0 16px;">${t.hi}</p>
 <p style="margin:0 0 16px;">${t.p1}</p>
 <p style="margin:0;">${t.p2}</p>
+${loc ? `<p style="margin:20px 0 10px;">${t.areaIntro}</p>${locationBlock(loc, lang, false)}` : ""}
 ${booking}
 <p style="margin:20px 0 0;">${t.p3}</p>
 <p style="margin:28px 0 0;font-weight:bold;">${t.sign}</p>

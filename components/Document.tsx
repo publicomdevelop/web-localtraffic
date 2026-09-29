@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { SiteHeader, SiteFooter } from "@/components/SiteChrome";
-import AskBar from "@/components/AskBar";
+import DemoDock from "@/components/DemoDock";
 import Analytics from "@/components/Analytics";
 import CookieBanner from "@/components/CookieBanner";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -40,7 +40,7 @@ export default function Document({ lang, children }: { lang: Lang; children: Rea
         <SiteHeader lang={lang} />
         <main id="contenido">{children}</main>
         <SiteFooter lang={lang} />
-        <AskBar />
+        <DemoDock />
         <CookieBanner />
         <ThemeToggle />
         <Analytics />
