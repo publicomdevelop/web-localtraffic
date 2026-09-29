@@ -7,6 +7,7 @@ import LocationPicker, { MapPreview } from "@/components/LocationPicker";
 import { DEFAULT_AREA, type Area, type Place } from "@/lib/location";
 import { useLang } from "@/lib/useLang";
 import { route } from "@/lib/i18n";
+import PageHero from "@/components/PageHero";
 import {
   DEFAULT_PREFIX,
   formatPhone,
@@ -350,15 +351,21 @@ export default function DemoForm() {
   const [area, setArea] = useState<Area>(DEFAULT_AREA);
 
   return (
-    <section id="demo" className="demo" data-hide-askbar aria-labelledby="demo-title">
+    <>
+      <PageHero
+        lang={lang}
+        title={t.title}
+        lede={t.lede}
+        crumbs={[
+          { href: route("home", lang), label: lang === "en" ? "Home" : "Inicio" },
+          { href: route("contact", lang), label: t.submit },
+        ]}
+      />
+    <section id="demo" className="demo demo--page" data-hide-askbar aria-label={t.submit}>
       <div className="wrap">
         <div className="dpanel dpanel--static">
           <div className="dpanel__inner">
             <div className="dpanel__map">
-              <h1 id="demo-title" className="dpanel__title dpanel__title--page">
-                {t.title}
-              </h1>
-              <p className="dpanel__lede">{t.lede}</p>
               <label htmlFor="f-zona" className="dpanel__label">
                 {t.zone}
               </label>
@@ -389,5 +396,6 @@ export default function DemoForm() {
         </div>
       </div>
     </section>
+    </>
   );
 }

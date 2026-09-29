@@ -4060,6 +4060,34 @@ canvas {
   }
 }
 
+/* Contact page: title outside, map column matches the form height. */
+.demo--page {
+  padding-top: clamp(32px, 5vw, 56px);
+}
+
+.dpanel--static .dpanel__map {
+  display: flex;
+  flex-direction: column;
+}
+
+.dpanel--static .mapprev {
+  flex: 1;
+  min-height: 260px;
+  aspect-ratio: auto;
+}
+
+.dpanel--static .demo__contact {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.dpanel--static .dpanel__label {
+  margin-top: 6px;
+}
+
 /* Reduced motion: everything is readable standing still ------------------- */
 
 @media (prefers-reduced-motion: reduce) {
