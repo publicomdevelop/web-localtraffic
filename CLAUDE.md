@@ -91,3 +91,10 @@ Antes de presentarlo, repasa el plan y descarta si aparece cualquiera de estos t
 - La web arranca en oscuro; el conmutador (`components/ThemeToggle.tsx`, abajo a la derecha) permite pasar a claro y se recuerda por navegador (`lt:theme`).
 - No escribir colores fijos en CSS: usar los tokens de `:root` (`--ink`, `--ink-rgb`, `--layer`, `--night-rgb`, `--line`…), que cambian con `[data-theme="light"]`.
 - Mapas, ilustraciones y el bloque azul se quedan oscuros en ambos modos (ámbito oscuro en `globals.css`: `.map`, `.story__sticky`, `.mega__thumb`).
+
+## Demo con ubicación (Mapbox)
+
+- `NEXT_PUBLIC_MAPBOX_TOKEN` (token público `pk.` restringido a nuestros dominios) en Vercel.
+- Barra flotante `components/DemoDock.tsx` + selector `components/LocationPicker.tsx` (autocompletar Geocoding v6, modos a pie/coche 10-15-20 min o CP/municipio). Al pedir demo vuela a un panel con mapa y `DemoFormBody`.
+- `/api/map` genera la imagen estática con la isócrona real (se usa en el panel y en los correos, así el token no viaja en emails). La API de demo recibe `direccion, lng, lat, cp, municipio, modo, minutos, admin` (`lib/location.ts`).
+- La confirmación al cliente no repite la dirección como texto (evita usar el formulario para enviar spam).
