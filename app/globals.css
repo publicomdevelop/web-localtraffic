@@ -4022,6 +4022,37 @@ canvas {
   }
 }
 
+.dpanel--static {
+  width: 100%;
+  max-height: none;
+  overflow: visible;
+  box-shadow: none;
+}
+
+.dpanel__title--page {
+  font-size: clamp(32px, 4.4vw, 52px);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  padding-right: 0;
+}
+
+.dpanel__label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+.dpanel--static .demo__contact {
+  margin-top: 20px;
+}
+
+@media (max-width: 860px) {
+  .dpanel--static {
+    border-radius: 20px;
+  }
+}
+
 /* Reduced motion: everything is readable standing still ------------------- */
 
 @media (prefers-reduced-motion: reduce) {

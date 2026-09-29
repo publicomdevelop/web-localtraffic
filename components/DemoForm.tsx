@@ -341,7 +341,7 @@ export function DemoFormBody({ variant = "page", place, area, locationText, loca
   );
 }
 
-/** /contacto: heading, contact details and the form with its own location picker. */
+/** /contacto: the same layout as the dock's panel, already open. */
 export default function DemoForm() {
   const lang = useLang();
   const t = COPY[lang];
@@ -351,43 +351,41 @@ export default function DemoForm() {
 
   return (
     <section id="demo" className="demo" data-hide-askbar aria-labelledby="demo-title">
-      <div className="wrap demo__grid">
-        <div className="demo__text">
-          <h1 id="demo-title" className="page-title">
-            {t.title}
-          </h1>
-          <p className="section-lede">{t.lede}</p>
-          <ul className="demo__contact">
-            <li>
-              <a href="tel:+34938148787">938 148 787</a>
-            </li>
-            <li>
-              <a href="mailto:hola@localtraffic.es">hola@localtraffic.es</a>
-            </li>
-          </ul>
-        </div>
-        <div className="demo__card">
-          <DemoFormBody
-            place={place}
-            area={area}
-            locationText={query}
-            locationSlot={
-              <div className="form__row">
-                <label htmlFor="f-zona">{t.zone}</label>
-                <LocationPicker
-                  lang={lang}
-                  inputId="f-zona"
-                  query={query}
-                  onQuery={setQuery}
-                  place={place}
-                  onPlace={setPlace}
-                  area={area}
-                  onArea={setArea}
-                />
-                {place && <MapPreview place={place} area={area} lang={lang} />}
-              </div>
-            }
-          />
+      <div className="wrap">
+        <div className="dpanel dpanel--static">
+          <div className="dpanel__inner">
+            <div className="dpanel__map">
+              <h1 id="demo-title" className="dpanel__title dpanel__title--page">
+                {t.title}
+              </h1>
+              <p className="dpanel__lede">{t.lede}</p>
+              <label htmlFor="f-zona" className="dpanel__label">
+                {t.zone}
+              </label>
+              <LocationPicker
+                lang={lang}
+                inputId="f-zona"
+                query={query}
+                onQuery={setQuery}
+                place={place}
+                onPlace={setPlace}
+                area={area}
+                onArea={setArea}
+              />
+              <MapPreview place={place} area={area} lang={lang} />
+              <ul className="demo__contact">
+                <li>
+                  <a href="tel:+34938148787">938 148 787</a>
+                </li>
+                <li>
+                  <a href="mailto:hola@localtraffic.es">hola@localtraffic.es</a>
+                </li>
+              </ul>
+            </div>
+            <div className="dpanel__form">
+              <DemoFormBody place={place} area={area} locationText={query} />
+            </div>
+          </div>
         </div>
       </div>
     </section>
